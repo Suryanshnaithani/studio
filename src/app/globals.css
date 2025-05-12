@@ -3,78 +3,83 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Georgia', serif; /* Match brochure font */
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 240 10% 97%; /* Light greyish */
+    --foreground: 220 30% 20%; /* Dark blueish */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 220 30% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --popover-foreground: 220 30% 20%;
+    --primary: 220 44% 20%; /* Dark blue */
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --secondary: 240 10% 97%; /* Light grey */
+    --secondary-foreground: 220 30% 20%;
+    --muted: 240 10% 90%;
+    --muted-foreground: 220 30% 40%;
+    --accent: 45 100% 50%; /* Gold */
+    --accent-foreground: 220 44% 20%; /* Dark blue on gold */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --border: 220 10% 85%;
+    --input: 220 10% 90%;
+    --ring: 220 44% 30%; /* Ring color related to primary */
+    --chart-1: 220 44% 50%;
+    --chart-2: 45 100% 60%;
+    --chart-3: 210 40% 50%;
+    --chart-4: 180 40% 50%;
+    --chart-5: 30 80% 60%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Adjusted sidebar vars to match main theme */
+    --sidebar-background: 220 44% 15%; /* Darker blue */
+    --sidebar-foreground: 0 0% 98%; /* White text */
+    --sidebar-primary: 45 100% 50%; /* Gold for primary elements */
+    --sidebar-primary-foreground: 220 44% 10%; /* Dark blue on gold */
+    --sidebar-accent: 220 44% 25%; /* Slightly lighter blue for accents */
+    --sidebar-accent-foreground: 0 0% 98%; /* White text on accent */
+    --sidebar-border: 220 44% 20%;
+    --sidebar-ring: 45 100% 50%; /* Gold ring */
   }
+
   .dark {
-    --background: 0 0% 3.9%;
+    /* Define dark theme variables if needed, mirroring the light theme structure */
+    --background: 220 30% 10%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 220 30% 12%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 220 30% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --primary: 220 50% 70%; /* Lighter blue for dark mode */
+    --primary-foreground: 220 30% 10%;
+    --secondary: 220 30% 15%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --muted: 220 30% 20%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 45 100% 60%; /* Slightly brighter Gold */
+    --accent-foreground: 220 44% 10%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 220 30% 25%;
+    --input: 220 30% 20%;
+    --ring: 45 100% 60%; /* Gold ring */
+    --chart-1: 220 50% 60%;
+    --chart-2: 45 100% 70%;
+    --chart-3: 210 50% 60%;
+    --chart-4: 180 50% 60%;
+    --chart-5: 30 80% 70%;
+
+    --sidebar-background: 220 30% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 45 100% 60%;
+    --sidebar-primary-foreground: 220 44% 10%;
+    --sidebar-accent: 220 30% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 30% 12%;
+    --sidebar-ring: 45 100% 60%;
   }
 }
 
@@ -84,5 +89,114 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Print specific styles */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact; /* Ensure background colors print */
+    print-color-adjust: exact;
+    font-family: 'Georgia', serif;
+    background-color: #fff !important; /* Force white background for print */
+    color: #333 !important; /* Force dark text */
+  }
+  .no-print {
+    display: none !important;
+  }
+  .printable-brochure {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+  }
+  .page {
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+    break-after: page !important;
+    break-inside: avoid !important;
+    width: 210mm !important;
+    height: 296mm !important; /* Slightly less than 297 to avoid issues */
+    overflow: hidden !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important; /* Reset padding for direct page control */
+    position: relative;
+    background-color: #FFFFFF !important; /* Ensure page background */
+  }
+  .page-content {
+      padding: 20mm !important;
+      height: calc(100% - 40mm) !important; /* Adjust height based on padding */
+      box-sizing: border-box;
+  }
+
+  /* Ensure background colors print for specific elements */
+ .page-accent-bg, .cover-page, .back-cover {
+    background-color: #1c2f4a !important;
+    color: #FFFFFF !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page-light-bg {
+    background-color: #F8F8F8 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .developer-content, .developer-page .disclaimer, .location-map .map-disclaimer, .back-cover .full-disclaimer {
+      background-color: rgba(0,0,0,0.6) !important;
+      color: white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+  }
+   .district-label, .grid-label {
+       background-color: white !important;
+       color: #1c2f4a !important;
+       -webkit-print-color-adjust: exact;
+       print-color-adjust: exact;
+   }
+
+  /* Prevent elements from breaking across pages where possible */
+  h1, h2, h3, h4, p, ul, li, div, img {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+  }
+
+  /* Hide scrollbars */
+  ::-webkit-scrollbar {
+      display: none;
+  }
+
+  /* Hide watermarks if they cause issues, or adjust opacity */
+  .watermark {
+     opacity: 0.1 !important; /* Ensure watermark prints if desired */
+     filter: none !important; /* Remove filter potentially hiding it */
+  }
+  .page-accent-bg .watermark {
+      filter: brightness(0) invert(1) !important;
+      opacity: 0.15 !important;
+  }
+
+  /* Ensure images print correctly */
+  img {
+      max-width: 100% !important;
+      display: block; /* Helps with layout */
+  }
+  .cover-image, .developer-image, .back-cover-image {
+      object-fit: cover !important;
+      width: 100% !important;
+      height: 100% !important;
+  }
+
+   /* Ensure flex/grid layouts print */
+  .location-container, .connectivity-container, .amenities-container, .specs-container, .floor-plan {
+    display: flex !important;
+  }
+  .amenities-grid {
+    display: grid !important;
+  }
+  .list-columns {
+      column-count: 2 !important;
+      column-gap: 10mm !important;
   }
 }

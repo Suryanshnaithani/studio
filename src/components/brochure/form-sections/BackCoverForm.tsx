@@ -1,0 +1,153 @@
+import React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+import type { BrochureData } from '@/components/brochure/data-schema';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+interface BackCoverFormProps {
+  form: UseFormReturn<BrochureData>;
+}
+
+export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
+  return (
+    <div className="space-y-4">
+       <FormField
+        control={form.control}
+        name="backCoverImage"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Back Cover Image URL</FormLabel>
+            <FormControl>
+              <Input type="url" placeholder="https://..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="backCoverLogo"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Back Cover Logo URL</FormLabel>
+            <FormControl>
+              <Input type="url" placeholder="https://..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="callToAction"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Call To Action Text</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g., Experience Luxury Living" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="contactTitle"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Info Title</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g., Contact Us" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="contactPhone"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Phone</FormLabel>
+            <FormControl>
+              <Input type="tel" placeholder="+91..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="contactEmail"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Email</FormLabel>
+            <FormControl>
+              <Input type="email" placeholder="sales@..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="contactWebsite"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Website</FormLabel>
+            <FormControl>
+              <Input type="url" placeholder="https://..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="contactAddress"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Address / Visit Info</FormLabel>
+            <FormControl>
+              <Input placeholder="Experience Center, ..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="fullDisclaimer"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Full Disclaimer</FormLabel>
+            <FormControl>
+              <Textarea placeholder="This brochure is conceptual..." {...field} rows={5}/>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+       <FormField
+        control={form.control}
+        name="reraDisclaimer"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>RERA Disclaimer (repeat)</FormLabel>
+            <FormControl>
+              <Textarea placeholder="RERA Registration No..." {...field} rows={2}/>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+};

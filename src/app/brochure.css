@@ -1,0 +1,219 @@
+/* Styles specifically for the BrochurePreview component */
+.brochure-preview-container {
+  @apply bg-gray-200 p-4 md:p-8 print:p-0 print:bg-transparent overflow-y-auto;
+  max-height: 100vh; /* Ensure preview area is scrollable */
+}
+
+.printable-brochure {
+  @apply bg-white shadow-lg mx-auto print:shadow-none;
+  width: 210mm; /* A4 width */
+}
+
+.page {
+  @apply relative overflow-hidden bg-white;
+  width: 210mm;
+  height: 297mm; /* A4 height */
+  font-family: 'Georgia', serif;
+  color: #333;
+  line-height: 1.5;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow for non-print view */
+  margin-bottom: 20px; /* Space between pages in preview */
+  /* Removed print:* prefixes, moved to @media print block below */
+}
+
+@media print {
+  .page {
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+.page-content {
+  @apply relative h-full;
+  padding: 20mm;
+  box-sizing: border-box;
+}
+
+/* Base Backgrounds */
+.page-light-bg {
+  background-color: #F8F8F8;
+}
+.page-accent-bg {
+  background-color: #1c2f4a;
+  color: #FFFFFF;
+}
+
+/* Typography - using approx pt to px conversion (1pt = 1.333px) and Tailwind classes */
+h1 { font-size: 42.66px; line-height: 1.2; margin-bottom: 13.33mm; font-weight: bold; letter-spacing: -0.5pt; }
+h2 { font-size: 32px; line-height: 1.2; margin-bottom: 13.33mm; font-weight: bold; letter-spacing: -0.3pt; }
+h3 { font-size: 24px; line-height: 1.2; margin-bottom: 13.33mm; font-weight: bold; letter-spacing: -0.2pt; }
+h4 { font-size: 18.66px; line-height: 1.2; margin-bottom: 13.33mm; font-weight: bold; }
+p { font-size: 14.66px; line-height: 1.6; margin-bottom: 5mm; }
+
+
+/* Section Title */
+.section-title {
+    font-size: 32px; /* 24pt */
+    font-weight: bold;
+    margin-bottom: 15mm;
+    color: #1c2f4a;
+    text-align: center;
+    position: relative;
+    padding-bottom: 5mm;
+}
+.section-title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30mm;
+    height: 1mm;
+    background-color: #1c2f4a;
+}
+.page-accent-bg .section-title { color: #FFFFFF; }
+.page-accent-bg .section-title::after { background-color: #FFFFFF; }
+
+/* Cover Page Specific */
+.cover-page { background-color: #1c2f4a; color: white; text-align: center; }
+.cover-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.6; object-fit: cover; }
+.cover-content { position: relative; z-index: 2; padding-top: 100mm; }
+.project-logo { width: 80mm; margin: 0 auto 20mm; display: block; }
+.project-name { font-size: 48px; /* 36pt */ text-transform: uppercase; margin-bottom: 10mm; }
+.project-tagline { font-size: 21.33px; /* 16pt */ font-style: italic; margin-bottom: 20mm; }
+.rera-text { position: absolute; top: 20mm; right: 20mm; font-size: 10.66px; /* 8pt */ text-align: right; background-color: rgba(0,0,0,0.3); padding: 3mm; border-radius: 2mm; z-index: 3; }
+
+/* Intro Page */
+.intro-text { width: 160mm; margin: 0 auto; text-align: center; font-size: 16px; /* 12pt */ line-height: 1.8; }
+.watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60mm; opacity: 0.1; z-index: 0; }
+.page-accent-bg .watermark { filter: brightness(0) invert(1); opacity: 0.15; }
+
+/* Developer Page */
+.developer-page { position: relative; }
+.developer-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+.developer-content { position: relative; z-index: 2; width: 100mm; background-color: rgba(0,0,0,0.6); padding: 10mm; color: white; border-radius: 2mm; margin-top: 120mm; }
+.developer-logo { width: 60mm; margin: 10mm auto 0; display: block; }
+.disclaimer { position: absolute; bottom: 10mm; right: 20mm; font-size: 10.66px; /* 8pt */ color: white; background-color: rgba(0,0,0,0.4); padding: 2mm; border-radius: 1mm; z-index: 3; }
+
+/* Location Page */
+.location-container { display: flex; height: 200mm; margin-bottom: 10mm; }
+.location-text { flex: 1.2; padding-right: 10mm; }
+.location-map { flex: 0.8; position: relative; }
+.location-map img { width: 100%; height: 100%; object-fit: cover; border-radius: 2mm; }
+.map-disclaimer { position: absolute; bottom: 5mm; right: 5mm; font-size: 9.33px; /* 7pt */ color: white; background-color: rgba(0,0,0,0.4); padding: 2mm; border-radius: 1mm; z-index: 3; }
+.list-columns { column-count: 2; column-gap: 10mm; margin: 10mm 0; }
+.list-columns ul { list-style: none; break-inside: avoid; margin-bottom: 10mm; padding-left: 0;}
+.list-columns li { margin-bottom: 3mm; font-size: 14.66px; /* 11pt */ position: relative; padding-left: 8mm; break-inside: avoid;}
+.list-columns li::before { content: '•'; color: #1c2f4a; position: absolute; left: 0; font-size: 18.66px; /* 14pt */ line-height: 1;}
+.page-accent-bg .list-columns li::before { color: white; }
+.location-note { font-size: 10.66px; /* 8pt */ font-style: italic; margin-top: 5mm; }
+
+/* Connectivity Page */
+.connectivity-container { display: flex; height: 200mm; }
+.connectivity-text { flex: 1.2; padding-right: 10mm; }
+.connectivity-text h3 { margin-bottom: 5mm; margin-top: 0;}
+.connectivity-image { flex: 0.8; position: relative; }
+.connectivity-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 2mm; }
+.district-label { position: absolute; bottom: 10mm; left: 50%; transform: translateX(-50%); background-color: white; color: #1c2f4a; padding: 3mm 10mm; font-weight: bold; font-size: 16px; /* 12pt */ text-transform: uppercase; border-radius: 1mm; z-index: 3;}
+
+/* Amenities Intro Page */
+.amenities-intro { width: 160mm; margin: 0 auto; text-align: center; font-size: 16px; /* 12pt */ line-height: 1.8; }
+
+/* Amenities List Page */
+.amenities-container { display: flex; height: 200mm; }
+.amenities-image { flex: 1; position: relative; }
+.amenities-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 2mm; }
+.amenities-list { flex: 1; padding-left: 10mm; }
+.amenities-list h3 { color: #1c2f4a; border-bottom: 1px solid #ddd; padding-bottom: 3mm; margin-top: 10mm; margin-bottom: 5mm; font-size: 24px; }
+.amenities-list ul { list-style: none; margin-bottom: 10mm; padding-left: 0; }
+.amenities-list li { margin-bottom: 3mm; font-size: 14.66px; /* 11pt */ position: relative; padding-left: 8mm; break-inside: avoid;}
+.amenities-list li::before { content: '•'; color: #1c2f4a; position: absolute; left: 0; font-size: 18.66px; /* 14pt */ line-height: 1; }
+
+/* Amenities Grid Page */
+.amenities-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10mm; height: 200mm; margin-bottom: 10mm; }
+.grid-item { position: relative; border-radius: 2mm; overflow: hidden; }
+.grid-item img { width: 100%; height: 100%; object-fit: cover; }
+.grid-label { position: absolute; bottom: 5mm; left: 50%; transform: translateX(-50%); background-color: white; color: #1c2f4a; padding: 2mm 5mm; font-weight: bold; font-size: 13.33px; /* 10pt */ text-transform: uppercase; border-radius: 1mm; z-index: 3;}
+.grid-disclaimer { position: absolute; bottom: 5mm; right: 0; font-size: 10.66px; /* 8pt */ font-style: italic; } /* Adjusted placement slightly */
+
+/* Specifications Page */
+.specs-container { display: flex; height: 200mm; }
+.specs-image { flex: 1; position: relative; }
+.specs-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 2mm; }
+.specs-list { flex: 1; padding-left: 10mm; }
+.specs-list h3 { color: #1c2f4a; border-bottom: 1px solid #ddd; padding-bottom: 3mm; margin-bottom: 5mm; margin-top: 10mm; font-size: 24px; }
+.specs-list ul { list-style: none; margin-bottom: 15mm; padding-left: 0; }
+.specs-list li { margin-bottom: 3mm; font-size: 14.66px; /* 11pt */ position: relative; padding-left: 8mm; break-inside: avoid;}
+.specs-list li::before { content: '•'; color: #1c2f4a; position: absolute; left: 0; font-size: 18.66px; /* 14pt */ line-height: 1; }
+
+/* Master Plan Page */
+.master-plan-image { width: 100%; height: 150mm; margin-bottom: 10mm; position: relative; }
+.master-plan-image img { width: 100%; height: 100%; object-fit: contain; border-radius: 2mm; border: 1px solid #eee;}
+.master-plan-text { margin-bottom: 10mm; }
+
+/* Floor Plans Page */
+.floor-plans-container { display: flex; flex-direction: column; gap: 15mm; }
+.floor-plan { display: flex; height: 80mm; }
+.plan-image { flex: 1.2; position: relative; }
+.plan-image img { width: 100%; height: 100%; object-fit: contain; border: 1px solid #ddd; border-radius: 2mm; }
+.plan-details { flex: 0.8; padding: 5mm; background-color: #f5f5f5; border-radius: 2mm; margin-left: 10mm; }
+.plan-details h4 { color: #1c2f4a; margin-bottom: 5mm; margin-top: 0; font-size: 18.66px; }
+.plan-details ul { list-style: none; padding-left: 0; }
+.plan-details li { margin-bottom: 2mm; font-size: 13.33px; /* 10pt */ position: relative; padding-left: 6mm; break-inside: avoid;}
+.plan-details li::before { content: '•'; color: #1c2f4a; position: absolute; left: 0; font-size: 16px; /* 12pt */ line-height: 1;}
+.plans-disclaimer { font-size: 10.66px; /* 8pt */ font-style: italic; margin-top: 10mm; }
+
+/* Back Cover */
+.back-cover { background-color: #1c2f4a; color: white; text-align: center; }
+.back-cover-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; object-fit: cover; }
+.back-cover-content { position: relative; z-index: 2; padding-top: 60mm; }
+.back-logo { width: 100mm; margin: 0 auto 20mm; display: block; }
+.call-to-action { font-size: 32px; /* 24pt */ text-transform: uppercase; margin-bottom: 20mm; letter-spacing: 1pt; }
+.contact-info { margin-bottom: 20mm; }
+.contact-info h3 { display: inline-block; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 3mm; margin-bottom: 10mm; font-size: 24px; }
+.contact-info p { margin-bottom: 3mm; font-size: 14.66px; }
+.full-disclaimer { position: absolute; bottom: 20mm; left: 20mm; right: 20mm; font-size: 10.66px; /* 8pt */ text-align: left; background-color: rgba(0,0,0,0.2); padding: 5mm; border-radius: 2mm; z-index: 3;}
+.full-disclaimer p { margin-bottom: 1mm; } /* Tighter spacing for disclaimer */
+
+/* Ensure image displays correctly */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.object-cover { object-fit: cover; }
+.object-contain { object-fit: contain; }
+
+/* Ensure list bullets align correctly */
+.list-columns li::before,
+.amenities-list li::before,
+.specs-list li::before,
+.plan-details li::before {
+    line-height: 1; /* Adjust line-height for better bullet alignment */
+    top: 0.1em; /* Fine-tune vertical alignment if needed */
+}
+
+/* Adjust spacing for specific elements */
+.developer-content h2 {
+    margin-bottom: 5mm;
+}
+.developer-content p {
+    margin-bottom: 3mm;
+}
+.location-text h3 {
+    margin-top: 10mm;
+    margin-bottom: 5mm;
+}
+.connectivity-text .list-columns {
+    margin-top: 0;
+}
+.plan-details p {
+    margin-bottom: 3mm;
+}
+
+/* Add data-ai-hints */
+img[data-ai-hint] {
+    /* You can add subtle styling for placeholders if needed */
+    /* background-color: #eee; */
+}
