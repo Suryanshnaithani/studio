@@ -43,16 +43,19 @@ Invent plausible details for a fictional high-end residential project (e.g., apa
 {{/if}}
 
 Fill in all the fields defined in the output schema. Ensure the content is professional, engaging, and suitable for a luxury real estate brochure.
-Use placeholder image URLs from 'https://picsum.photos/seed/...' where image URLs are required. Use unique seeds for each image. Ensure floor plan features are distinct and relevant to the name/area. Keep descriptions concise but informative. Ensure lists (like amenities, specs, key distances) have a reasonable number of relevant items. Generate plausible RERA information and disclaimers.
+For optional image URL fields (like 'coverImage', 'projectLogo', etc.), provide a placeholder URL from 'https://picsum.photos/seed/...' using a unique descriptive seed (e.g., 'https://picsum.photos/seed/coverBuilding/800/600') IF an image is appropriate for that field. If no image is suitable or needed for an optional field, omit the field entirely (do not provide an empty string).
+Ensure floor plan features are distinct and relevant to the name/area. Keep descriptions concise but informative. Ensure lists (like amenities, specs, key distances) have a reasonable number of relevant items. Generate plausible RERA information and disclaimers.
 Make the project name and developer name creative and appropriate for a luxury project.
-Ensure all string fields are populated with realistic text and array fields contain appropriate string items. Floor plan features should be an array of strings. Key distances should be specific and plausible.
+Ensure all required string fields are populated with realistic text and array fields contain appropriate string items. Floor plan features should be an array of strings. Key distances should be specific and plausible.
 
-Output the response strictly adhering to the provided JSON schema.`,
+Output the response strictly adhering to the provided JSON schema. Do not include fields that are not defined in the schema.`,
   config: {
     // Add safety settings if needed, e.g., block harmful content generation
     // safetySettings: [ ... ],
     // Increase temperature slightly for more creative output
     temperature: 0.8,
+    // Ensure JSON output mode is enabled if available/needed by the model
+    // response_mime_type: "application/json", // This might depend on the specific model/provider integration
   },
 });
 
@@ -76,14 +79,18 @@ const generateBrochureFlow = ai.defineFlow(
 
      // Validate the output against the schema again before returning
      try {
-        BrochureDataSchema.parse(output);
+        // Use safeParse to handle potential errors gracefully
+        const parsedOutput = BrochureDataSchema.safeParse(output);
+        if (!parsedOutput.success) {
+             console.error("Generated data failed validation:", parsedOutput.error);
+             throw new Error("AI generated data that does not match the required schema.");
+        }
         console.log("Generated data validated successfully.");
-        return output;
-      } catch (error) {
-        console.error("Generated data failed validation:", error);
-        // Attempt to return default data as a fallback, or re-throw
-        // For now, re-throwing might be better to indicate failure clearly
-        throw new Error("AI generated data that does not match the required schema.");
+        return parsedOutput.data; // Return the validated data
+      } catch (error: any) {
+        console.error("Error during output validation or processing:", error);
+        // Re-throw the error to indicate failure clearly
+        throw new Error(error.message || "An unexpected error occurred during AI response validation.");
       }
   }
 );

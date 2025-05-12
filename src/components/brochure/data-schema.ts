@@ -1,19 +1,21 @@
 import { z } from 'zod';
 
+// Updated FloorPlanSchema: image is just optional URL
 const FloorPlanSchema = z.object({
   id: z.string().optional(), // For mapping arrays
-  name: z.string().min(1, 'Floor plan name is required'),
-  area: z.string().min(1, 'Area is required'),
-  features: z.array(z.string().min(1)).min(1, 'At least one feature is required'),
-  image: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  name: z.string().min(1, 'Floor plan name is required').default('Unnamed Floor Plan'),
+  area: z.string().min(1, 'Area is required').default('N/A sq. ft.'),
+  features: z.array(z.string().min(1)).min(1, 'At least one feature is required').default(['Basic Feature']),
+  image: z.string().url('Must be a valid URL').optional(),
 });
 
+// Updated BrochureDataSchema: Removed .or(z.literal('')) from all optional URL fields
 export const BrochureDataSchema = z.object({
   // Cover Page
   projectName: z.string().default('Elysian Towers'),
   projectTagline: z.string().default('Experience Unrivaled Urban Living'),
-  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/skyscraper/1500/2000'),
-  projectLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/minimalistlogo/400/200'),
+  coverImage: z.string().url('Must be a valid URL').optional().describe("URL for the main cover image. Use picsum.photos."),
+  projectLogo: z.string().url('Must be a valid URL').optional().describe("URL for the project logo. Use picsum.photos."),
   reraInfo: z.string().default('RERA No: PRJ/ST/XYZ/001234 | Project registered under RERA Act, 2016.\nDetails available at state.rera.gov.in'),
 
   // Introduction
@@ -21,14 +23,14 @@ export const BrochureDataSchema = z.object({
   introParagraph1: z.string().default('Welcome to Elysian Towers, a landmark residential development offering an exquisite collection of apartments designed for contemporary urban living. Situated in the city\'s most sought-after district, Elysian Towers blends architectural brilliance with unparalleled amenities.'),
   introParagraph2: z.string().default('Every residence at Elysian Towers is a testament to luxury and thoughtful design. Featuring spacious layouts, premium finishes, and breathtaking city views, these homes provide the perfect sanctuary amidst the vibrant cityscape. Experience a lifestyle curated for comfort, convenience, and sophistication.'),
   introParagraph3: z.string().default('From the moment you step into the grand lobby, you are enveloped in an atmosphere of elegance. Our commitment to quality ensures every detail, from imported materials to smart home features, meets the highest standards of modern luxury living.'),
-  introWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/geometricpattern/200/200'),
+  introWatermark: z.string().url('Must be a valid URL').optional().describe("Subtle watermark image URL for intro page. Use picsum.photos."),
 
   // Developer Profile
   developerName: z.string().default('Horizon Development Group'),
   developerDesc1: z.string().default('Horizon Development Group is a leading name in luxury real estate, renowned for creating iconic properties that shape city skylines. With a legacy spanning over three decades, we are committed to excellence, innovation, and customer satisfaction.'),
   developerDesc2: z.string().default('Our portfolio showcases a dedication to quality craftsmanship, sustainable practices, and cutting-edge design. We build more than structures; we build communities where people thrive.'),
-  developerImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/construction/1500/2000'),
-  developerLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/horizonlogo/300/200'),
+  developerImage: z.string().url('Must be a valid URL').optional().describe("Background image URL for developer page. Use picsum.photos."),
+  developerLogo: z.string().url('Must be a valid URL').optional().describe("Developer's logo URL. Use picsum.photos."),
   developerDisclaimer: z.string().default("Conceptual rendering. Actual project may vary."),
 
   // Location
@@ -43,30 +45,30 @@ export const BrochureDataSchema = z.object({
       'Global School - 15 mins drive',
       'City Hospital - 12 mins drive',
       'Financial Center - 8 mins drive',
-  ]),
-  locationMapImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/citymap/800/1000'),
+  ]).describe("List of nearby locations and their approximate distance/time."),
+  locationMapImage: z.string().url('Must be a valid URL').optional().describe("URL for the location map image. Use picsum.photos."),
   mapDisclaimer: z.string().default('*Map is indicative and not to scale. Distances are approximate travel times.'),
-  locationWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/compass/200/200'),
+  locationWatermark: z.string().url('Must be a valid URL').optional().describe("Subtle watermark image URL for location page. Use picsum.photos."),
 
 
   // Connectivity
   connectivityTitle: z.string().default('Seamless Connectivity'),
   connectivityPointsBusiness: z.array(z.string().min(1)).default([
     'Business Hubs', 'Tech Park One', 'Financial Square', 'Corporate Avenue'
-  ]),
+  ]).describe("List of nearby business points, first item is category title."),
    connectivityPointsHealthcare: z.array(z.string().min(1)).default([
     'Healthcare', 'Metro General Hospital', 'LifeCare Clinic', 'Wellness Institute'
-   ]),
+   ]).describe("List of nearby healthcare points, first item is category title."),
    connectivityPointsEducation: z.array(z.string().min(1)).default([
     'Education', 'Global International School', 'City University', 'Management College'
-   ]),
+   ]).describe("List of nearby education points, first item is category title."),
   connectivityPointsLeisure: z.array(z.string().min(1)).default([
     'Leisure & Retail', 'Central Mall', 'Art Gallery', 'Fine Dining Strip', 'Multiplex Cinema'
-  ]),
+  ]).describe("List of nearby leisure/retail points, first item is category title."),
   connectivityNote: z.string().default('Connectivity subject to infrastructure development and traffic conditions.'),
-  connectivityImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/cityscape/800/1000'),
-  connectivityDistrictLabel: z.string().default('CBD Hub'),
-  connectivityWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/network/200/200'),
+  connectivityImage: z.string().url('Must be a valid URL').optional().describe("Image URL illustrating connectivity. Use picsum.photos."),
+  connectivityDistrictLabel: z.string().default('CBD Hub').describe("Label text overlaid on the connectivity image."),
+  connectivityWatermark: z.string().url('Must be a valid URL').optional().describe("Subtle watermark image URL for connectivity page. Use picsum.photos."),
 
 
   // Amenities Intro
@@ -74,48 +76,47 @@ export const BrochureDataSchema = z.object({
   amenitiesIntroP1: z.string().default('Elysian Towers offers an exceptional array of amenities meticulously designed to cater to every aspect of your well-being and leisure. Experience a harmonious blend of relaxation, recreation, and social engagement within the community.'),
   amenitiesIntroP2: z.string().default('Our state-of-the-art facilities provide the perfect escape from the everyday hustle. Whether you seek invigorating workouts, serene relaxation, or vibrant social spaces, Elysian Towers delivers an unparalleled lifestyle experience.'),
   amenitiesIntroP3: z.string().default('Designed by leading architects, the amenity spaces combine functionality with aesthetic elegance. Enjoy exclusive access to world-class facilities that elevate your daily life and foster a strong sense of community.'),
-  amenitiesIntroWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/lifestyleicon/200/200'),
+  amenitiesIntroWatermark: z.string().url('Must be a valid URL').optional().describe("Subtle watermark image URL for amenities intro page. Use picsum.photos."),
 
 
   // Amenities List
   amenitiesListTitle: z.string().default('Exclusive Amenities'),
-  amenitiesListImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/infinitypool/800/1000'),
+  amenitiesListImage: z.string().url('Must be a valid URL').optional().describe("Image URL for the amenities list page. Use picsum.photos."),
   amenitiesListImageDisclaimer: z.string().default("Conceptual image."),
   amenitiesWellness: z.array(z.string().min(1)).default([
     'Infinity Edge Swimming Pool', 'Jacuzzi & Steam Room', 'Yoga & Pilates Studio', 'Zen Garden & Reflexology Path'
-  ]),
+  ]).describe("List of wellness/leisure amenities."),
   amenitiesRecreation: z.array(z.string().min(1)).default([
     'Fully Equipped Gymnasium', 'Indoor Badminton Court', 'Residents\' Lounge & Cafe', "Kids' Adventure Zone", 'Mini Theatre / AV Room'
-  ]),
+  ]).describe("List of recreation amenities."),
 
   // Amenities Grid
   amenitiesGridTitle: z.string().default('Signature Facilities'),
-  amenitiesGridImage1: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/modernfitness/800/800'),
-  amenitiesGridLabel1: z.string().default('Gymnasium'),
-  amenitiesGridImage2: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/luxurylounge/800/800'),
-  amenitiesGridLabel2: z.string().default('Residents\' Lounge'),
-  amenitiesGridImage3: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/rooftopgarden/800/800'),
-  amenitiesGridLabel3: z.string().default('Sky Garden'),
-  amenitiesGridImage4: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/kidsplayroom/800/800'),
-  amenitiesGridLabel4: z.string().default('Kids\' Zone'),
+  amenitiesGridImage1: z.string().url('Must be a valid URL').optional().describe("Image URL for grid item 1. Use picsum.photos."),
+  amenitiesGridLabel1: z.string().default('Gymnasium').describe("Label for grid item 1."),
+  amenitiesGridImage2: z.string().url('Must be a valid URL').optional().describe("Image URL for grid item 2. Use picsum.photos."),
+  amenitiesGridLabel2: z.string().default('Residents\' Lounge').describe("Label for grid item 2."),
+  amenitiesGridImage3: z.string().url('Must be a valid URL').optional().describe("Image URL for grid item 3. Use picsum.photos."),
+  amenitiesGridLabel3: z.string().default('Sky Garden').describe("Label for grid item 3."),
+  amenitiesGridImage4: z.string().url('Must be a valid URL').optional().describe("Image URL for grid item 4. Use picsum.photos."),
   amenitiesGridDisclaimer: z.string().default("Images are representative. Actual amenities may vary."),
 
   // Specifications
   specsTitle: z.string().default('Finishes & Features'),
-  specsImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/luxuryinterior/800/1000'),
+  specsImage: z.string().url('Must be a valid URL').optional().describe("Image URL for specifications page. Use picsum.photos."),
   specsImageDisclaimer: z.string().default("Conceptual interior view."),
   specsInterior: z.array(z.string().min(1)).default([
     'Living/Dining: Italian Marble Flooring', 'Bedrooms: Engineered Wooden Flooring', 'Kitchen: European Modular Kitchen with Hob & Chimney', 'Bathrooms: Premium Sanitaryware & CP Fittings', 'Windows: Soundproof Double-Glazed Units', 'Smart Home Automation System'
-  ]),
+  ]).describe("List of interior specifications."),
   specsBuilding: z.array(z.string().min(1)).default([
     'Structure: Earthquake Resistant RCC Frame', 'Security: 5-Tier Security with Video Door Phone', 'Elevators: High-Speed Passenger & Service Lifts', 'Power Backup: 100% DG Backup for Apartments & Common Areas', 'Water Treatment Plant'
-  ]),
-  specsWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/blueprinticon/200/200'),
+  ]).describe("List of building features/specifications."),
+  specsWatermark: z.string().url('Must be a valid URL').optional().describe("Subtle watermark image URL for specs page. Use picsum.photos."),
 
 
   // Master Plan
   masterPlanTitle: z.string().default('Site Master Plan'),
-  masterPlanImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/siteplan/1500/1000'),
+  masterPlanImage: z.string().url('Must be a valid URL').optional().describe("URL for the master plan image. Use picsum.photos."),
   masterPlanImageDisclaimer: z.string().default('Master plan is indicative and subject to change.'),
   masterPlanDesc1: z.string().default('The master plan for Elysian Towers is meticulously crafted to optimize space, views, and ventilation. Residential towers are strategically positioned to maximize privacy and natural light, surrounded by lush landscaped greens.'),
   masterPlanDesc2: z.string().default('Dedicated zones for amenities, recreation, and vehicle movement ensure a seamless and harmonious living environment. Over 70% of the site area is dedicated to open spaces, creating a green oasis in the city center.'),
@@ -123,15 +124,15 @@ export const BrochureDataSchema = z.object({
   // Floor Plans
   floorPlansTitle: z.string().default('Intelligent Floor Plans'),
   floorPlans: z.array(FloorPlanSchema).default([
-    { id: 'fp1', name: '3 Bedroom Signature', area: 'Approx. 1,850 sq. ft.', features: ['Spacious Living & Dining', 'Master Suite with Walk-in Closet', 'Private Balcony', 'Utility Area'], image: 'https://picsum.photos/seed/floorplan3bhk/1000/800' },
-    { id: 'fp2', name: '4 Bedroom Sky Villa', area: 'Approx. 2,500 sq. ft.', features: ['Expansive Living Room', 'Two Master Suites', 'Large Sundeck', 'Servant Room with separate entry'], image: 'https://picsum.photos/seed/floorplan4bhk/1000/800' },
-     { id: 'fp3', name: '5 Bedroom Duplex Penthouse', area: 'Approx. 4,000 sq. ft.', features: ['Double Height Living Area', 'Private Terrace Garden', 'Home Theatre Room', 'Panoramic City Views'], image: 'https://picsum.photos/seed/floorplan5bhk/1000/800' },
-  ]),
+    { id: 'fp1', name: '3 Bedroom Signature', area: 'Approx. 1,850 sq. ft.', features: ['Spacious Living & Dining', 'Master Suite with Walk-in Closet', 'Private Balcony', 'Utility Area'], image: 'https://picsum.photos/seed/fp3bhk/1000/800' },
+    { id: 'fp2', name: '4 Bedroom Sky Villa', area: 'Approx. 2,500 sq. ft.', features: ['Expansive Living Room', 'Two Master Suites', 'Large Sundeck', 'Servant Room with separate entry'], image: 'https://picsum.photos/seed/fp4bhk/1000/800' },
+     { id: 'fp3', name: '5 Bedroom Duplex Penthouse', area: 'Approx. 4,000 sq. ft.', features: ['Double Height Living Area', 'Private Terrace Garden', 'Home Theatre Room', 'Panoramic City Views'], image: 'https://picsum.photos/seed/fp5bhk/1000/800' },
+  ]).describe("Array of floor plan objects."),
   floorPlansDisclaimer: z.string().default('Unit plans are indicative. Areas are approximate. Furniture layout is not included.'),
 
   // Back Cover
-  backCoverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/nightcity/1500/2000'),
-  backCoverLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/horizonlogodark/500/300'),
+  backCoverImage: z.string().url('Must be a valid URL').optional().describe("Background image URL for back cover. Use picsum.photos."),
+  backCoverLogo: z.string().url('Must be a valid URL').optional().describe("Logo URL for back cover. Use picsum.photos."),
   callToAction: z.string().default('Your Urban Sanctuary Awaits'),
   contactTitle: z.string().default('Visit Our Sales Gallery'),
   contactPhone: z.string().default('+91 12345 67890'),
@@ -145,7 +146,34 @@ export const BrochureDataSchema = z.object({
 export type BrochureData = z.infer<typeof BrochureDataSchema>;
 export type FloorPlanData = z.infer<typeof FloorPlanSchema>;
 
-// Helper function to get default values
+// Helper function to get default values derived from the schema
 export const getDefaultBrochureData = (): BrochureData => {
-    return BrochureDataSchema.parse({});
+    // Use .parse({}) to get defaults. Need to handle potential errors if schema changes radically.
+    try {
+        return BrochureDataSchema.parse({});
+    } catch (e) {
+        console.error("Error parsing default BrochureDataSchema:", e);
+        // Fallback to a manually defined basic structure if parse fails
+        return {
+            projectName: '', projectTagline: '', reraInfo: '',
+            introTitle: '', introParagraph1: '', introParagraph2: '', introParagraph3: '',
+            developerName: '', developerDesc1: '', developerDesc2: '', developerDisclaimer: '',
+            locationTitle: '', locationDesc1: '', locationDesc2: '', keyDistances: [], mapDisclaimer: '',
+            connectivityTitle: '', connectivityPointsBusiness: [], connectivityPointsHealthcare: [], connectivityPointsEducation: [], connectivityPointsLeisure: [], connectivityNote: '', connectivityDistrictLabel: '',
+            amenitiesIntroTitle: '', amenitiesIntroP1: '', amenitiesIntroP2: '', amenitiesIntroP3: '',
+            amenitiesListTitle: '', amenitiesListImageDisclaimer: '', amenitiesWellness: [], amenitiesRecreation: [],
+            amenitiesGridTitle: '', amenitiesGridLabel1: '', amenitiesGridLabel2: '', amenitiesGridLabel3: '', amenitiesGridLabel4: '', amenitiesGridDisclaimer: '',
+            specsTitle: '', specsImageDisclaimer: '', specsInterior: [], specsBuilding: [],
+            masterPlanTitle: '', masterPlanImageDisclaimer: '', masterPlanDesc1: '', masterPlanDesc2: '',
+            floorPlansTitle: '', floorPlans: [], floorPlansDisclaimer: '',
+            callToAction: '', contactTitle: '', contactPhone: '', contactEmail: '', contactWebsite: '', contactAddress: '', fullDisclaimer: '', reraDisclaimer: '',
+            // Optional fields initialized as undefined
+            coverImage: undefined, projectLogo: undefined, introWatermark: undefined,
+            developerImage: undefined, developerLogo: undefined, locationMapImage: undefined, locationWatermark: undefined,
+            connectivityImage: undefined, connectivityWatermark: undefined, amenitiesIntroWatermark: undefined,
+            amenitiesListImage: undefined, amenitiesGridImage1: undefined, amenitiesGridImage2: undefined, amenitiesGridImage3: undefined, amenitiesGridImage4: undefined,
+            specsImage: undefined, specsWatermark: undefined, masterPlanImage: undefined,
+            backCoverImage: undefined, backCoverLogo: undefined
+        };
+    }
 }

@@ -10,10 +10,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface FloorPlansFormProps {
@@ -99,7 +98,13 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form }) => {
            variant="outline"
            size="sm"
            className="mt-2"
-           onClick={() => append({ id: `fp${Date.now()}`, name: '', area: '', features: [''], image: '' })}
+           onClick={() => append({
+                id: `fp${Date.now()}`,
+                name: 'New Floor Plan', // Default name
+                area: '0 sq. ft.', // Default area
+                features: ['New Feature'], // Default feature
+                image: undefined // Default image to undefined
+            })}
          >
            Add Floor Plan
          </Button>
@@ -149,7 +154,7 @@ const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="outline" size="icon" onClick={() => remove(featureIndex)}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => remove(featureIndex)} disabled={fields.length <= 1}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -160,7 +165,7 @@ const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex
                 variant="outline"
                 size="sm"
                 className="mt-2"
-                onClick={() => append("")}
+                onClick={() => append("New Feature")} // Append a default feature text
             >
                 Add Feature
             </Button>
