@@ -22,7 +22,9 @@ export default function RootLayout({
       {/* <body className={`${lora.variable} font-serif antialiased`}> */}
       <body className="font-[Georgia,serif] antialiased"> {/* Apply Georgia font stack */}
         {children}
-        <Toaster /> {/* Add Toaster component */}
+        <div className="no-print"> {/* Add wrapper with no-print class */}
+             <Toaster /> {/* Add Toaster component */}
+        </div>
       </body>
     </html>
   );
