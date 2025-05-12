@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface ConnectivityFormProps {
   form: UseFormReturn<BrochureData>;
@@ -111,19 +112,12 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="connectivityImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Connectivity Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="connectivityImage"
+            label="Connectivity Image (URL or Upload)"
+       />
       <FormField
         control={form.control}
         name="connectivityDistrictLabel"
@@ -137,19 +131,12 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="connectivityWatermark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Connectivity Watermark Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="connectivityWatermark"
+            label="Connectivity Watermark (URL or Upload)"
+       />
     </div>
   );
 };

@@ -14,19 +14,21 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
         <div className="section-title">{data.masterPlanTitle}</div>
         <div className="master-plan-image">
           {data.masterPlanImage && (
-            <Image
-              src={data.masterPlanImage}
-              alt="Master Plan"
-              width={643} // width of content area (210mm - 40mm)
-              height={567} // 150mm
-              className="w-full h-full object-contain rounded-[2mm]"
-              data-ai-hint="architectural site layout"
-            />
+             <figure className="relative"> {/* Wrap image and disclaimer */}
+                 <Image
+                    src={data.masterPlanImage}
+                    alt="Master Plan Layout" // More descriptive alt text
+                    width={643} // Guide width
+                    height={567} // Guide height
+                    className="w-full h-auto object-contain rounded-[2mm] border border-gray-200" // Use contain, let height be auto
+                    data-ai-hint="architectural site layout plan" // Updated hint
+                 />
+                 {/* Position disclaimer relative to the figure */}
+                 <figcaption className="map-disclaimer absolute bottom-1 right-1">
+                    <p>{data.masterPlanImageDisclaimer}</p>
+                 </figcaption>
+             </figure>
           )}
-           {/* Position disclaimer relative to the image container */}
-           <div className="absolute bottom-1 right-1 map-disclaimer">
-             <p>{data.masterPlanImageDisclaimer}</p>
-           </div>
         </div>
         <div className="master-plan-text">
           <p>{data.masterPlanDesc1}</p>

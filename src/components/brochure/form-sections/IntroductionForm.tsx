@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface IntroductionFormProps {
   form: UseFormReturn<BrochureData>;
@@ -70,19 +71,12 @@ export const IntroductionForm: React.FC<IntroductionFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-      <FormField
-        control={form.control}
-        name="introWatermark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Intro Watermark Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="introWatermark"
+            label="Intro Watermark (URL or Upload)"
+       />
     </div>
   );
 };

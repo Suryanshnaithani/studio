@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface CoverFormProps {
   form: UseFormReturn<BrochureData>;
@@ -44,32 +45,18 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="coverImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Cover Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-       <FormField
-        control={form.control}
-        name="projectLogo"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Project Logo URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+        <ImageUploadInput
+            form={form}
+            name="coverImage"
+            label="Cover Image (URL or Upload)"
+        />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="projectLogo"
+            label="Project Logo (URL or Upload)"
+       />
        <FormField
         control={form.control}
         name="reraInfo"

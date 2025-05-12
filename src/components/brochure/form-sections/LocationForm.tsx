@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface LocationFormProps {
   form: UseFormReturn<BrochureData>;
@@ -102,19 +103,13 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form }) => {
          </Button>
       </div>
 
-      <FormField
-        control={form.control}
+      {/* Use ImageUploadInput */}
+      <ImageUploadInput
+        form={form}
         name="locationMapImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Location Map Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        label="Location Map Image (URL or Upload)"
       />
+
       <FormField
         control={form.control}
         name="mapDisclaimer"
@@ -128,19 +123,12 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="locationWatermark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Location Watermark Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="locationWatermark"
+            label="Location Watermark (URL or Upload)"
+       />
     </div>
   );
 };

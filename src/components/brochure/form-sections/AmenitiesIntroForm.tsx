@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface AmenitiesIntroFormProps {
   form: UseFormReturn<BrochureData>;
@@ -70,19 +71,12 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) 
           </FormItem>
         )}
       />
-        <FormField
-        control={form.control}
-        name="amenitiesIntroWatermark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Amenities Intro Watermark Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="amenitiesIntroWatermark"
+            label="Amenities Intro Watermark (URL or Upload)"
+       />
     </div>
   );
 };

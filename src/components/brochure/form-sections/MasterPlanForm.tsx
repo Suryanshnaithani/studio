@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface MasterPlanFormProps {
   form: UseFormReturn<BrochureData>;
@@ -31,19 +32,12 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="masterPlanImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Master Plan Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="masterPlanImage"
+            label="Master Plan Image (URL or Upload)"
+       />
        <FormField
         control={form.control}
         name="masterPlanImageDisclaimer"

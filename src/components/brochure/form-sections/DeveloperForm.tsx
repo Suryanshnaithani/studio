@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface DeveloperFormProps {
   form: UseFormReturn<BrochureData>;
@@ -57,32 +58,18 @@ export const DeveloperForm: React.FC<DeveloperFormProps> = ({ form }) => {
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="developerImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Developer Background Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="developerLogo"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Developer Logo URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="developerImage"
+            label="Developer Background Image (URL or Upload)"
+       />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="developerLogo"
+            label="Developer Logo (URL or Upload)"
+       />
       <FormField
         control={form.control}
         name="developerDisclaimer"

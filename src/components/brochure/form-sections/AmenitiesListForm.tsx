@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface AmenitiesListFormProps {
   form: UseFormReturn<BrochureData>;
@@ -84,19 +85,12 @@ export const AmenitiesListForm: React.FC<AmenitiesListFormProps> = ({ form }) =>
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="amenitiesListImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Amenities List Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="amenitiesListImage"
+            label="Amenities List Image (URL or Upload)"
+       />
        <FormField
         control={form.control}
         name="amenitiesListImageDisclaimer"

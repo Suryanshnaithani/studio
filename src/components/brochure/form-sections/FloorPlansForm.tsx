@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface FloorPlansFormProps {
   form: UseFormReturn<BrochureData>;
@@ -82,18 +83,11 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form }) => {
                     </FormItem>
                     )}
                 />
-                 <FormField
-                    control={form.control}
+                 {/* Use ImageUploadInput */}
+                <ImageUploadInput
+                    form={form}
                     name={`floorPlans.${index}.image`}
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Image URL</FormLabel>
-                        <FormControl>
-                        <Input type="url" placeholder="https://..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
+                    label="Image (URL or Upload)"
                 />
                 {/* Features Sub-Array */}
                  <FeatureArrayInput form={form} planIndex={index} />

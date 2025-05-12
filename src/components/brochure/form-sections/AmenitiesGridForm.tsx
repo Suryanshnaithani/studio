@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface AmenitiesGridFormProps {
   form: UseFormReturn<BrochureData>;
@@ -32,26 +33,19 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form }) =>
       />
 
       {/* Grid Item 1 */}
-       <div className="grid grid-cols-2 gap-4 p-3 border rounded">
-        <FormField
-            control={form.control}
+       <div className="p-3 border rounded space-y-3">
+         <FormLabel>Grid Item 1</FormLabel>
+        <ImageUploadInput
+            form={form}
             name="amenitiesGridImage1"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Grid Image 1 URL</FormLabel>
-                <FormControl>
-                <Input type="url" placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
+            label="Image (URL or Upload)"
         />
         <FormField
             control={form.control}
             name="amenitiesGridLabel1"
             render={({ field }) => (
             <FormItem>
-                <FormLabel>Grid Label 1</FormLabel>
+                <FormLabel>Label</FormLabel>
                 <FormControl>
                 <Input placeholder="e.g., Gymnasium" {...field} />
                 </FormControl>
@@ -62,26 +56,19 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form }) =>
        </div>
 
       {/* Grid Item 2 */}
-       <div className="grid grid-cols-2 gap-4 p-3 border rounded">
-        <FormField
-            control={form.control}
+      <div className="p-3 border rounded space-y-3">
+         <FormLabel>Grid Item 2</FormLabel>
+        <ImageUploadInput
+            form={form}
             name="amenitiesGridImage2"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Grid Image 2 URL</FormLabel>
-                <FormControl>
-                <Input type="url" placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
+            label="Image (URL or Upload)"
         />
         <FormField
             control={form.control}
             name="amenitiesGridLabel2"
             render={({ field }) => (
             <FormItem>
-                <FormLabel>Grid Label 2</FormLabel>
+                 <FormLabel>Label</FormLabel>
                 <FormControl>
                 <Input placeholder="e.g., Clubhouse" {...field} />
                 </FormControl>
@@ -92,26 +79,19 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form }) =>
        </div>
 
       {/* Grid Item 3 */}
-       <div className="grid grid-cols-2 gap-4 p-3 border rounded">
-        <FormField
-            control={form.control}
+      <div className="p-3 border rounded space-y-3">
+         <FormLabel>Grid Item 3</FormLabel>
+        <ImageUploadInput
+            form={form}
             name="amenitiesGridImage3"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Grid Image 3 URL</FormLabel>
-                <FormControl>
-                <Input type="url" placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
+            label="Image (URL or Upload)"
         />
         <FormField
             control={form.control}
             name="amenitiesGridLabel3"
             render={({ field }) => (
             <FormItem>
-                <FormLabel>Grid Label 3</FormLabel>
+                 <FormLabel>Label</FormLabel>
                 <FormControl>
                 <Input placeholder="e.g., Gardens" {...field} />
                 </FormControl>
@@ -122,26 +102,19 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form }) =>
        </div>
 
       {/* Grid Item 4 */}
-       <div className="grid grid-cols-2 gap-4 p-3 border rounded">
-        <FormField
-            control={form.control}
+      <div className="p-3 border rounded space-y-3">
+         <FormLabel>Grid Item 4</FormLabel>
+        <ImageUploadInput
+            form={form}
             name="amenitiesGridImage4"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Grid Image 4 URL</FormLabel>
-                <FormControl>
-                <Input type="url" placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
+            label="Image (URL or Upload)"
         />
         <FormField
             control={form.control}
             name="amenitiesGridLabel4"
             render={({ field }) => (
             <FormItem>
-                <FormLabel>Grid Label 4</FormLabel>
+                 <FormLabel>Label</FormLabel>
                 <FormControl>
                 <Input placeholder="e.g., Play Area" {...field} />
                 </FormControl>

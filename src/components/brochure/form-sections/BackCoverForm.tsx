@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
 
 interface BackCoverFormProps {
   form: UseFormReturn<BrochureData>;
@@ -18,32 +19,18 @@ interface BackCoverFormProps {
 export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
   return (
     <div className="space-y-4">
-       <FormField
-        control={form.control}
-        name="backCoverImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Back Cover Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-       <FormField
-        control={form.control}
-        name="backCoverLogo"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Back Cover Logo URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="backCoverImage"
+            label="Back Cover Image (URL or Upload)"
+       />
+       {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="backCoverLogo"
+            label="Back Cover Logo (URL or Upload)"
+       />
        <FormField
         control={form.control}
         name="callToAction"

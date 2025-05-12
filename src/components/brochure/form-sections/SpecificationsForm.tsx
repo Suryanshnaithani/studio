@@ -12,6 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
+
 
 interface SpecificationsFormProps {
   form: UseFormReturn<BrochureData>;
@@ -84,19 +86,12 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form }) 
           </FormItem>
         )}
       />
-       <FormField
-        control={form.control}
-        name="specsImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Specifications Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="specsImage"
+            label="Specifications Image (URL or Upload)"
+       />
       <FormField
         control={form.control}
         name="specsImageDisclaimer"
@@ -114,19 +109,12 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form }) 
        <SpecArrayInput form={form} name="specsInterior" label="Interior Specifications"/>
        <SpecArrayInput form={form} name="specsBuilding" label="Building Features"/>
 
-       <FormField
-        control={form.control}
-        name="specsWatermark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Specs Watermark Image URL</FormLabel>
-            <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Use ImageUploadInput */}
+       <ImageUploadInput
+            form={form}
+            name="specsWatermark"
+            label="Specs Watermark (URL or Upload)"
+       />
 
     </div>
   );
