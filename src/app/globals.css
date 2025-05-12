@@ -94,21 +94,23 @@ body {
 
 /* Print specific styles */
 @media print {
-  body {
-    -webkit-print-color-adjust: exact; /* Ensure background colors print */
-    print-color-adjust: exact;
-    font-family: 'Georgia', serif;
-    background-color: #fff !important; /* Force white background for print */
-    color: #333 !important; /* Force dark text */
+  html, body {
+      height: auto !important; /* Allow content to determine height */
+      background-color: #fff !important; /* Force white background */
+      color: #333 !important; /* Force dark text */
+      -webkit-print-color-adjust: exact !important; /* Ensure background colors print */
+      print-color-adjust: exact !important;
+      font-family: 'Georgia', serif;
   }
   .no-print {
     display: none !important;
   }
   .printable-brochure {
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    border: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
   }
   .page {
     page-break-after: always !important;
@@ -116,44 +118,38 @@ body {
     break-after: page !important;
     break-inside: avoid !important;
     width: 210mm !important;
-    height: 296mm !important; /* Slightly less than 297 to avoid issues */
-    overflow: hidden !important;
+    height: 297mm !important; /* Correct A4 height */
+    overflow: hidden !important; /* Crucial for containing content */
     box-shadow: none !important;
     border: none !important;
     margin: 0 !important;
     padding: 0 !important; /* Reset padding for direct page control */
-    position: relative;
+    position: relative !important; /* Ensure positioning context */
     background-color: #FFFFFF !important; /* Ensure page background */
   }
   .page-content {
       padding: 20mm !important;
       height: calc(100% - 40mm) !important; /* Adjust height based on padding */
-      box-sizing: border-box;
+      box-sizing: border-box !important;
+      position: relative; /* Ensure content stays within bounds */
+      overflow: hidden; /* Prevent content overflow */
   }
 
   /* Ensure background colors print for specific elements */
  .page-accent-bg, .cover-page, .back-cover {
     background-color: #1c2f4a !important;
     color: #FFFFFF !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
   }
   .page-light-bg {
     background-color: #F8F8F8 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
   }
   .developer-content, .developer-page .disclaimer, .location-map .map-disclaimer, .back-cover .full-disclaimer {
       background-color: rgba(0,0,0,0.6) !important;
       color: white !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
   }
    .district-label, .grid-label {
        background-color: white !important;
        color: #1c2f4a !important;
-       -webkit-print-color-adjust: exact;
-       print-color-adjust: exact;
    }
 
   /* Prevent elements from breaking across pages where possible */
@@ -164,28 +160,32 @@ body {
 
   /* Hide scrollbars */
   ::-webkit-scrollbar {
-      display: none;
+      display: none !important;
   }
 
-  /* Hide watermarks if they cause issues, or adjust opacity */
+  /* Adjust watermarks */
   .watermark {
-     opacity: 0.1 !important; /* Ensure watermark prints if desired */
-     filter: none !important; /* Remove filter potentially hiding it */
+     opacity: 0.08 !important;
+     filter: none !important;
   }
   .page-accent-bg .watermark {
       filter: brightness(0) invert(1) !important;
-      opacity: 0.15 !important;
+      opacity: 0.12 !important;
   }
 
   /* Ensure images print correctly */
   img {
       max-width: 100% !important;
-      display: block; /* Helps with layout */
+      display: block !important;
+      height: auto !important;
   }
   .cover-image, .developer-image, .back-cover-image {
       object-fit: cover !important;
       width: 100% !important;
       height: 100% !important;
+      position: absolute !important; /* Ensure they fill the page */
+      top: 0;
+      left: 0;
   }
 
    /* Ensure flex/grid layouts print */
@@ -198,5 +198,9 @@ body {
   .list-columns {
       column-count: 2 !important;
       column-gap: 10mm !important;
+  }
+
+  a[href]::after {
+      content: none !important; /* Prevent URL printing */
   }
 }

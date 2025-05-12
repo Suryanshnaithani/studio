@@ -18,7 +18,7 @@ export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) 
             width={227} // 60mm
             height={227} // 60mm
             className="watermark" // Style for accent bg watermark is in css
-            data-ai-hint="logo abstract"
+            data-ai-hint="lifestyle icon elegant"
           />
         )}
         <div className="section-title">{data.amenitiesIntroTitle}</div>

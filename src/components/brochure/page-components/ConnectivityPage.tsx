@@ -30,7 +30,7 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
             width={227} // 60mm
             height={227} // 60mm
             className="watermark"
-            data-ai-hint="logo abstract"
+            data-ai-hint="network lines abstract"
           />
         )}
         <div className="section-title">{data.connectivityTitle}</div>
@@ -54,9 +54,8 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                 alt="Location Highlight"
                 width={605} // approx 0.8 * (210mm - 40mm padding)
                 height={756} // 200mm
-                objectFit="cover"
                 className="w-full h-full object-cover rounded-[2mm]"
-                data-ai-hint="city landmarks"
+                data-ai-hint="cityscape aerial view"
               />
             )}
             <div className="district-label">{data.connectivityDistrictLabel}</div>

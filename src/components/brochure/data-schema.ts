@@ -10,134 +10,136 @@ const FloorPlanSchema = z.object({
 
 export const BrochureDataSchema = z.object({
   // Cover Page
-  projectName: z.string().default('LUXURY RESIDENCES'),
-  projectTagline: z.string().default('Where Elegance Meets Modern Living'),
-  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/cover/1500/2000'),
-  projectLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/logo1/400/200'),
-  reraInfo: z.string().default('RERA Registration No. ABCDE12345\ndated 01-01-2023. Available at www.rera.gov.in'),
+  projectName: z.string().default('Elysian Towers'),
+  projectTagline: z.string().default('Experience Unrivaled Urban Living'),
+  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/skyscraper/1500/2000'),
+  projectLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/minimalistlogo/400/200'),
+  reraInfo: z.string().default('RERA No: PRJ/ST/XYZ/001234 | Project registered under RERA Act, 2016.\nDetails available at state.rera.gov.in'),
 
   // Introduction
-  introTitle: z.string().default('Welcome to Luxury Residences'),
-  introParagraph1: z.string().default('Luxury Residences offers an unparalleled lifestyle with meticulously designed homes and world-class amenities in the heart of the city. Our commitment to excellence is reflected in every detail of this prestigious development.'),
-  introParagraph2: z.string().default('Designed for those who appreciate the finer things in life, Luxury Residences combines sophisticated architecture with thoughtful spaces to create homes that are both elegant and functional. Experience the perfect balance of luxury, comfort, and convenience in a vibrant urban setting.'),
-  introParagraph3: z.string().default('Each residence is crafted with premium materials and finishes, ensuring that every aspect of your home exudes quality and refinement. From the grand entrance lobby to the private terraces, every space has been designed to elevate your living experience.'),
-  introWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/watermark/200/200'),
+  introTitle: z.string().default('Discover Elysian Towers'),
+  introParagraph1: z.string().default('Welcome to Elysian Towers, a landmark residential development offering an exquisite collection of apartments designed for contemporary urban living. Situated in the city\'s most sought-after district, Elysian Towers blends architectural brilliance with unparalleled amenities.'),
+  introParagraph2: z.string().default('Every residence at Elysian Towers is a testament to luxury and thoughtful design. Featuring spacious layouts, premium finishes, and breathtaking city views, these homes provide the perfect sanctuary amidst the vibrant cityscape. Experience a lifestyle curated for comfort, convenience, and sophistication.'),
+  introParagraph3: z.string().default('From the moment you step into the grand lobby, you are enveloped in an atmosphere of elegance. Our commitment to quality ensures every detail, from imported materials to smart home features, meets the highest standards of modern luxury living.'),
+  introWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/geometricpattern/200/200'),
 
   // Developer Profile
-  developerName: z.string().default('Premier Developers'),
-  developerDesc1: z.string().default('With over two decades of experience, Premier Developers has established itself as a trusted leader in real estate, delivering iconic projects that redefine urban living.'),
-  developerDesc2: z.string().default('Our commitment to quality, innovation, and sustainability has earned us numerous accolades and the trust of thousands of satisfied homeowners across the country.'),
-  developerImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/devbg/1500/2000'),
-  developerLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/devlogo/300/200'),
-  developerDisclaimer: z.string().default("Artist's impression."),
+  developerName: z.string().default('Horizon Development Group'),
+  developerDesc1: z.string().default('Horizon Development Group is a leading name in luxury real estate, renowned for creating iconic properties that shape city skylines. With a legacy spanning over three decades, we are committed to excellence, innovation, and customer satisfaction.'),
+  developerDesc2: z.string().default('Our portfolio showcases a dedication to quality craftsmanship, sustainable practices, and cutting-edge design. We build more than structures; we build communities where people thrive.'),
+  developerImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/construction/1500/2000'),
+  developerLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/horizonlogo/300/200'),
+  developerDisclaimer: z.string().default("Conceptual rendering. Actual project may vary."),
 
   // Location
-  locationTitle: z.string().default('Prime Location'),
-  locationDesc1: z.string().default('Located in the prestigious Central District, Luxury Residences offers unmatched connectivity to business hubs, educational institutions, healthcare facilities, and entertainment venues.'),
-  locationDesc2: z.string().default('The strategic location ensures that residents enjoy the perfect balance of urban convenience and serene living, with easy access to major highways and public transportation.'),
+  locationTitle: z.string().default('Unbeatable Location'),
+  locationDesc1: z.string().default('Elysian Towers boasts a prestigious address in the heart of the Central Business District, offering seamless connectivity to financial hubs, premium retail destinations, renowned educational institutions, and world-class healthcare facilities.'),
+  locationDesc2: z.string().default('Enjoy the convenience of having major transportation links, including the metro and arterial roads, just moments away. This prime location ensures you are always connected to the pulse of the city while providing a tranquil retreat.'),
   keyDistances: z.array(z.string().min(1)).default([
-      'International Airport - 15 km',
-      'Central Business District - 5 km',
-      'Metro Station - 500 m',
-      'Shopping Mall - 2 km',
-      'International School - 3 km',
-      'City Hospital - 4 km',
+      'Metro Station - 2 mins walk',
+      'Central Park - 5 mins drive',
+      'International Airport - 25 mins drive',
+      'Prestige Mall - 10 mins drive',
+      'Global School - 15 mins drive',
+      'City Hospital - 12 mins drive',
+      'Financial Center - 8 mins drive',
   ]),
-  locationMapImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/map/800/1000'),
-  mapDisclaimer: z.string().default('*Map not to scale. Distances are approximate.'),
-  locationWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/watermark2/200/200'),
+  locationMapImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/citymap/800/1000'),
+  mapDisclaimer: z.string().default('*Map is indicative and not to scale. Distances are approximate travel times.'),
+  locationWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/compass/200/200'),
 
 
   // Connectivity
-  connectivityTitle: z.string().default('Exceptional Connectivity'),
+  connectivityTitle: z.string().default('Seamless Connectivity'),
   connectivityPointsBusiness: z.array(z.string().min(1)).default([
-    'Business Hubs', 'Central Tech Park', 'Financial District', 'Corporate Towers'
+    'Business Hubs', 'Tech Park One', 'Financial Square', 'Corporate Avenue'
   ]),
    connectivityPointsHealthcare: z.array(z.string().min(1)).default([
-    'Healthcare', 'City General Hospital', 'Medical Center', 'Wellness Clinic'
+    'Healthcare', 'Metro General Hospital', 'LifeCare Clinic', 'Wellness Institute'
    ]),
    connectivityPointsEducation: z.array(z.string().min(1)).default([
-    'Education', 'International School', 'University Campus', 'Research Institute'
+    'Education', 'Global International School', 'City University', 'Management College'
    ]),
   connectivityPointsLeisure: z.array(z.string().min(1)).default([
-    'Leisure', 'Central Park', 'Shopping Mall', 'Fine Dining'
+    'Leisure & Retail', 'Central Mall', 'Art Gallery', 'Fine Dining Strip', 'Multiplex Cinema'
   ]),
-  connectivityNote: z.string().default('Connectivity and infrastructure subject to change as per municipal development plans.'),
-  connectivityImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/connect/800/1000'),
-  connectivityDistrictLabel: z.string().default('Central District'),
-  connectivityWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/watermark3/200/200'),
+  connectivityNote: z.string().default('Connectivity subject to infrastructure development and traffic conditions.'),
+  connectivityImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/cityscape/800/1000'),
+  connectivityDistrictLabel: z.string().default('CBD Hub'),
+  connectivityWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/network/200/200'),
 
 
   // Amenities Intro
-  amenitiesIntroTitle: z.string().default('World-Class Amenities'),
-  amenitiesIntroP1: z.string().default('Luxury Residences offers a thoughtfully curated selection of amenities designed to enhance your lifestyle. From wellness facilities to recreational spaces, every amenity has been planned to provide residents with the perfect balance of relaxation, recreation, and community living.'),
-  amenitiesIntroP2: z.string().default('Our commitment to excellence extends to every aspect of the community, ensuring that residents enjoy a lifestyle that is both luxurious and fulfilling.'),
-  amenitiesIntroP3: z.string().default('The amenities at Luxury Residences have been designed by world-renowned architects and landscape designers to create spaces that are not only functional but also aesthetically pleasing. Every detail has been carefully considered to ensure that residents have access to the finest facilities.'),
-  amenitiesIntroWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/watermark4/200/200'),
+  amenitiesIntroTitle: z.string().default('Lifestyle Redefined'),
+  amenitiesIntroP1: z.string().default('Elysian Towers offers an exceptional array of amenities meticulously designed to cater to every aspect of your well-being and leisure. Experience a harmonious blend of relaxation, recreation, and social engagement within the community.'),
+  amenitiesIntroP2: z.string().default('Our state-of-the-art facilities provide the perfect escape from the everyday hustle. Whether you seek invigorating workouts, serene relaxation, or vibrant social spaces, Elysian Towers delivers an unparalleled lifestyle experience.'),
+  amenitiesIntroP3: z.string().default('Designed by leading architects, the amenity spaces combine functionality with aesthetic elegance. Enjoy exclusive access to world-class facilities that elevate your daily life and foster a strong sense of community.'),
+  amenitiesIntroWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/lifestyleicon/200/200'),
 
 
   // Amenities List
-  amenitiesListTitle: z.string().default('Lifestyle Amenities'),
-  amenitiesListImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/pool/800/1000'),
-  amenitiesListImageDisclaimer: z.string().default("Artist's impression."),
+  amenitiesListTitle: z.string().default('Exclusive Amenities'),
+  amenitiesListImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/infinitypool/800/1000'),
+  amenitiesListImageDisclaimer: z.string().default("Conceptual image."),
   amenitiesWellness: z.array(z.string().min(1)).default([
-    'Temperature-controlled Swimming Pool', 'Luxury Spa & Sauna', 'Meditation & Yoga Deck', 'Landscaped Gardens'
+    'Infinity Edge Swimming Pool', 'Jacuzzi & Steam Room', 'Yoga & Pilates Studio', 'Zen Garden & Reflexology Path'
   ]),
   amenitiesRecreation: z.array(z.string().min(1)).default([
-    'State-of-the-art Gymnasium', 'Multi-purpose Sports Courts', 'Exclusive Clubhouse', "Children's Play Area", 'Indoor Games Room'
+    'Fully Equipped Gymnasium', 'Indoor Badminton Court', 'Residents\' Lounge & Cafe', "Kids' Adventure Zone", 'Mini Theatre / AV Room'
   ]),
 
   // Amenities Grid
-  amenitiesGridTitle: z.string().default('Premium Facilities'),
-  amenitiesGridImage1: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/gym/800/800'),
+  amenitiesGridTitle: z.string().default('Signature Facilities'),
+  amenitiesGridImage1: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/modernfitness/800/800'),
   amenitiesGridLabel1: z.string().default('Gymnasium'),
-  amenitiesGridImage2: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/club/800/800'),
-  amenitiesGridLabel2: z.string().default('Clubhouse'),
-  amenitiesGridImage3: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/garden/800/800'),
-  amenitiesGridLabel3: z.string().default('Gardens'),
-  amenitiesGridImage4: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/play/800/800'),
-  amenitiesGridLabel4: z.string().default('Play Area'),
-  amenitiesGridDisclaimer: z.string().default("All images are artist's impressions."),
+  amenitiesGridImage2: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/luxurylounge/800/800'),
+  amenitiesGridLabel2: z.string().default('Residents\' Lounge'),
+  amenitiesGridImage3: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/rooftopgarden/800/800'),
+  amenitiesGridLabel3: z.string().default('Sky Garden'),
+  amenitiesGridImage4: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/kidsplayroom/800/800'),
+  amenitiesGridLabel4: z.string().default('Kids\' Zone'),
+  amenitiesGridDisclaimer: z.string().default("Images are representative. Actual amenities may vary."),
 
   // Specifications
-  specsTitle: z.string().default('Premium Specifications'),
-  specsImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/interior/800/1000'),
-  specsImageDisclaimer: z.string().default("Artist's impression."),
+  specsTitle: z.string().default('Finishes & Features'),
+  specsImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/luxuryinterior/800/1000'),
+  specsImageDisclaimer: z.string().default("Conceptual interior view."),
   specsInterior: z.array(z.string().min(1)).default([
-    'Flooring: Imported Marble in Living Areas', 'Kitchen: Fully Modular with Premium Appliances', 'Bathrooms: Designer Fittings & Fixtures', 'Windows: UPVC with Double Glazing', 'Doors: Engineered Wood with Premium Finish', 'Walls: Premium Emulsion Paint'
+    'Living/Dining: Italian Marble Flooring', 'Bedrooms: Engineered Wooden Flooring', 'Kitchen: European Modular Kitchen with Hob & Chimney', 'Bathrooms: Premium Sanitaryware & CP Fittings', 'Windows: Soundproof Double-Glazed Units', 'Smart Home Automation System'
   ]),
   specsBuilding: z.array(z.string().min(1)).default([
-    'Security: 24/7 CCTV Surveillance', 'Power Backup: 100% for Common Areas', 'Elevators: High-Speed with Smart Access', 'Water Supply: 24/7 Treated Water'
+    'Structure: Earthquake Resistant RCC Frame', 'Security: 5-Tier Security with Video Door Phone', 'Elevators: High-Speed Passenger & Service Lifts', 'Power Backup: 100% DG Backup for Apartments & Common Areas', 'Water Treatment Plant'
   ]),
-  specsWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/watermark5/200/200'),
+  specsWatermark: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/blueprinticon/200/200'),
 
 
   // Master Plan
-  masterPlanTitle: z.string().default('Master Plan'),
-  masterPlanImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/masterplan/1500/1000'),
-  masterPlanImageDisclaimer: z.string().default('Artist\'s impression. Not to scale.'),
-  masterPlanDesc1: z.string().default('The master plan of Luxury Residences has been thoughtfully designed to create a harmonious living environment. The layout integrates residential towers, landscaped gardens, recreational facilities, and open spaces to foster a sense of community while ensuring privacy and exclusivity.'),
-  masterPlanDesc2: z.string().default('With over 60% of the total area dedicated to open spaces and amenities, residents can enjoy a lifestyle that balances urban convenience with natural serenity.'),
+  masterPlanTitle: z.string().default('Site Master Plan'),
+  masterPlanImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/siteplan/1500/1000'),
+  masterPlanImageDisclaimer: z.string().default('Master plan is indicative and subject to change.'),
+  masterPlanDesc1: z.string().default('The master plan for Elysian Towers is meticulously crafted to optimize space, views, and ventilation. Residential towers are strategically positioned to maximize privacy and natural light, surrounded by lush landscaped greens.'),
+  masterPlanDesc2: z.string().default('Dedicated zones for amenities, recreation, and vehicle movement ensure a seamless and harmonious living environment. Over 70% of the site area is dedicated to open spaces, creating a green oasis in the city center.'),
 
   // Floor Plans
-  floorPlansTitle: z.string().default('Thoughtfully Designed Floor Plans'),
+  floorPlansTitle: z.string().default('Intelligent Floor Plans'),
   floorPlans: z.array(FloorPlanSchema).default([
-    { id: 'fp1', name: 'Luxury 2 Bedroom', area: '1,200 sq. ft.', features: ['Spacious Living & Dining', 'Master Bedroom with Ensuite', 'Balcony with Panoramic Views', 'Modular Kitchen'], image: 'https://picsum.photos/seed/fp1/1000/800' },
-    { id: 'fp2', name: 'Premium 3 Bedroom', area: '1,800 sq. ft.', features: ['Expansive Living Area', 'Two Master Bedrooms', 'Study Room / Home Office', 'Wrap-around Balcony'], image: 'https://picsum.photos/seed/fp2/1000/800' },
+    { id: 'fp1', name: '3 Bedroom Signature', area: 'Approx. 1,850 sq. ft.', features: ['Spacious Living & Dining', 'Master Suite with Walk-in Closet', 'Private Balcony', 'Utility Area'], image: 'https://picsum.photos/seed/floorplan3bhk/1000/800' },
+    { id: 'fp2', name: '4 Bedroom Sky Villa', area: 'Approx. 2,500 sq. ft.', features: ['Expansive Living Room', 'Two Master Suites', 'Large Sundeck', 'Servant Room with separate entry'], image: 'https://picsum.photos/seed/floorplan4bhk/1000/800' },
+     { id: 'fp3', name: '5 Bedroom Duplex Penthouse', area: 'Approx. 4,000 sq. ft.', features: ['Double Height Living Area', 'Private Terrace Garden', 'Home Theatre Room', 'Panoramic City Views'], image: 'https://picsum.photos/seed/floorplan5bhk/1000/800' },
   ]),
-  floorPlansDisclaimer: z.string().default('Floor plans are indicative. Furniture layout is for representation only.'),
+  floorPlansDisclaimer: z.string().default('Unit plans are indicative. Areas are approximate. Furniture layout is not included.'),
 
   // Back Cover
-  backCoverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/backcover/1500/2000'),
-  backCoverLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/logo2/500/300'),
-  callToAction: z.string().default('Experience Luxury Living'),
-  contactTitle: z.string().default('Contact Us'),
-  contactPhone: z.string().default('+91 98765 43210'),
-  contactEmail: z.string().email().default('sales@luxuryresidences.com'),
-  contactWebsite: z.string().url().default('https://www.luxuryresidences.com'),
-  contactAddress: z.string().default('Experience Center, Central District, City - 123456'),
-  fullDisclaimer: z.string().default('Disclaimer: This brochure is conceptual and not a legal offering. The information contained herein is subject to change without notice. All images are artistic impressions. Specifications and amenities mentioned are indicative and subject to change as per regulations and final design. Please refer to the final agreement for detailed terms and conditions.'),
-  reraDisclaimer: z.string().default('RERA Registration No. ABCDE12345 dated 01-01-2023. Available at www.rera.gov.in'),
+  backCoverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/nightcity/1500/2000'),
+  backCoverLogo: z.string().url('Must be a valid URL').optional().or(z.literal('')).default('https://picsum.photos/seed/horizonlogodark/500/300'),
+  callToAction: z.string().default('Your Urban Sanctuary Awaits'),
+  contactTitle: z.string().default('Visit Our Sales Gallery'),
+  contactPhone: z.string().default('+91 12345 67890'),
+  contactEmail: z.string().email().default('sales@elysiantowers.com'),
+  contactWebsite: z.string().url().default('https://www.elysiantowers.com'),
+  contactAddress: z.string().default('Site Address: 1 Elysian Way, CBD, Cityville - 400001'),
+  fullDisclaimer: z.string().default('Disclaimer: This brochure is for informational purposes only and does not constitute a legal offer or contract. All specifications, designs, layouts, and amenities are indicative and subject to change without prior notice as per the discretion of the developer or competent authorities. Visual representations, including images and models, are artistic impressions. The final agreement for sale contains the actual terms and conditions. E&OE.'),
+  reraDisclaimer: z.string().default('RERA No: PRJ/ST/XYZ/001234. Details at state.rera.gov.in'),
 });
 
 export type BrochureData = z.infer<typeof BrochureDataSchema>;

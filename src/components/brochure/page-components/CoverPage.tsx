@@ -18,7 +18,7 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
           objectFit="cover"
           className="cover-image"
           priority // Load first image quickly
-          data-ai-hint="building exterior"
+          data-ai-hint="modern building facade"
         />
       )}
       <div className="cover-content">
@@ -29,7 +29,7 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
             width={302} // 80mm approx
             height={151} // maintain aspect ratio if possible
             className="project-logo"
-            data-ai-hint="company logo"
+            data-ai-hint="minimalist company logo"
           />
         )}
         <h1 className="project-name">{data.projectName}</h1>
@@ -37,7 +37,7 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
       </div>
       <div className="rera-text">
         {data.reraInfo.split('\n').map((line, index) => (
-          <p key={index}>{line}</p>
+          <p key={index} className="text-[10.66px] leading-tight">{line}</p> // Adjust font size/leading if needed
         ))}
       </div>
     </PageWrapper>

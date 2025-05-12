@@ -17,7 +17,7 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
           layout="fill"
           objectFit="cover"
           className="developer-image"
-          data-ai-hint="city skyline"
+          data-ai-hint="construction site progress"
         />
        )}
       <div className="page-content">
@@ -32,7 +32,7 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
               width={227} // 60mm
               height={151} // Adjust height as needed
               className="developer-logo"
-              data-ai-hint="company logo"
+              data-ai-hint="corporate building logo"
             />
            )}
         </div>

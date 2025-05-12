@@ -17,7 +17,7 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
           layout="fill"
           objectFit="cover"
           className="back-cover-image"
-          data-ai-hint="abstract texture"
+          data-ai-hint="city night skyline"
         />
       )}
       <div className="back-cover-content">
@@ -28,14 +28,14 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
             width={378} // 100mm
             height={227} // Maintain aspect ratio
             className="back-logo"
-            data-ai-hint="company logo dark"
+            data-ai-hint="developer logo dark"
           />
         )}
         <h2 className="call-to-action">{data.callToAction}</h2>
         <div className="contact-info">
           <h3>{data.contactTitle}</h3>
-          <p>Call: {data.contactPhone}</p>
-          <p>Email: {data.contactEmail}</p>
+          <p>Call: <a href={`tel:${data.contactPhone.replace(/\s+/g, '')}`} className="text-white hover:text-gray-300">{data.contactPhone}</a></p>
+          <p>Email: <a href={`mailto:${data.contactEmail}`} className="text-white hover:text-gray-300">{data.contactEmail}</a></p>
           <p>Website: <a href={data.contactWebsite} target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-gray-300">{data.contactWebsite}</a></p>
           <p>Visit: {data.contactAddress}</p>
         </div>

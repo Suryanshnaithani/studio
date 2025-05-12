@@ -20,9 +20,8 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
                 alt="Swimming Pool"
                  width={643} // approx 0.5 * (210mm - 40mm padding - 10mm gap)
                  height={756} // 200mm
-                 objectFit="cover"
                  className="w-full h-full object-cover rounded-[2mm]"
-                 data-ai-hint="swimming pool resort"
+                 data-ai-hint="luxury infinity pool"
               />
             )}
             <div className="map-disclaimer"> {/* Using map-disclaimer style for consistency */}

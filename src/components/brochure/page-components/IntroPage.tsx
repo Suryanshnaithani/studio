@@ -18,7 +18,7 @@ export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
             width={227} // 60mm
             height={227} // 60mm
             className="watermark"
-            data-ai-hint="logo abstract"
+            data-ai-hint="geometric pattern subtle"
           />
         )}
         <div className="section-title">{data.introTitle}</div>

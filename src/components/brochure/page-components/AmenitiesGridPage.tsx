@@ -15,7 +15,6 @@ const GridItem: React.FC<{ src?: string; alt: string; label: string; hint: strin
         alt={alt}
         width={316} // approx half width minus gap
         height={378} // approx half height minus gap
-        objectFit="cover"
         className="w-full h-full object-cover"
         data-ai-hint={hint}
       />
@@ -30,10 +29,10 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
       <div className="page-content">
         <div className="section-title">{data.amenitiesGridTitle}</div>
         <div className="amenities-grid">
-          <GridItem src={data.amenitiesGridImage1} alt="Gymnasium" label={data.amenitiesGridLabel1} hint="gym fitness" />
-          <GridItem src={data.amenitiesGridImage2} alt="Clubhouse" label={data.amenitiesGridLabel2} hint="lounge interior" />
-          <GridItem src={data.amenitiesGridImage3} alt="Gardens" label={data.amenitiesGridLabel3} hint="garden park" />
-          <GridItem src={data.amenitiesGridImage4} alt="Play Area" label={data.amenitiesGridLabel4} hint="playground kids" />
+          <GridItem src={data.amenitiesGridImage1} alt="Gymnasium" label={data.amenitiesGridLabel1} hint="modern gym equipment" />
+          <GridItem src={data.amenitiesGridImage2} alt="Clubhouse" label={data.amenitiesGridLabel2} hint="luxury resident lounge" />
+          <GridItem src={data.amenitiesGridImage3} alt="Gardens" label={data.amenitiesGridLabel3} hint="landscaped rooftop garden" />
+          <GridItem src={data.amenitiesGridImage4} alt="Play Area" label={data.amenitiesGridLabel4} hint="indoor children playground" />
         </div>
          <div className="grid-disclaimer" style={{width: 'calc(100% - 40mm)', bottom: '25mm', textAlign: 'right'}}> {/* Position based on page padding */}
              <p>{data.amenitiesGridDisclaimer}</p>

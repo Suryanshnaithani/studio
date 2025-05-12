@@ -18,7 +18,7 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
             width={227} // 60mm
             height={227} // 60mm
             className="watermark"
-            data-ai-hint="logo abstract"
+            data-ai-hint="blueprint icon abstract"
           />
         )}
         <div className="section-title">{data.specsTitle}</div>
@@ -30,9 +30,8 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
                 alt="Interior Finish"
                  width={643} // approx 0.5 * (210mm - 40mm padding - 10mm gap)
                  height={756} // 200mm
-                 objectFit="cover"
                  className="w-full h-full object-cover rounded-[2mm]"
-                 data-ai-hint="modern interior"
+                 data-ai-hint="luxury apartment interior"
               />
             )}
             <div className="map-disclaimer"> {/* Using map-disclaimer style */}
