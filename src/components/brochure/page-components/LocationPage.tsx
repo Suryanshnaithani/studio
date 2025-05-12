@@ -8,15 +8,15 @@ interface LocationPageProps {
 }
 
 // Helper to split array into two columns
-const splitIntoColumns = (arr: string[]) => {
-  if (!arr) return [[], []];
-  const mid = Math.ceil(arr.length / 2);
-  return [arr.slice(0, mid), arr.slice(mid)];
+const splitIntoColumns = (arr: string[] = []) => {
+  const filteredArr = arr.filter(item => item?.trim());
+  const mid = Math.ceil(filteredArr.length / 2);
+  return [filteredArr.slice(0, mid), filteredArr.slice(mid)];
 };
 
 
 export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
-  const [col1, col2] = splitIntoColumns(data.keyDistances || []);
+  const [col1, col2] = splitIntoColumns(data.keyDistances);
 
   return (
     <PageWrapper className="page-light-bg" id="location-page">
@@ -25,14 +25,13 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
            <Image
             src={data.locationWatermark}
             alt="Watermark"
-            width={227} // 60mm
-            height={227} // 60mm
+            width={189} // 50mm
+            height={189} // 50mm
             className="watermark"
-            data-ai-hint="map compass icon"
+            data-ai-hint="map compass icon simple"
           />
         )}
         <div className="section-title">{data.locationTitle}</div>
-        {/* Use default flex direction (column for print) defined in CSS */}
         <div className="location-container">
           <div className="location-text">
             <p>{data.locationDesc1}</p>
@@ -50,23 +49,29 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                  </ul>
                 )}
             </div>
-             <p className="location-note">{data.locationNote}</p>
+             {data.locationNote && <p className="location-note">{data.locationNote}</p>}
           </div>
           <div className="location-map">
-            {data.locationMapImage && (
-              <figure className="relative"> {/* Wrap image and disclaimer */}
+            {data.locationMapImage ? (
+              <figure className="relative">
                  <Image
                     src={data.locationMapImage}
                     alt="Location Map"
-                    width={605} // Maintain aspect ratio calculation guide if needed
-                    height={756} // Maintain aspect ratio calculation guide if needed
-                    className="w-full h-auto max-h-[120mm] object-contain rounded-[2mm] border border-gray-200" // Use contain, limit height
-                    data-ai-hint="stylized city map region" // Updated hint
+                    width={700} // Guide width
+                    height={550} // Guide height
+                    className="w-full h-auto max-h-[110mm] object-contain rounded-[2mm] border border-gray-200" // contain is usually better for maps
+                    data-ai-hint="stylized city map color"
                  />
-                 <figcaption className="map-disclaimer">
-                   <p>{data.mapDisclaimer}</p>
-                 </figcaption>
+                 {data.mapDisclaimer && (
+                     <figcaption className="map-disclaimer">
+                       <p>{data.mapDisclaimer}</p>
+                     </figcaption>
+                 )}
               </figure>
+            ): (
+                 <div className="w-full h-[110mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm] border border-gray-200">
+                    Map Placeholder
+                </div>
             )}
           </div>
         </div>

@@ -13,21 +13,26 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
       <div className="page-content">
         <div className="section-title">{data.masterPlanTitle}</div>
         <div className="master-plan-image">
-          {data.masterPlanImage && (
-             <figure className="relative"> {/* Wrap image and disclaimer */}
+          {data.masterPlanImage ? (
+             <figure className="relative">
                  <Image
                     src={data.masterPlanImage}
-                    alt="Master Plan Layout" // More descriptive alt text
-                    width={643} // Guide width
-                    height={567} // Guide height
-                    className="w-full h-auto object-contain rounded-[2mm] border border-gray-200" // Use contain, let height be auto
-                    data-ai-hint="architectural site layout plan" // Updated hint
+                    alt="Master Plan Layout"
+                    width={700} // Guide width
+                    height={500} // Guide height
+                    className="w-full h-auto object-contain rounded-[2mm] border border-gray-200 max-h-[160mm]"
+                    data-ai-hint="architectural site plan color legend"
                  />
-                 {/* Position disclaimer relative to the figure */}
-                 <figcaption className="map-disclaimer absolute bottom-1 right-1">
-                    <p>{data.masterPlanImageDisclaimer}</p>
-                 </figcaption>
+                 {data.masterPlanImageDisclaimer && (
+                     <figcaption className="map-disclaimer absolute bottom-1 right-1 text-black bg-white/70">
+                        <p>{data.masterPlanImageDisclaimer}</p>
+                     </figcaption>
+                 )}
              </figure>
+          ) : (
+               <div className="w-full h-[160mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm] border border-gray-200">
+                    Master Plan Placeholder
+               </div>
           )}
         </div>
         <div className="master-plan-text">

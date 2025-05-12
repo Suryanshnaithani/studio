@@ -9,15 +9,19 @@ interface AmenitiesGridPageProps {
 
 const GridItem: React.FC<{ src?: string; alt: string; label: string; hint: string }> = ({ src, alt, label, hint }) => (
   <div className="grid-item">
-    {src && (
+    {src ? (
       <Image
         src={src}
         alt={alt}
-        width={316} // approx half width minus gap
-        height={378} // approx half height minus gap
+        width={300} // Adjusted size calculation based on 2 columns and gap
+        height={225} // Adjusted for 4:3 ratio
         className="w-full h-full object-cover"
         data-ai-hint={hint}
       />
+    ) : (
+        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-sm">
+            {alt} Placeholder
+        </div>
     )}
     <div className="grid-label">{label}</div>
   </div>
@@ -26,15 +30,16 @@ const GridItem: React.FC<{ src?: string; alt: string; label: string; hint: strin
 export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) => {
   return (
     <PageWrapper className="page-light-bg" id="amenities-grid-page">
-      <div className="page-content">
+      <div className="page-content relative"> {/* Add relative positioning */}
         <div className="section-title">{data.amenitiesGridTitle}</div>
         <div className="amenities-grid">
-          <GridItem src={data.amenitiesGridImage1} alt="Gymnasium" label={data.amenitiesGridLabel1} hint="modern gym equipment" />
-          <GridItem src={data.amenitiesGridImage2} alt="Clubhouse" label={data.amenitiesGridLabel2} hint="luxury resident lounge" />
-          <GridItem src={data.amenitiesGridImage3} alt="Gardens" label={data.amenitiesGridLabel3} hint="landscaped rooftop garden" />
-          <GridItem src={data.amenitiesGridImage4} alt="Play Area" label={data.amenitiesGridLabel4} hint="indoor children playground" />
+          <GridItem src={data.amenitiesGridImage1} alt={data.amenitiesGridLabel1 || "Amenity 1"} label={data.amenitiesGridLabel1} hint="modern gym equipment weights" />
+          <GridItem src={data.amenitiesGridImage2} alt={data.amenitiesGridLabel2 || "Amenity 2"} label={data.amenitiesGridLabel2} hint="luxury resident lounge seating" />
+          <GridItem src={data.amenitiesGridImage3} alt={data.amenitiesGridLabel3 || "Amenity 3"} label={data.amenitiesGridLabel3} hint="landscaped rooftop garden city view" />
+          <GridItem src={data.amenitiesGridImage4} alt={data.amenitiesGridLabel4 || "Amenity 4"} label={data.amenitiesGridLabel4} hint="indoor children playground colorful" />
         </div>
-         <div className="grid-disclaimer" style={{width: 'calc(100% - 40mm)', bottom: '25mm', textAlign: 'right'}}> {/* Position based on page padding */}
+         {/* Position disclaimer absolutely within page-content */}
+         <div className="absolute bottom-[18mm] right-[18mm] text-right grid-disclaimer">
              <p>{data.amenitiesGridDisclaimer}</p>
          </div>
       </div>

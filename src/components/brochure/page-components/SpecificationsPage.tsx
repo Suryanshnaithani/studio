@@ -18,30 +18,35 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
            <Image
             src={data.specsWatermark}
             alt="Watermark"
-            width={227} // 60mm
-            height={227} // 60mm
+            width={189} // 50mm
+            height={189} // 50mm
             className="watermark"
-            data-ai-hint="blueprint icon abstract"
+            data-ai-hint="blueprint icon simple"
           />
         )}
         <div className="section-title">{data.specsTitle}</div>
-         {/* Use default flex direction (column for print) defined in CSS */}
         <div className="specs-container">
           <div className="specs-image">
-            {data.specsImage && (
-               <figure className="relative"> {/* Wrap image and disclaimer */}
+            {data.specsImage ? (
+               <figure className="relative">
                  <Image
                     src={data.specsImage}
-                    alt="Interior Finish Example" // More descriptive alt text
-                    width={643} // Guide width
-                    height={756} // Guide height
-                    className="w-full h-auto max-h-[120mm] object-cover rounded-[2mm]" // Use cover, limit height
-                    data-ai-hint="luxury apartment interior detail" // Updated hint
+                    alt="Interior Finish Example"
+                    width={700} // Guide width
+                    height={500} // Guide height
+                    className="w-full h-auto max-h-[100mm] object-cover rounded-[2mm]" // Adjusted max-height
+                    data-ai-hint="luxury apartment detail marble"
                  />
-                 <figcaption className="map-disclaimer"> {/* Using map-disclaimer style */}
-                   <p>{data.specsImageDisclaimer}</p>
-                 </figcaption>
+                  {data.specsImageDisclaimer && (
+                     <figcaption className="map-disclaimer">
+                       <p>{data.specsImageDisclaimer}</p>
+                     </figcaption>
+                  )}
                </figure>
+            ) : (
+                 <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm]">
+                    Image Placeholder
+                </div>
             )}
           </div>
           <div className="specs-list">

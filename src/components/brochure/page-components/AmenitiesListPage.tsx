@@ -15,23 +15,28 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
     <PageWrapper className="page-light-bg" id="amenities-list-page">
       <div className="page-content">
         <div className="section-title">{data.amenitiesListTitle}</div>
-         {/* Use default flex direction (column for print) defined in CSS */}
         <div className="amenities-container">
           <div className="amenities-image">
-             {data.amenitiesListImage && (
-               <figure className="relative"> {/* Wrap image and disclaimer */}
+             {data.amenitiesListImage ? (
+               <figure className="relative">
                  <Image
                     src={data.amenitiesListImage}
-                    alt="Swimming Pool Area" // More descriptive alt text
-                    width={643} // Guide width
-                    height={756} // Guide height
-                    className="w-full h-auto max-h-[120mm] object-cover rounded-[2mm]" // Use cover, limit height
-                    data-ai-hint="luxury infinity pool lounge" // Updated hint
+                    alt="Amenities Highlight"
+                    width={700} // Example width guide
+                    height={500} // Example height guide
+                    className="w-full h-auto max-h-[100mm] object-cover rounded-[2mm]" // Adjusted max-height
+                    data-ai-hint="luxury infinity pool sunset"
                  />
-                 <figcaption className="map-disclaimer"> {/* Using map-disclaimer style */}
-                   <p>{data.amenitiesListImageDisclaimer}</p>
-                 </figcaption>
+                 {data.amenitiesListImageDisclaimer && (
+                     <figcaption className="map-disclaimer">
+                       <p>{data.amenitiesListImageDisclaimer}</p>
+                     </figcaption>
+                 )}
                </figure>
+            ) : (
+                <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm]">
+                    Image Placeholder
+                </div>
             )}
           </div>
           <div className="amenities-list">
