@@ -138,6 +138,7 @@ export function ImageUploadInput<T extends FieldValues>({
              <Input
                 placeholder="Enter image URL (http://... or data:...)"
                 {...field}
+                value={field.value ?? ''} // Ensure value is always a string
                 onChange={handleUrlChange} // Use custom handler
                 className="flex-grow"
               />
@@ -177,6 +178,12 @@ export function ImageUploadInput<T extends FieldValues>({
                     width={150}
                     height={100}
                     className="rounded border object-contain bg-muted" // Use contain to see whole image
+                    onError={() => {
+                      // Handle broken image links if needed
+                      console.warn(`Failed to load image preview for: ${previewUrl}`);
+                      // Optionally clear the preview or show a placeholder
+                      // setPreviewUrl(null);
+                    }}
                  />
                  <Button
                     type="button"
