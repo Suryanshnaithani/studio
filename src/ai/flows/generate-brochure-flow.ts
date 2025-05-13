@@ -53,10 +53,13 @@ Your task is to:
     *   If 'existingData' is partially filled (e.g., only project name, location, and a few amenities are provided), use *only* these details as a foundation.
     *   Your main job is to REPHRASE, STRUCTURE, and WRITE COMPELLING COPY based *solely* on the given information.
     *   If fields are missing, you must still generate content for them, but ensure it's generic and plausible *based on the context derived STRICTLY from the provided fields*. For example, if only the project name "Green Valley Homes" is given, infer a residential, possibly nature-oriented theme, but don't invent specific eco-features unless they are listed in amenities or specs.
-    *   **Introduction Generation:** Specifically for the 'introTitle', 'introParagraph1', 'introParagraph2', and 'introParagraph3' fields:
-        *   Generate a suitable 'introTitle' based on the 'projectName' and 'projectTagline' (if available).
-        *   Write the introduction paragraphs ('introParagraph1', 'introParagraph2', 'introParagraph3') by weaving together information *only* from the provided 'projectName', 'projectTagline', 'locationDesc1'/'locationDesc2', 'developerName', and perhaps a general mention of listed 'amenities' or 'specs'.
-        *   **Crucially, do NOT add any details, themes, or selling points to the introduction that are not directly supported by the information present in the other fields of 'existingData'.** For instance, if 'existingData' doesn't mention luxury finishes, don't describe the project as luxurious in the intro. If it doesn't list a pool, don't mention aquatic facilities. Stick strictly to elaborating on what *is* provided.
+    *   **Introduction Generation (introTitle, introParagraph1, introParagraph2, introParagraph3):**
+        *   **This is a CRITICAL instruction for the introduction:** You must be *extremely strict* with the information used. Base the introduction *solely* on the project name and other relevant information explicitly provided in 'existingData'.
+        *   DO NOT HALLUCINATE or invent any details, features, themes, or descriptions for the introduction that are not *directly specified* in the 'existingData'.
+        *   Generate a suitable 'introTitle' based *only* on 'existingData.projectName' and 'existingData.projectTagline' (if available from 'existingData').
+        *   Write 'introParagraph1', 'introParagraph2', and 'introParagraph3' by weaving together information *exclusively* from the following fields in 'existingData' (if they are provided): 'projectName', 'projectTagline', 'locationDesc1', 'locationDesc2', 'developerName', and a general, factual summary of listed 'amenities' or 'specs'.
+        *   If 'existingData' lacks information for these introduction fields or related source fields, the introduction should remain generic and reflect only what *is* known from 'existingData'. Do not invent.
+        *   **Example:** If 'existingData.projectName' is "Urban Living Apartments" and 'existingData.locationDesc1' mentions "city center", the intro should reflect this. If 'existingData' does *not* mention "luxury" or "panoramic views", then these terms MUST NOT appear in the introduction.
     *   For lists (amenities, specs, key distances, floor plan features), if 'existingData' provides items, use them. If the lists are empty or missing, generate a small number (2-4) of *generic but plausible* items consistent with the project type implied *only* by other provided data (like project name or location description). For floor plan features, keep them very generic (e.g., "Living Area", "Bedroom", "Kitchen") if no specific features are provided.
 
 3.  **Professional Quality & Tone:**
@@ -193,3 +196,4 @@ const generateBrochureFlow = ai.defineFlow(
     return output;
   }
 );
+
