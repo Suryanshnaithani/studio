@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Trash2, Wand2 } from 'lucide-react';
-import { ImageUploadInput from '@/components/ui/image-upload-input';
+import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
 export interface SpecificationsFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
@@ -112,6 +112,7 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, on
             form={form}
             name="specsImage"
             label="Specifications Image (URL or Upload)"
+            disabled={disabled}
        />
       <FormField
         control={form.control}
@@ -134,6 +135,7 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, on
             form={form}
             name="specsWatermark"
             label="Specs Watermark (URL or Upload)"
+            disabled={disabled}
        />
 
     </div>

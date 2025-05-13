@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -48,7 +47,7 @@ export default function Home() {
   const { toast } = useToast();
   const [brochureData, setBrochureData] = useState<BrochureData>(getDefaultBrochureData());
   const [isClient, setIsClient] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(isPrinting);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [aiPromptHint, setAiPromptHint] = useState(''); 
 
   // General AI generation for full brochure
@@ -184,19 +183,25 @@ export default function Home() {
 
       const aiGeneratedFullData = await generateBrochureContent(aiInput);
 
+      // Create a partial data object for resetting specific fields
+      const dataToReset: Partial<BrochureData> = {};
       fieldsToUpdate.forEach(fieldName => {
         // @ts-ignore
-        form.setValue(fieldName, aiGeneratedFullData[fieldName], { shouldValidate: true, shouldDirty: true });
+        dataToReset[fieldName] = aiGeneratedFullData[fieldName];
+      });
+
+      // Update the form with only the changed fields
+      form.reset({
+        ...currentFormData, // Keep existing data
+        ...dataToReset // Overwrite only the specified fields
       });
       
+      // Update the local state for preview
       setBrochureData(prev => BrochureDataSchema.parse({
         ...prev,
-        ...fieldsToUpdate.reduce((acc, fieldName) => {
-          // @ts-ignore
-          acc[fieldName] = aiGeneratedFullData[fieldName];
-          return acc;
-        }, {} as Partial<BrochureData>)
+        ...dataToReset
       }));
+
 
       toast({ title: `AI ${toastTitle} Complete`, description: `${toastTitle} has been updated.` });
     } catch (error: any) {
@@ -244,7 +249,7 @@ export default function Home() {
       label: 'Developer', 
       Component: DeveloperForm, 
       props: { 
-        onGenerateContent: () => handleGenerateSectionContent('developer', setIsGeneratingDeveloper, ['developerDesc1', 'developerDesc2'], "Developer Info"),
+        onGenerateContent: () => handleGenerateSectionContent('developer', setIsGeneratingDeveloper, ['developerName', 'developerDesc1', 'developerDesc2'], "Developer Info"),
         isGeneratingContent: isGeneratingDeveloper,
         disabled: globalDisable,
       } 
@@ -254,7 +259,7 @@ export default function Home() {
       label: 'Location', 
       Component: LocationForm, 
       props: { 
-        onGenerateContent: () => handleGenerateSectionContent('location', setIsGeneratingLocation, ['locationDesc1', 'locationDesc2', 'locationNote'], "Location Details"),
+        onGenerateContent: () => handleGenerateSectionContent('location', setIsGeneratingLocation, ['locationTitle', 'locationDesc1', 'locationDesc2', 'locationNote'], "Location Details"),
         isGeneratingContent: isGeneratingLocation,
         disabled: globalDisable,
       }  
@@ -264,7 +269,7 @@ export default function Home() {
       label: 'Connectivity', 
       Component: ConnectivityForm, 
       props: { 
-        onGenerateContent: () => handleGenerateSectionContent('connectivity', setIsGeneratingConnectivity, ['connectivityNote'], "Connectivity Note"),
+        onGenerateContent: () => handleGenerateSectionContent('connectivity', setIsGeneratingConnectivity, ['connectivityTitle', 'connectivityNote'], "Connectivity Note"),
         isGeneratingContent: isGeneratingConnectivity,
         disabled: globalDisable,
       }
@@ -274,7 +279,7 @@ export default function Home() {
       label: 'Amenities Intro', 
       Component: AmenitiesIntroForm, 
       props: { 
-        onGenerateContent: () => handleGenerateSectionContent('amenitiesIntro', setIsGeneratingAmenitiesIntro, ['amenitiesIntroP1', 'amenitiesIntroP2', 'amenitiesIntroP3'], "Amenities Intro"),
+        onGenerateContent: () => handleGenerateSectionContent('amenitiesIntro', setIsGeneratingAmenitiesIntro, ['amenitiesIntroTitle', 'amenitiesIntroP1', 'amenitiesIntroP2', 'amenitiesIntroP3'], "Amenities Intro"),
         isGeneratingContent: isGeneratingAmenitiesIntro,
         disabled: globalDisable,
       }
@@ -314,7 +319,7 @@ export default function Home() {
       label: 'Master Plan', 
       Component: MasterPlanForm, 
       props: { 
-        onGenerateContent: () => handleGenerateSectionContent('masterPlan', setIsGeneratingMasterPlan, ['masterPlanDesc1', 'masterPlanDesc2'], "Master Plan Details"),
+        onGenerateContent: () => handleGenerateSectionContent('masterPlan', setIsGeneratingMasterPlan, ['masterPlanTitle', 'masterPlanDesc1', 'masterPlanDesc2'], "Master Plan Details"),
         isGeneratingContent: isGeneratingMasterPlan,
         disabled: globalDisable,
       }

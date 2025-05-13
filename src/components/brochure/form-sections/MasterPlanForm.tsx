@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 from 'lucide-react';
+import { Loader2, Wand2 } from 'lucide-react';
 
 export interface MasterPlanFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
