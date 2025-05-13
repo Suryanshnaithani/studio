@@ -14,7 +14,7 @@ import {z} from 'genkit';
 
 // Input schema: Optional hint + optional existing partial data
 const GenerateBrochureInputSchema = z.object({
-  promptHint: z.string().optional().describe('Optional high-level hint for the AI (e.g., "Focus on eco-friendly features").'),
+  promptHint: z.string().optional().describe('Optional high-level hint for the AI (e.g., "Focus on eco-friendly features", "Luxury downtown apartments").'),
   existingData: BrochureDataSchema.partial().optional().describe('Partial brochure data provided by the user to be completed or enhanced.'),
 });
 export type GenerateBrochureInput = z.infer<typeof GenerateBrochureInputSchema>;
@@ -40,21 +40,38 @@ const generateContentPrompt = ai.definePrompt({
   input: {schema: GenerateBrochureInputSchema},
   output: {schema: BrochureDataSchema},
   prompt: `You are an expert real estate copywriter and marketing assistant.
-Your task is to complete and enhance the provided real estate brochure data.
-Use the 'existingData' as the primary source of truth. Do NOT invent details that contradict the provided information.
-If 'existingData' is provided, complete any missing fields based *only* on the context of the provided data and the optional 'promptHint'.
-If a field exists in 'existingData', refine its content for clarity, professionalism, and marketing appeal, but MAINTAIN the original core information.
-If 'existingData' is missing or empty, generate plausible content for a fictional high-end residential project based on the 'promptHint' if available, otherwise create a generic luxury project.
+Your primary goal is to generate a complete, professional, and appealing real estate brochure.
+You will be given 'existingData', which might be sparse, partially filled, or entirely empty.
+Your task is to:
 
-**Instructions:**
+1.  **Strictly Adhere to Provided Facts:**
+    *   If specific information (e.g., project name, RERA number, a particular amenity, developer name, image URL) is present in 'existingData', YOU MUST use that exact information as the core.
+    *   You can rephrase, elaborate, or improve the presentation of provided text, but DO NOT change the fundamental facts or invent details that contradict what's given.
+    *   If an image URL is provided in 'existingData' for any field, use that URL. Do not replace it with a placeholder.
 
-1.  **Prioritize Existing Data:** Base your response primarily on the content within the 'existingData' object.
-2.  **Complete Missing Fields:** Fill in any fields that are missing in 'existingData' by inferring reasonable values from the provided context (other fields in 'existingData' and the 'promptHint'). For example, if the project name suggests luxury apartments, generate amenities and specifications suitable for that type.
-3.  **Refine Existing Content:** Where content exists, improve its quality, grammar, and marketing effectiveness. Ensure descriptions are engaging and professional. Keep the core facts unchanged.
-4.  **Placeholder Images:** For *missing* optional image URL fields (like 'coverImage', 'projectLogo', etc.), provide a placeholder URL from 'https://picsum.photos/seed/...' using a unique descriptive seed (e.g., 'https://picsum.photos/seed/coverBuilding/800/600') ONLY IF an image is appropriate for that field. If an image URL is already provided in 'existingData', use it. If no image is suitable or needed for a missing optional field, omit the field or leave it as an empty string.
-5.  **Structure and Formatting:** Ensure lists (amenities, specs, key distances, floor plan features) contain relevant items. Keep descriptions concise but informative. Ensure floor plan features are distinct and relevant to the name/area.
-6.  **Consistency:** Maintain consistency in tone and style throughout the brochure content. If 'existingData' suggests a specific project type (e.g., villas, apartments), ensure all generated/refined content aligns with it.
-7.  **Schema Adherence:** Strictly adhere to the JSON output schema. Ensure all REQUIRED fields in the schema are populated, using defaults from the schema definition if no other information can be derived. Do not add fields not present in the schema.
+2.  **Expand on Limited Information & Complete Missing Fields:**
+    *   If 'existingData' is partially filled (e.g., only a project name and location are provided), use these details as a foundation.
+    *   Your main job is to EXPAND upon this limited data. Write compelling copy, taglines, detailed descriptions, and relevant lists (e.g., amenities, specifications, key distances, floor plan features).
+    *   All generated content must be *logically consistent* with and *plausible* for the type of project suggested by the provided data and any 'promptHint'. For example, if 'projectName' is "EcoGreen Villas," all generated content should reflect an eco-friendly, villa-style development.
+    *   If 'existingData' is completely empty or key sections are missing, generate all necessary content. Infer the project style from 'promptHint' if available; otherwise, create content for a generic, high-quality residential project (e.g., luxury apartments or modern townhouses).
+    *   For lists (amenities, specs, key distances, floor plan features), aim for a reasonable number of relevant items (typically 3-7 items per list, unless the context suggests otherwise). Ensure floor plan features are distinct and relevant to the plan's name/area.
+
+3.  **Professional Quality & Tone:**
+    *   Ensure all text is grammatically correct, well-structured, engaging, and uses professional real estate marketing language.
+    *   Maintain a consistent tone and style throughout the brochure.
+
+4.  **Placeholder Images (Only for Missing Optional Image Fields):**
+    *   For *optional* image URL fields in the schema (like 'coverImage', 'projectLogo', 'developerImage', 'locationMapImage', 'floorPlans.image', etc.) that are *missing* in 'existingData' (i.e., not provided by the user):
+        *   Provide a placeholder URL from 'https://picsum.photos/seed/...'
+        *   Use a unique, descriptive seed for each image (e.g., 'https://picsum.photos/seed/luxuryLivingRoom/800/600' for an interior shot, 'https://picsum.photos/seed/projectAerialView/1200/800' for a master plan context).
+        *   Only provide a placeholder if an image is appropriate and typically expected for that field. Ensure dimensions are reasonable (e.g., 800x600, 1000x700).
+    *   For optional *watermark* image fields (e.g., 'introWatermark', 'specsWatermark'), if the field is missing, you MAY provide a subtle picsum.photos URL (e.g., 'https://picsum.photos/seed/subtlePattern/200/200'). Prioritize main content and main images over watermarks. If a main image for that section is user-provided, it's often better to omit the AI-generated watermark or ensure it's a very generic pattern.
+
+5.  **Schema Adherence:**
+    *   Strictly adhere to the JSON output schema.
+    *   Ensure all REQUIRED fields in the schema are populated. If no information can be derived from 'existingData' or 'promptHint' for a required field, use the default values specified in the schema's Zod definition (as a last resort, if you cannot generate plausible content).
+    *   Do not add fields not present in the schema.
+    *   Ensure all generated values match their expected types (e.g., strings, arrays of strings, nested objects).
 
 **Input Context:**
 
@@ -63,7 +80,7 @@ User Hint: {{{promptHint}}}
 {{/if}}
 
 {{#if existingData}}
-**Existing Brochure Data (Use this as the base):**
+**Existing Brochure Data (Use this as the base for expansion and completion. Refine and expand on this information, do not contradict it):**
 Project Name: {{existingData.projectName}}
 Tagline: {{existingData.projectTagline}}
 RERA Info: {{existingData.reraInfo}}
@@ -108,7 +125,7 @@ Master Plan Desc1: {{existingData.masterPlanDesc1}}
 Master Plan Desc2: {{existingData.masterPlanDesc2}}
 Floor Plans Title: {{existingData.floorPlansTitle}}
 {{#each existingData.floorPlans}}
-Floor Plan: {{this.name}} ({{this.area}}) - Features: {{#each this.features}} {{this}}; {{/each}}
+Floor Plan: {{this.name}} (Area: {{this.area}}) - Features: {{#if this.features}}{{#each this.features}} {{this}}; {{/each}}{{else}} (features not specified) {{/if}} Image: {{#if this.image}} {{this.image}} {{else}} (image not specified) {{/if}}
 {{/each}}
 Floor Plans Disclaimer: {{existingData.floorPlansDisclaimer}}
 Back Cover CTA: {{existingData.callToAction}}
@@ -119,16 +136,38 @@ Contact Website: {{existingData.contactWebsite}}
 Contact Address: {{existingData.contactAddress}}
 Full Disclaimer: {{existingData.fullDisclaimer}}
 RERA Disclaimer (Back): {{existingData.reraDisclaimer}}
+
+Image fields from existing data (use these if provided, otherwise generate placeholders if appropriate and field is optional):
+Cover Image: {{existingData.coverImage}}
+Project Logo: {{existingData.projectLogo}}
+Intro Watermark: {{existingData.introWatermark}}
+Developer Image: {{existingData.developerImage}}
+Developer Logo (main): {{existingData.developerLogo}}
+Location Map Image: {{existingData.locationMapImage}}
+Location Watermark: {{existingData.locationWatermark}}
+Connectivity Image: {{existingData.connectivityImage}}
+Connectivity Watermark: {{existingData.connectivityWatermark}}
+Amenities Intro Watermark: {{existingData.amenitiesIntroWatermark}}
+Amenities List Image: {{existingData.amenitiesListImage}}
+Amenities Grid Image 1: {{existingData.amenitiesGridImage1}}
+Amenities Grid Image 2: {{existingData.amenitiesGridImage2}}
+Amenities Grid Image 3: {{existingData.amenitiesGridImage3}}
+Amenities Grid Image 4: {{existingData.amenitiesGridImage4}}
+Specs Image: {{existingData.specsImage}}
+Specs Watermark: {{existingData.specsWatermark}}
+Master Plan Image: {{existingData.masterPlanImage}}
+Back Cover Image: {{existingData.backCoverImage}}
+Back Cover Logo: {{existingData.backCoverLogo}}
 {{else}}
-**No existing data provided. Generate content based on the hint or a generic luxury project.**
+**No existing data provided. Generate comprehensive brochure content for a generic luxury residential project based on the 'promptHint' if available. Ensure all required fields are populated and optional image fields get appropriate picsum.photos placeholders.**
 {{/if}}
 
 Now, generate the complete brochure data based on these instructions and the provided context, adhering strictly to the output JSON schema.
 `,
   config: {
-    temperature: 0.6, // Slightly lower temperature to encourage adherence to existing data
-    // Ensure JSON output mode if the model supports it explicitly
-    // responseFormat: 'json_object', // Or similar depending on model/API
+    temperature: 0.5, // Adjusted temperature for more controlled expansion
+    // Ensure JSON output mode if the model supports it explicitly via response_mime_type
+    // For Gemini, structured output is requested by providing outputSchema.
   },
 });
 
