@@ -14,14 +14,16 @@ import { SpecificationsPage } from './page-components/SpecificationsPage';
 import { MasterPlanPage } from './page-components/MasterPlanPage';
 import { FloorPlansPage } from './page-components/FloorPlansPage';
 import { BackCoverPage } from './page-components/BackCoverPage';
+import { cn } from '@/lib/utils';
 
 interface BrochurePreviewProps {
   data: BrochureData;
+  themeClass: string;
 }
 
-export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data }) => {
+export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeClass }) => {
   return (
-    <div className="printable-brochure" id="brochure-content">
+    <div className={cn("printable-brochure", themeClass)} id="brochure-content">
       <CoverPage data={data} />
       <IntroPage data={data} />
       <DeveloperPage data={data} />
