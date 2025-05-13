@@ -206,7 +206,9 @@ export default function Home() {
             setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           setGeneratedBrochureData(currentLiveFormData);
+           // If parsing fails, set to the potentially invalid data to allow user correction
+           // or setGeneratedBrochureData(null) if a clean slate is preferred on error.
+           setGeneratedBrochureData(currentLiveFormData as BrochureData);
         }
       }, 2500); 
     }
@@ -244,10 +246,10 @@ export default function Home() {
     <FormProvider {...form}>
       <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-muted/30 dark:bg-background/10 text-foreground">
         <Card id="sidebar-container" className={cn(
-          "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar-background text-sidebar-foreground transition-all duration-300 ease-in-out",
+          "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out",
           sidebarOpen ? "w-full md:w-[420px] lg:w-[480px]" : "w-0 md:w-16 overflow-hidden"
         )}>
-          <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar-background z-20">
+          <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar z-20">
              <div className="flex justify-between items-center mb-2">
                {sidebarOpen && <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>}
                 <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent">
@@ -278,13 +280,13 @@ export default function Home() {
             <CardDescription className="text-xs text-sidebar-foreground/80 mt-2">
                Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'}.
             </CardDescription>
-             {!showPreview && ( // Show "Generate" button only if preview is not shown
+             {!showPreview && ( 
                 <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" disabled={globalDisable} className="w-full mt-3 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90">
                     <Palette className="mr-2 h-4 w-4" />
                     Generate Brochure
                 </Button>
             )}
-            {showPreview && ( // Show "Update Preview" only if preview is shown
+            {showPreview && ( 
                 <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-3 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
                     <RefreshCcw className="mr-2 h-4 w-4" />
                     Update Preview
@@ -297,7 +299,7 @@ export default function Home() {
             <ScrollArea className="flex-grow">
                 <CardContent className="p-0">
                 <Tabs defaultValue="cover" className="w-full" orientation="vertical">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-background z-10 border-b border-sidebar-border transform-gpu">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar z-10 border-b border-sidebar-border transform-gpu">
                     {formSections.map(section => (
                         <TabsTrigger key={section.value} value={section.value} className="text-xs px-1.5 py-2 h-auto data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground data-[state=active]:shadow-md text-sidebar-foreground hover:bg-sidebar-accent/70">
                         {section.label}
@@ -329,6 +331,9 @@ export default function Home() {
                             if (tabsInstance) {
                                 const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
                                 trigger?.click();
+                                // Ensure the tab content is scrolled into view if needed, after sidebar opens and tab activates
+                                const contentEl = document.querySelector(`[data-state="active"][data-orientation="vertical"]`);
+                                contentEl?.scrollIntoView({ behavior: 'smooth', block: 'start'});
                             }
                         }, 50); 
                      }}>
@@ -367,7 +372,7 @@ export default function Home() {
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme}
-                printKeyProp={`print-${printKey}-${activeTheme}`}
+                printKeyProp={`print-${printKey}-${activeTheme}`} // Changed prop name to avoid conflict
               />
             )}
           </div>
@@ -376,6 +381,7 @@ export default function Home() {
   );
 }
 
+// Changed prop name from `key` to `printKeyProp` to avoid React's special `key` prop conflict
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, printKeyProp: string }> = React.memo(({ data, themeClass, printKeyProp }) => {
   try {
     const validatedData = BrochureDataSchema.parse(data);
@@ -397,4 +403,3 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
   }
 });
 PrintableBrochureLoader.displayName = 'PrintableBrochureLoader';
-
