@@ -11,28 +11,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-interface BackCoverFormProps { // Exporting the interface
+interface BackCoverFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  isGeneratingAi?: boolean;
-  onAiGenerate?: () => void;
 }
 
-export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
+export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
-        <div className="flex justify-end items-center mb-2">
-         {onAiGenerate && (
-            <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="shrink-0">
-                {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                AI Enhance
-            </Button>
-        )}
-       </div>
        <ImageUploadInput
             form={form}
             name="backCoverImage"
@@ -50,7 +38,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Call To Action Text</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Experience Luxury Living" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input placeholder="e.g., Experience Luxury Living" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -63,7 +51,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Contact Info Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Contact Us" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input placeholder="e.g., Contact Us" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -76,7 +64,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Contact Phone</FormLabel>
             <FormControl>
-              <Input type="tel" placeholder="+91..." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input type="tel" placeholder="+91..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -89,7 +77,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Contact Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="sales@..." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input type="email" placeholder="sales@..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -102,7 +90,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Contact Website</FormLabel>
             <FormControl>
-              <Input type="url" placeholder="https://..." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input type="url" placeholder="https://..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -115,7 +103,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Contact Address / Visit Info</FormLabel>
             <FormControl>
-              <Input placeholder="Experience Center, ..." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input placeholder="Experience Center, ..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -128,7 +116,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>Full Disclaimer</FormLabel>
             <FormControl>
-              <Textarea placeholder="This brochure is conceptual..." {...field} value={field.value ?? ''} rows={5} disabled={disabled || isGeneratingAi}/>
+              <Textarea placeholder="This brochure is conceptual..." {...field} value={field.value ?? ''} rows={5} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -141,7 +129,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled, is
           <FormItem>
             <FormLabel>RERA Disclaimer (repeat)</FormLabel>
             <FormControl>
-              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={2} disabled={disabled || isGeneratingAi}/>
+              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={2} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>

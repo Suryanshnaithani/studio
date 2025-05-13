@@ -1,49 +1,45 @@
 /* Styles specifically for the BrochurePreview component */
 .brochure-preview-container {
-  @apply bg-card p-4 md:p-8 print:p-0 print:bg-transparent overflow-y-auto; /* Changed bg for live preview */
-  max-height: 100vh; /* Ensure preview area is scrollable */
+  @apply bg-card p-4 md:p-8 print:p-0 print:bg-transparent overflow-y-auto;
+  max-height: 100vh; 
 }
 
 .printable-brochure {
   @apply bg-white shadow-lg mx-auto print:shadow-none;
-  background-color: hsl(var(--background)); /* Use theme background */
-  width: 210mm; /* A4 width */
+  background-color: hsl(var(--background)); 
+  width: 210mm; 
   padding: 0 !important;
-  margin: 0 auto !important; /* Center in preview */
+  margin: 0 auto !important; 
 }
 
 .page {
-  @apply relative; /* Default page background, can be overridden */
+  @apply relative; 
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   width: 210mm;
-  min-height: 297mm; /* A4 standard height */
-  height: 297mm; /* Enforce A4 page height */
-  font-family: var(--brochure-font-family, 'Georgia', serif); /* Use theme font */
+  min-height: 297mm; 
+  height: 297mm; 
+  font-family: var(--brochure-font-family, 'Georgia', serif); 
   line-height: 1.4;
-  box-shadow: 0 0 10px hsla(var(--foreground-h, 0), var(--foreground-s, 0%), var(--foreground-l, 10%), 0.1); /* Shadow for non-print */
-  margin-bottom: 20px; /* Space between pages in preview */
+  box-shadow: 0 0 10px hsla(var(--foreground-h, 0), var(--foreground-s, 0%), var(--foreground-l, 10%), 0.1); 
+  margin-bottom: 20px; 
   page-break-inside: avoid !important; 
   page-break-before: auto !important; 
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden; /* Default to hidden for screen to prevent scrollbars on page itself */
+  overflow: hidden; 
 }
 
 @media print {
-  /* .brochure-preview-container is handled by globals.css (display: none !important) */
-
-  /* .printable-brochure is styled in globals.css for print */
-  
   .page {
     box-shadow: none !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 210mm !important;
-    height: 297mm !important; /* Strict A4 height for print */
+    height: 297mm !important; 
     min-height: 297mm !important;
-    overflow: hidden !important; /* Change to hidden for print to respect page boundaries better */
+    overflow: hidden !important; 
     page-break-inside: avoid !important; 
     page-break-before: auto !important; 
     position: relative !important; 
@@ -53,18 +49,18 @@
     -webkit-print-color-adjust: exact !important;
   }
    .page:not(:last-child) {
-       page-break-after: always !important; /* Critical for page separation */
+       page-break-after: always !important;
    }
   .page-content {
-    overflow: hidden !important; /* Keep hidden to better manage content within fixed page height */
+    overflow: hidden !important; 
   }
 }
 
 .page-content {
-  @apply relative flex-grow; /* Allow content to take available space */
+  @apply relative flex-grow; 
   padding: 12mm 15mm;
   box-sizing: border-box;
-  overflow: hidden; /* Default to hidden for screen */
+  overflow: hidden; 
   display: flex;
   flex-direction: column;
 }
@@ -75,7 +71,7 @@
 .page-muted-bg { background-color: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
 
 
-/* Typography - Reduced margins/sizes for print fit */
+/* Typography */
 h1 { font-size: 28px; line-height: 1.1; margin-bottom: 6mm; font-weight: bold; letter-spacing: -0.25pt; } 
 h2 { font-size: 20px; line-height: 1.1; margin-bottom: 4mm; font-weight: bold; letter-spacing: -0.1pt; } 
 h3 { font-size: 16px; line-height: 1.1; margin-bottom: 3mm; font-weight: bold; } 
@@ -88,8 +84,8 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .page-accent-bg li::before { color: hsl(var(--primary-foreground)); }
 .page-accent-bg h1, .page-accent-bg h2, .page-accent-bg h3, .page-accent-bg h4, .page-accent-bg p { color: hsl(var(--primary-foreground)); }
 
-.page-muted-bg li::before { color: hsl(var(--primary));} /* Primary dots on muted bg */
-.page-muted-bg h1, .page-muted-bg h2, .page-muted-bg h3, .page-muted-bg h4, .page-muted-bg p { color: hsl(var(--foreground)); } /* Default foreground on muted */
+.page-muted-bg li::before { color: hsl(var(--primary));} 
+.page-muted-bg h1, .page-muted-bg h2, .page-muted-bg h3, .page-muted-bg h4, .page-muted-bg p { color: hsl(var(--foreground)); } 
 
 
 /* Section Title using Theme Variables */
@@ -102,7 +98,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
     position: relative;
     padding-bottom: 2mm;
     page-break-after: avoid !important;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0; 
 }
 .section-title::after {
     content: ""; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -128,7 +124,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
   right: 8mm;
   font-size: 7pt;
   text-align: right;
-  background-color: hsla(var(--cover-text-bg-h, var(--foreground-h, 0)), var(--cover-text-bg-s, var(--foreground-s, 0%)), var(--cover-text-bg-l, var(--foreground-l, 10%)), 0.35);
+  background-color: hsla(var(--cover-text-bg-h, var(--primary-h)), var(--cover-text-bg-s, var(--primary-s)), var(--cover-text-bg-l, var(--primary-l)), 0.35); /* Use primary as base for overlay */
   color: hsl(var(--cover-text-color, var(--primary-foreground)));
   padding: 1.5mm 2.5mm;
   border-radius: 1.5mm;
@@ -148,7 +144,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .developer-image-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: var(--developer-image-opacity, 0.65); z-index: 1; overflow: hidden;}
 .developer-image-container img { width: 100%; height: 100%; object-fit: cover; }
 .developer-content { position: relative; z-index: 2; max-width: 110mm; background-color: hsla(var(--dev-content-bg-h, var(--background-h,0)), var(--dev-content-bg-s, var(--background-s,0%)), var(--dev-content-bg-l, var(--background-l,100%)), 0.8); padding: 6mm; color: hsl(var(--dev-content-text-color, var(--foreground))); border-radius: 1.5mm; margin: auto; } 
-.page-accent-bg .developer-content { background-color: hsla(var(--dev-content-bg-h-accent, var(--primary-foreground-h,0)), var(--dev-content-bg-s-accent, var(--primary-foreground-s,0%)), var(--dev-content-bg-l-accent, var(--primary-foreground-l,98%)), 0.2); color: hsl(var(--dev-content-text-color-accent, var(--primary-foreground)));}
+.page-accent-bg .developer-content { background-color: hsla(var(--dev-content-bg-h-accent, var(--primary-h)), var(--dev-content-bg-s-accent, var(--primary-s)), var(--dev-content-bg-l-accent, var(--primary-l)), 0.2); color: hsl(var(--dev-content-text-color-accent, var(--primary-foreground)));} /* Primary as base for overlay on accent */
 .page-muted-bg .developer-content { background-color: hsla(var(--dev-content-bg-h-muted, var(--background-h,0)), var(--dev-content-bg-s-muted, var(--background-s,0%)), var(--dev-content-bg-l-muted, var(--background-l,100%)), 0.7); color: hsl(var(--dev-content-text-color-muted, var(--foreground)));}
 
 .developer-content h2 { margin-bottom: 3mm; font-size: 17px; }
@@ -209,7 +205,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 /* Specifications Page */
 .specs-container { display: flex; flex-direction: column; gap: 4mm; flex-grow: 1; }
 .specs-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden;}
-.specs-image img { width: 100%; height: auto; max-h: 75mm; object-fit: cover; border-radius: 1.5mm; }
+.specs-image img { width: 100%; height: auto; max-height: 75mm; object-fit: cover; border-radius: 1.5mm; }
 .specs-image .map-disclaimer { position: absolute; bottom: 2mm; right: 2mm; font-size: 6pt; color: hsl(var(--specs-disclaimer-text-color, var(--foreground))); background-color: hsla(var(--specs-disclaimer-bg-h, var(--background-h,0)), var(--specs-disclaimer-bg-s, var(--background-s,0%)), var(--specs-disclaimer-bg-l, var(--background-l,100%)), 0.65); padding: 1mm 1.5mm; border-radius: 1mm; z-index: 3; }
 .page-accent-bg .specs-image .map-disclaimer { color: hsl(var(--specs-disclaimer-text-color-accent, var(--primary-foreground))); background-color: hsla(var(--specs-disclaimer-bg-h-accent, var(--primary-h,0)), var(--specs-disclaimer-bg-s-accent, var(--primary-s,0%)), var(--specs-disclaimer-bg-l-accent, var(--primary-l,20%)), 0.55); }
 .page-muted-bg .specs-image .map-disclaimer { color: hsl(var(--specs-disclaimer-text-color-muted, var(--foreground))); background-color: hsla(var(--specs-disclaimer-bg-h-muted, var(--muted-h,0)), var(--specs-disclaimer-bg-s-muted, var(--muted-s,0%)), var(--specs-disclaimer-bg-l-muted, var(--muted-l,96%)), 0.7); }
@@ -247,7 +243,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .contact-info { margin-bottom: 8mm; }
 .contact-info h3 { display: inline-block; border-bottom: 1px solid hsla(var(--bc-contact-line-h, var(--primary-foreground-h,0)), var(--bc-contact-line-s, var(--primary-foreground-s,0%)), var(--bc-contact-line-l, var(--primary-foreground-l,98%)), 0.35); padding-bottom: 1.5mm; margin-bottom: 5mm; font-size: 16px; }
 .contact-info p { margin-bottom: 2mm; font-size: 10pt; }
-.contact-info a { color: inherit; text-decoration: underline; } /* Use inherit to respect page text color */
+.contact-info a { color: inherit; text-decoration: underline; } 
 .full-disclaimer { position: relative; z-index: 2; bottom: auto; left: auto; right: auto; margin: 0 8mm 8mm; font-size: 7pt; text-align: justify; background-color: hsla(var(--bc-disclaimer-bg-h, var(--primary-h,0)), var(--bc-disclaimer-bg-s, var(--primary-s,0%)), var(--bc-disclaimer-bg-l, var(--primary-l,20%)), 0.3); color: hsl(var(--bc-disclaimer-text-color, var(--primary-foreground))); padding: 2.5mm; border-radius: 1.5mm; flex-shrink: 0; } 
 .full-disclaimer p { font-size: 7pt; }
 
@@ -281,7 +277,7 @@ img[data-ai-hint] { }
   }
   /* Theme specific variable overrides for print */
   .theme-brochure-builder {
-    --cover-text-bg-h: var(--foreground-h); --cover-text-bg-s: var(--foreground-s); --cover-text-bg-l: var(--foreground-l);
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l);
     --cover-text-color: var(--primary-foreground);
     --logo-filter-on-dark-bg: initial;
 
@@ -303,11 +299,11 @@ img[data-ai-hint] { }
     --mp-disclaimer-text-color: var(--foreground);
 
     --bc-contact-line-h: var(--primary-foreground-h); --bc-contact-line-s: var(--primary-foreground-s); --bc-contact-line-l: var(--primary-foreground-l);
-    --bc-disclaimer-bg-h: var(--primary-h); --bc-disclaimer-bg-s: var(--primary-s); --bc-disclaimer-bg-l: var(--primary-l); /* Darker blue for disclaimer bg on primary */
+    --bc-disclaimer-bg-h: var(--primary-h); --bc-disclaimer-bg-s: var(--primary-s); --bc-disclaimer-bg-l: var(--primary-l); 
     --bc-disclaimer-text-color: var(--primary-foreground);
 
     /* Accent page overrides */
-    --dev-content-bg-h-accent: var(--primary-foreground-h); --dev-content-bg-s-accent: var(--primary-foreground-s); --dev-content-bg-l-accent: var(--primary-foreground-l);
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
     --dev-content-text-color-accent: var(--primary-foreground);
     --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
     --dev-disclaimer-text-color-accent: var(--primary-foreground);
@@ -321,14 +317,14 @@ img[data-ai-hint] { }
     --mp-disclaimer-text-color-accent: var(--primary-foreground);
   }
    .theme-elegant-serif {
-    --cover-text-bg-h: 45; --cover-text-bg-s: 15%; --cover-text-bg-l: 20%;
-    --cover-text-color: hsl(45, 50%, 98%);
-    --logo-filter-on-dark-bg: brightness(0) invert(1); /* Example: Make logo white on dark cover */
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l); 
+    --cover-text-color: var(--primary-foreground);
+    --logo-filter-on-dark-bg: brightness(0) invert(1); 
     
-    --dev-content-bg-h: 45; --dev-content-bg-s: 50%; --dev-content-bg-l: 98%; /* Creamy white for content box */
-    --dev-content-text-color: hsl(45, 15%, 20%); /* Dark olive for text */
+    --dev-content-bg-h: 45; --dev-content-bg-s: 50%; --dev-content-bg-l: 98%; 
+    --dev-content-text-color: hsl(45, 15%, 20%); 
     --dev-disclaimer-bg-h: 45; --dev-disclaimer-bg-s: 50%; --dev-disclaimer-bg-l: 98%;
-    --dev-disclaimer-text-color: hsl(45, 15%, 40%); /* Muted olive for disclaimer text */
+    --dev-disclaimer-text-color: hsl(45, 15%, 40%); 
 
     --map-disclaimer-bg-h: 45; --map-disclaimer-bg-s: 50%; --map-disclaimer-bg-l: 98%;
     --map-disclaimer-text-color: hsl(45, 15%, 20%);
@@ -343,25 +339,24 @@ img[data-ai-hint] { }
     --mp-disclaimer-text-color: hsl(45, 15%, 20%);
 
     --bc-contact-line-h: 45; --bc-contact-line-s: 50%; --bc-contact-line-l: 98%;
-    --bc-disclaimer-bg-h: 180; --bc-disclaimer-bg-s: 30%; --bc-disclaimer-bg-l: 35%; /* Muted teal */
+    --bc-disclaimer-bg-h: 180; --bc-disclaimer-bg-s: 30%; --bc-disclaimer-bg-l: 35%; 
     --bc-disclaimer-text-color: hsl(45, 50%, 98%);
 
     /* Accent page overrides */
-    --dev-content-bg-h-accent: 45; --dev-content-bg-s-accent: 50%; --dev-content-bg-l-accent: 98%; /* Creamy on accent if needed for contrast */
-    --dev-content-text-color-accent: hsl(45, 15%, 20%);
-    --dev-disclaimer-bg-h-accent: 180; --dev-disclaimer-bg-s-accent: 30%; --dev-disclaimer-bg-l-accent: 35%;
-    --dev-disclaimer-text-color-accent: hsl(45, 50%, 98%);
-    /* ... other accent page disclaimers */
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
+    --dev-content-text-color-accent: var(--primary-foreground);
+    --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
+    --dev-disclaimer-text-color-accent: var(--primary-foreground);
   }
    .theme-cool-modern {
-    --cover-text-bg-h: 210; --cover-text-bg-s: 20%; --cover-text-bg-l: 25%;
-    --cover-text-color: hsl(210, 30%, 98%);
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l);
+    --cover-text-color: var(--primary-foreground);
     --logo-filter-on-dark-bg: brightness(0) invert(1);
 
-    --dev-content-bg-h: 210; --dev-content-bg-s: 30%; --dev-content-bg-l: 98%; /* Light blue-grey for content box */
-    --dev-content-text-color: hsl(210, 20%, 25%); /* Dark slate for text */
+    --dev-content-bg-h: 210; --dev-content-bg-s: 30%; --dev-content-bg-l: 98%; 
+    --dev-content-text-color: hsl(210, 20%, 25%); 
     --dev-disclaimer-bg-h: 210; --dev-disclaimer-bg-s: 30%; --dev-disclaimer-bg-l: 98%;
-    --dev-disclaimer-text-color: hsl(210, 15%, 50%); /* Muted slate for disclaimer text */
+    --dev-disclaimer-text-color: hsl(210, 15%, 50%); 
 
     --map-disclaimer-bg-h: 210; --map-disclaimer-bg-s: 30%; --map-disclaimer-bg-l: 98%;
     --map-disclaimer-text-color: hsl(210, 20%, 25%);
@@ -376,18 +371,17 @@ img[data-ai-hint] { }
     --mp-disclaimer-text-color: hsl(210, 20%, 25%);
 
     --bc-contact-line-h: 210; --bc-contact-line-s: 30%; --bc-contact-line-l: 98%;
-    --bc-disclaimer-bg-h: 205; --bc-disclaimer-bg-s: 65%; --bc-disclaimer-bg-l: 45%; /* Steel blue */
+    --bc-disclaimer-bg-h: 205; --bc-disclaimer-bg-s: 65%; --bc-disclaimer-bg-l: 45%; 
     --bc-disclaimer-text-color: hsl(210, 30%, 98%);
 
      /* Accent page overrides */
-    --dev-content-bg-h-accent: 210; --dev-content-bg-s-accent: 30%; --dev-content-bg-l-accent: 98%;
-    --dev-content-text-color-accent: hsl(210, 20%, 25%);
-    --dev-disclaimer-bg-h-accent: 205; --dev-disclaimer-bg-s-accent: 65%; --dev-disclaimer-bg-l-accent: 45%;
-    --dev-disclaimer-text-color-accent: hsl(210, 30%, 98%);
-    /* ... other accent page disclaimers */
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
+    --dev-content-text-color-accent: var(--primary-foreground);
+    --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
+    --dev-disclaimer-text-color-accent: var(--primary-foreground);
   }
 
-  .page-accent-bg, .cover-page, .back-cover { /* Cover and BackCover are always primary theme based */
+  .page-accent-bg, .cover-page, .back-cover { 
     background-color: hsl(var(--primary)) !important;
     color: hsl(var(--primary-foreground)) !important;
   }
@@ -397,19 +391,19 @@ img[data-ai-hint] { }
   }
    .page-muted-bg {
     background-color: hsl(var(--muted)) !important;
-    color: hsl(var(--muted-foreground)) !important; /* Or var(--foreground) if better contrast needed */
+    color: hsl(var(--muted-foreground)) !important; 
   }
    .developer-content {
       background-color: hsla(var(--dev-content-bg-h), var(--dev-content-bg-s), var(--dev-content-bg-l), 0.8) !important;
       color: hsl(var(--dev-content-text-color)) !important;
    }
   .page-accent-bg .developer-content {
-      background-color: hsla(var(--dev-content-bg-h-accent, var(--primary-foreground-h)), var(--dev-content-bg-s-accent, var(--primary-foreground-s)), var(--dev-content-bg-l-accent, var(--primary-foreground-l)), 0.2) !important;
-      color: hsl(var(--dev-content-text-color-accent, var(--primary-foreground))) !important;
+      background-color: hsla(var(--dev-content-bg-h-accent), var(--dev-content-bg-s-accent), var(--dev-content-bg-l-accent), 0.2) !important;
+      color: hsl(var(--dev-content-text-color-accent)) !important;
    }
   .page-muted-bg .developer-content {
-      background-color: hsla(var(--dev-content-bg-h-muted, var(--background-h)), var(--dev-content-bg-s-muted, var(--background-s)), var(--dev-content-bg-l-muted, var(--background-l)), 0.7) !important;
-      color: hsl(var(--dev-content-text-color-muted, var(--foreground))) !important;
+      background-color: hsla(var(--dev-content-bg-h-muted), var(--dev-content-bg-s-muted), var(--dev-content-bg-l-muted), 0.7) !important;
+      color: hsl(var(--dev-content-text-color-muted)) !important;
    }
 
   .disclaimer {
@@ -417,12 +411,12 @@ img[data-ai-hint] { }
       color: hsl(var(--dev-disclaimer-text-color)) !important;
   }
    .page-accent-bg .disclaimer {
-      background-color: hsla(var(--dev-disclaimer-bg-h-accent, var(--primary-h)), var(--dev-disclaimer-bg-s-accent, var(--primary-s)), var(--dev-disclaimer-bg-l-accent, var(--primary-l)), 0.55) !important;
-      color: hsl(var(--dev-disclaimer-text-color-accent, var(--primary-foreground))) !important;
+      background-color: hsla(var(--dev-disclaimer-bg-h-accent), var(--dev-disclaimer-bg-s-accent), var(--dev-disclaimer-bg-l-accent), 0.55) !important;
+      color: hsl(var(--dev-disclaimer-text-color-accent)) !important;
   }
    .page-muted-bg .disclaimer {
-      background-color: hsla(var(--dev-disclaimer-bg-h-muted, var(--muted-h)), var(--dev-disclaimer-bg-s-muted, var(--muted-s)), var(--dev-disclaimer-bg-l-muted, var(--muted-l)), 0.7) !important;
-      color: hsl(var(--dev-disclaimer-text-color-muted, var(--foreground))) !important;
+      background-color: hsla(var(--dev-disclaimer-bg-h-muted), var(--dev-disclaimer-bg-s-muted), var(--dev-disclaimer-bg-l-muted), 0.7) !important;
+      color: hsl(var(--dev-disclaimer-text-color-muted)) !important;
   }
 
   .location-map .map-disclaimer, .amenities-image .map-disclaimer, .specs-image .map-disclaimer, .master-plan-image .map-disclaimer {
@@ -430,17 +424,17 @@ img[data-ai-hint] { }
       color: hsl(var(--map-disclaimer-text-color)) !important;
   }
    .page-accent-bg .location-map .map-disclaimer, .page-accent-bg .amenities-image .map-disclaimer, .page-accent-bg .specs-image .map-disclaimer, .page-accent-bg .master-plan-image .map-disclaimer {
-      background-color: hsla(var(--map-disclaimer-bg-h-accent, var(--primary-h)), var(--map-disclaimer-bg-s-accent, var(--primary-s)), var(--map-disclaimer-bg-l-accent, var(--primary-l)), 0.55) !important;
-      color: hsl(var(--map-disclaimer-text-color-accent, var(--primary-foreground))) !important;
+      background-color: hsla(var(--map-disclaimer-bg-h-accent), var(--map-disclaimer-bg-s-accent), var(--map-disclaimer-bg-l-accent), 0.55) !important;
+      color: hsl(var(--map-disclaimer-text-color-accent)) !important;
    }
    .page-muted-bg .location-map .map-disclaimer, .page-muted-bg .amenities-image .map-disclaimer, .page-muted-bg .specs-image .map-disclaimer, .page-muted-bg .master-plan-image .map-disclaimer {
-      background-color: hsla(var(--map-disclaimer-bg-h-muted, var(--muted-h)), var(--map-disclaimer-bg-s-muted, var(--muted-s)), var(--map-disclaimer-bg-l-muted, var(--muted-l)), 0.7) !important;
-      color: hsl(var(--map-disclaimer-text-color-muted, var(--foreground))) !important;
+      background-color: hsla(var(--map-disclaimer-bg-h-muted), var(--map-disclaimer-bg-s-muted), var(--map-disclaimer-bg-l-muted), 0.7) !important;
+      color: hsl(var(--map-disclaimer-text-color-muted)) !important;
    }
 
-  .back-cover .full-disclaimer { /* Back cover disclaimer bg is primary color based for all themes */
-      background-color: hsla(var(--bc-disclaimer-bg-h, var(--primary-h)), var(--bc-disclaimer-bg-s, var(--primary-s)), var(--bc-disclaimer-bg-l, var(--primary-l)), 0.3) !important;
-      color: hsl(var(--bc-disclaimer-text-color, var(--primary-foreground))) !important;
+  .back-cover .full-disclaimer { 
+      background-color: hsla(var(--bc-disclaimer-bg-h), var(--bc-disclaimer-bg-s), var(--bc-disclaimer-bg-l), 0.3) !important;
+      color: hsl(var(--bc-disclaimer-text-color)) !important;
   }
    .district-label {
        background-color: hsl(var(--conn-label-bg)) !important;
@@ -450,9 +444,9 @@ img[data-ai-hint] { }
        background-color: hsla(var(--am-grid-label-bg-h), var(--am-grid-label-bg-s), var(--am-grid-label-bg-l), 0.9) !important;
        color: hsl(var(--am-grid-label-text-color)) !important;
    }
-    .rera-text { /* Rera text bg is always primary based */
-        background-color: hsla(var(--cover-text-bg-h, var(--primary-h)), var(--cover-text-bg-s, var(--primary-s)), var(--cover-text-bg-l, var(--primary-l)), 0.35) !important;
-        color: hsl(var(--cover-text-color, var(--primary-foreground))) !important;
+    .rera-text { 
+        background-color: hsla(var(--cover-text-bg-h), var(--cover-text-bg-s), var(--cover-text-bg-l), 0.35) !important;
+        color: hsl(var(--cover-text-color)) !important;
     }
     .project-logo, .back-logo { filter: var(--logo-filter-on-dark-bg, initial) !important; }
 
@@ -467,7 +461,7 @@ img[data-ai-hint] { }
 
     @page {
       size: A4;
-      margin: 0 !important; /* Crucial for no extra margins */
+      margin: 0 !important; 
     }
     html, body {
         font-family: var(--brochure-font-family, 'Georgia', serif) !important;

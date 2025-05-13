@@ -11,25 +11,26 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, PlusCircle, Trash2, Wand2 } from 'lucide-react';
+import { PlusCircle, Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export interface AmenitiesGridFormProps {
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  isGeneratingAi?: boolean;
-  onAiGenerate?: () => void;
 }
 
-export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
+export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disabled }) => {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "amenitiesGridItems",
   });
 
   const addNewGridItem = () => {
-    append({ image: '', label: 'New Amenity Feature' } as AmenityGridItemData);
+    // Provide a default new item structure. 
+    // Ensure the 'id' is unique if you rely on it before saving/submitting.
+    // The schema's default for 'id' will handle this if it's not provided here.
+    append({ image: '', label: 'New Amenity Feature', id: `temp-grid-${Date.now()}` } as AmenityGridItemData);
   };
 
   return (
@@ -42,18 +43,12 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
             <FormItem className="flex-grow">
               <FormLabel>Amenities Grid Title</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Premium Facilities" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi} />
+                <Input placeholder="e.g., Premium Facilities" {...field} value={field.value ?? ''} disabled={disabled} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        {onAiGenerate && (
-          <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="ml-2 shrink-0">
-            {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-            AI Generate Title/Labels
-          </Button>
-        )}
       </div>
 
       <div className="space-y-3">
@@ -68,7 +63,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(index)}
-                  disabled={disabled || isGeneratingAi || fields.length <= 1}
+                  disabled={disabled || fields.length <= 0} // Allow removing if there's at least one. Can be 0.
                   className="h-7 w-7 text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -89,7 +84,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
                   <FormItem>
                     <FormLabel>Label</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Gymnasium" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi} />
+                      <Input placeholder="e.g., Gymnasium" {...field} value={field.value ?? ''} disabled={disabled} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,7 +98,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
           variant="outline"
           size="sm"
           onClick={addNewGridItem}
-          disabled={disabled || isGeneratingAi}
+          disabled={disabled}
           className="mt-2"
         >
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -118,7 +113,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
           <FormItem>
             <FormLabel>Grid Disclaimer</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., All images are artist's impressions." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi} />
+              <Input placeholder="e.g., All images are artist's impressions." {...field} value={field.value ?? ''} disabled={disabled} />
             </FormControl>
             <FormMessage />
           </FormItem>

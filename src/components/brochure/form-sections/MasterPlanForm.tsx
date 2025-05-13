@@ -11,28 +11,18 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-export interface MasterPlanFormProps { // Exporting the interface
+export interface MasterPlanFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  isGeneratingAi?: boolean;
-  onAiGenerate?: () => void;
 }
 
-export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
+export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Master Plan Details</h3>
-            {onAiGenerate && (
-                <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="ml-2 shrink-0">
-                    {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    AI Generate
-                </Button>
-            )}
        </div>
        <FormField
         control={form.control}
@@ -41,7 +31,7 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled, 
           <FormItem>
             <FormLabel>Master Plan Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Master Plan" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input placeholder="e.g., Master Plan" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -59,7 +49,7 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled, 
           <FormItem>
             <FormLabel>Master Plan Image Disclaimer</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Artist's impression. Not to scale." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
+              <Input placeholder="e.g., Artist's impression. Not to scale." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -72,7 +62,7 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled, 
           <FormItem>
             <FormLabel>Master Plan Description 1</FormLabel>
             <FormControl>
-              <Textarea placeholder="Describe the master plan..." {...field} value={field.value ?? ''} rows={3} disabled={disabled || isGeneratingAi}/>
+              <Textarea placeholder="Describe the master plan..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -85,7 +75,7 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled, 
           <FormItem>
             <FormLabel>Master Plan Description 2</FormLabel>
             <FormControl>
-              <Textarea placeholder="Highlight key aspects..." {...field} value={field.value ?? ''} rows={3} disabled={disabled || isGeneratingAi}/>
+              <Textarea placeholder="Highlight key aspects..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
