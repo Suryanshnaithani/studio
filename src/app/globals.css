@@ -9,13 +9,26 @@ body {
 @layer base {
   :root {
     --background: 240 10% 97%; /* Light greyish */
+    --background-h: 240;
+    --background-s: 10%;
+    --background-l: 97%;
+
     --foreground: 220 30% 20%; /* Dark blueish */
+    --foreground-h: 220;
+    --foreground-s: 30%;
+    --foreground-l: 20%;
+
     --card: 0 0% 100%;
     --card-foreground: 220 30% 20%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 30% 20%;
+
     --primary: 220 44% 20%; /* Dark blue */
+    --primary-h: 220;
+    --primary-s: 44%;
+    --primary-l: 20%;
     --primary-foreground: 0 0% 98%;
+
     --secondary: 240 10% 97%; /* Light grey */
     --secondary-foreground: 220 30% 20%;
     --muted: 240 10% 90%;
@@ -48,13 +61,26 @@ body {
   .dark {
     /* Define dark theme variables if needed, mirroring the light theme structure */
     --background: 220 30% 10%;
+    --background-h: 220;
+    --background-s: 30%;
+    --background-l: 10%;
+
     --foreground: 0 0% 98%;
+    --foreground-h: 0;
+    --foreground-s: 0%;
+    --foreground-l: 98%;
+
     --card: 220 30% 12%;
     --card-foreground: 0 0% 98%;
     --popover: 220 30% 10%;
     --popover-foreground: 0 0% 98%;
+
     --primary: 220 50% 70%; /* Lighter blue for dark mode */
+    --primary-h: 220;
+    --primary-s: 50%;
+    --primary-l: 70%;
     --primary-foreground: 220 30% 10%;
+
     --secondary: 220 30% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 220 30% 20%;
@@ -102,8 +128,8 @@ body {
 
   html, body {
       height: auto !important;
-      background-color: #fff !important;
-      color: #000 !important;
+      background-color: hsl(var(--background)) !important; /* Use theme background */
+      color: hsl(var(--foreground)) !important; /* Use theme foreground */
       print-color-adjust: exact !important;
       -webkit-print-color-adjust: exact !important;
       font-family: 'Georgia', serif;
@@ -171,14 +197,17 @@ body {
     * {
         transform: none !important;
         filter: none !important;
-        opacity: 1 !important;
+        /* opacity: 1 !important; Re-evaluate this, might break intentional opacity */
         visibility: visible !important;
     }
     /* Re-apply specific opacities if needed, e.g., for image overlays */
     .cover-image { opacity: 0.5 !important; }
     .developer-image { opacity: 0.7 !important; }
     .back-cover-image { opacity: 0.25 !important; }
-    .watermark { opacity: 0.05 !important; }
-    .page-accent-bg .watermark { filter: brightness(0) invert(1) !important; opacity: 0.08 !important; }
+    .watermark { opacity: 0.05 !important; } /* Standard watermark opacity for print */
+    .page-accent-bg .watermark { /* Watermark on dark background */
+        filter: brightness(0) invert(1) !important; /* Make it whiteish */
+        opacity: 0.12 !important; /* Slightly more visible on dark bg */
+    }
 
 }

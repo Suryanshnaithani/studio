@@ -11,15 +11,17 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
   return (
     <PageWrapper className="cover-page" id="cover-page">
       {data.coverImage && (
-        <Image
-          src={data.coverImage}
-          alt="Luxury Property Cover"
-          layout="fill"
-          objectFit="cover"
-          className="cover-image"
-          priority // Load first image quickly
-          data-ai-hint="modern building facade"
-        />
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden"> {/* Added wrapper with overflow:hidden */}
+          <Image
+            src={data.coverImage}
+            alt="Luxury Property Cover"
+            layout="fill"
+            objectFit="cover"
+            className="cover-image" // cover-image class has opacity and z-index
+            priority // Load first image quickly
+            data-ai-hint="modern building facade"
+          />
+        </div>
       )}
       <div className="cover-content">
         {data.projectLogo && (
@@ -37,7 +39,7 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
       </div>
       <div className="rera-text">
         {data.reraInfo.split('\n').map((line, index) => (
-          <p key={index} className="text-[10.66px] leading-tight">{line}</p> // Adjust font size/leading if needed
+          <p key={index} className="text-[10.66px] leading-tight">{line}</p>
         ))}
       </div>
     </PageWrapper>

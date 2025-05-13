@@ -11,14 +11,16 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
   return (
     <PageWrapper className="developer-page" id="developer-page">
        {data.developerImage && (
-        <Image
-          src={data.developerImage}
-          alt="Developer Background"
-          layout="fill"
-          objectFit="cover"
-          className="developer-image"
-          data-ai-hint="construction site progress"
-        />
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden"> {/* Added wrapper with overflow:hidden */}
+          <Image
+            src={data.developerImage}
+            alt="Developer Background"
+            layout="fill"
+            objectFit="cover"
+            className="developer-image" // developer-image class has opacity and z-index
+            data-ai-hint="construction site progress"
+          />
+        </div>
        )}
       <div className="page-content">
         <div className="developer-content">
