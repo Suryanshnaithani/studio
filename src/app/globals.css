@@ -145,31 +145,75 @@ body {
     --muted-foreground: 214 30% 35%; /* Muted blue-grey text */
 
     --brochure-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Professional Sans-Serif */
+
+    /* Opacity variables for theme-brochure-builder */
+    --cover-image-opacity: 0.5;
+    --developer-image-opacity: 0.65;
+    --back-cover-image-opacity: 0.4;
+    --watermark-opacity-light: 0.07;
+    --watermark-opacity-accent: 0.1;
+    --watermark-opacity-muted: 0.06;
+    --watermark-opacity-light-print: 0.04;
+    --watermark-opacity-accent-print: 0.07;
+    --watermark-opacity-muted-print: 0.035;
   }
 
    .theme-elegant-serif {
     --background: 45 50% 98%; /* Creamy White */
+    --background-h: 45; --background-s: 50%; --background-l: 98%;
     --foreground: 45 15% 20%; /* Dark Olive Green */
+    --foreground-h: 45; --foreground-s: 15%; --foreground-l: 20%;
     --primary: 180 30% 35%;   /* Muted Teal */
+    --primary-h: 180; --primary-s: 30%; --primary-l: 35%;
     --primary-foreground: 45 50% 98%; /* Creamy White */
+    --primary-foreground-h: 45; --primary-foreground-s: 50%; --primary-foreground-l: 98%;
     --accent: 30 80% 60%;  /* Warm Coral/Orange */
+    --accent-h: 30; --accent-s: 80%; --accent-l: 60%;
     --accent-foreground: 45 15% 20%; /* Dark Olive Green */
     --border: 45 30% 85%;
     --muted: 45 50% 95%;
     --muted-foreground: 45 15% 45%;
     --brochure-font-family: 'Playfair Display', serif;
+
+    /* Opacity variables for theme-elegant-serif */
+    --cover-image-opacity: 0.6;
+    --developer-image-opacity: 0.5;
+    --back-cover-image-opacity: 0.45;
+    --watermark-opacity-light: 0.05;
+    --watermark-opacity-accent: 0.08;
+    --watermark-opacity-muted: 0.04;
+    --watermark-opacity-light-print: 0.03;
+    --watermark-opacity-accent-print: 0.05;
+    --watermark-opacity-muted-print: 0.025;
   }
+
    .theme-cool-modern {
     --background: 210 30% 98%; /* Very Light Blue-Grey */
+    --background-h: 210; --background-s: 30%; --background-l: 98%;
     --foreground: 210 20% 25%; /* Dark Slate Blue */
+    --foreground-h: 210; --foreground-s: 20%; --foreground-l: 25%;
     --primary: 205 65% 45%;    /* Steel Blue */
+    --primary-h: 205; --primary-s: 65%; --primary-l: 45%;
     --primary-foreground: 210 30% 98%; /* Very Light Blue-Grey */
+    --primary-foreground-h: 210; --primary-foreground-s: 30%; --primary-foreground-l: 98%;
     --accent: 330 70% 60%;   /* Vibrant Pink/Magenta */
+    --accent-h: 330; --accent-s: 70%; --accent-l: 60%;
     --accent-foreground: 210 30% 98%; /* Very Light Blue-Grey */
     --border: 210 20% 88%;
     --muted: 210 30% 95%;
     --muted-foreground: 210 15% 50%;
     --brochure-font-family: 'Open Sans', sans-serif;
+
+    /* Opacity variables for theme-cool-modern */
+    --cover-image-opacity: 0.4;
+    --developer-image-opacity: 0.7;
+    --back-cover-image-opacity: 0.35;
+    --watermark-opacity-light: 0.08;
+    --watermark-opacity-accent: 0.12;
+    --watermark-opacity-muted: 0.07;
+    --watermark-opacity-light-print: 0.05;
+    --watermark-opacity-accent-print: 0.08;
+    --watermark-opacity-muted-print: 0.04;
   }
 
 
@@ -201,10 +245,11 @@ body {
       overflow: visible !important;
       margin: 0 !important; /* Double ensure no margins */
       padding: 0 !important; /* Double ensure no padding */
+      page-break-before: avoid !important; /* Prevent blank first page */
   }
 
   /* Hide elements not meant for printing */
-  .no-print, [data-radix-toast-provider] /* Hide ShadCN Toaster */ {
+  .no-print, [data-radix-toast-provider], body > div[data-radix-toast-provider-focus-wrapper-id] {
      display: none !important;
   }
   #sidebar-container { display: none !important; }
@@ -220,6 +265,7 @@ body {
     box-shadow: none !important;
     width: auto !important; 
     height: auto !important;
+    page-break-before: avoid !important;
   }
 
   .printable-brochure { /* This is the direct child of #printable-brochure-wrapper OR PrintableBrochureLoader */
@@ -230,12 +276,20 @@ body {
     width: 210mm !important; /* Set A4 width */
     height: auto !important; /* Height will be sum of its pages */
     overflow: visible !important;
+    page-break-before: avoid !important; /* Prevent blank first page */
   }
+
+  /* Ensure the very first *rendered* page in the brochure doesn't break before it */
+  .printable-brochure > .page:first-of-type,
+  .printable-brochure > *:first-child:is(.page) {
+      page-break-before: avoid !important;
+  }
+
 
   h1, h2, h3, h4, h5, h6, .section-title {
     page-break-after: avoid !important;
   }
-  p, ul, ol, div:not(.page):not(.page-content), img, figure, table {
+  p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div), img, figure, table {
       page-break-inside: avoid !important;
   }
   p, li { orphans: 3; widows: 3; }
@@ -247,16 +301,7 @@ body {
    a[href]::after { content: none !important; }
 
     * {
-        /* Be careful with global transform/filter none, might affect intended opacity */
         box-shadow: none !important;
         text-shadow: none !important;
-    }
-    .cover-image-container { opacity: 0.5 !important; }
-    .developer-image-container { opacity: 0.65 !important; }
-    .back-cover-image-container { opacity: 0.4 !important; }
-    .watermark { opacity: 0.05 !important; }
-    .page-accent-bg .watermark {
-        filter: brightness(0) invert(1) !important;
-        opacity: 0.12 !important;
     }
 }

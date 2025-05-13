@@ -38,12 +38,14 @@
     margin: 0 !important;
     padding: 0 !important;
     background-color: transparent !important; /* Ensure no body background interferes */
+    page-break-before: avoid !important;
   }
   .brochure-preview-container { /* Ensure preview container takes no space */
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
     height: auto !important;
+    page-break-before: avoid !important;
   }
   .printable-brochure { /* The root of printed content */
     width: 210mm !important;
@@ -51,10 +53,12 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
+    page-break-before: avoid !important;
   }
 
-  .printable-brochure > .page:first-child {
-    page-break-before: avoid !important; /* Ensure no break before the very first page */
+  /* Crucial for preventing blank first page */
+  .printable-brochure > .page:first-of-type {
+    page-break-before: avoid !important;
   }
 
   .page {
