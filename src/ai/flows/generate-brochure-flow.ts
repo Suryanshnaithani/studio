@@ -47,12 +47,11 @@ Your task is to:
 1.  **Strictly Adhere to Provided Facts:**
     *   YOU MUST use the exact information (e.g., project name, RERA number, specific amenities, developer name, location details, image URLs) present in 'existingData' as the absolute source of truth.
     *   DO NOT invent features, amenities, characteristics, or locations not explicitly mentioned or strongly implied by the provided 'existingData'.
-    *   If an image URL is provided in 'existingData' for any field, use that EXACT URL. Do not replace it.
 
 2.  **Expand and Elaborate ONLY on Provided Information:**
     *   If 'existingData' is partially filled (e.g., only project name, location, and a few amenities are provided), use *only* these details as a foundation.
     *   Your main job is to REPHRASE, STRUCTURE, and WRITE COMPELLING COPY based *solely* on the given information.
-    *   If fields are missing, you must still generate content for them, but ensure it's generic and plausible *based on the context derived STRICTLY from the provided fields*. For example, if only the project name "Green Valley Homes" is given, infer a residential, possibly nature-oriented theme, but don't invent specific eco-features unless they are listed in amenities or specs.
+    *   If fields are missing (excluding image fields, see rule 4), you must still generate content for them, but ensure it's generic and plausible *based on the context derived STRICTLY from the provided fields*. For example, if only the project name "Green Valley Homes" is given, infer a residential, possibly nature-oriented theme, but don't invent specific eco-features unless they are listed in amenities or specs.
     *   **Introduction Generation (introTitle, introParagraph1, introParagraph2, introParagraph3):**
         *   **This is a CRITICAL instruction for the introduction:** You must be *extremely strict* with the information used. Base the introduction *solely* on the project name and other relevant information explicitly provided in 'existingData'.
         *   DO NOT HALLUCINATE or invent any details, features, themes, or descriptions for the introduction that are not *directly specified* in the 'existingData'.
@@ -65,17 +64,17 @@ Your task is to:
 3.  **Professional Quality & Tone:**
     *   Ensure all text is grammatically correct, well-structured, engaging, and uses professional real estate marketing language appropriate for the *implied* project type based on the limited data.
 
-4.  **Placeholder Images (Only for Missing Optional Image Fields):**
-    *   For *optional* image URL fields that are *missing* in 'existingData':
-        *   Provide a placeholder URL from 'https://picsum.photos/seed/...'
-        *   Use a unique, descriptive seed relevant to the field (e.g., 'https://picsum.photos/seed/ProjectCoverView/1200/800', 'https://picsum.photos/seed/DeveloperLogoGeneric/400/200', 'https://picsum.photos/seed/FloorPlanGeneric/800/600').
-        *   Only provide a placeholder if an image is appropriate for that field. Ensure dimensions are reasonable.
-    *   Do *not* provide placeholders for required image fields if the schema demands them (though current schema makes most images optional). Prioritize generating text content accurately based on existing data over generating many placeholder images.
+4.  **Image Handling (CRITICAL):**
+    *   All image fields in the brochure (e.g., 'coverImage', 'projectLogo', 'floorPlans.image', etc.) are user-provided.
+    *   If an image URL is present in 'existingData' for any image field (e.g., 'existingData.coverImage'), YOU MUST use that exact URL in your output for the corresponding field (e.g., 'coverImage'). DO NOT MODIFY IT.
+    *   If an image URL is *missing* or an empty string in 'existingData' for an optional image field, YOU MUST ensure that field is also an empty string in your output.
+    *   DO NOT invent or generate any placeholder image URLs (e.g., from picsum.photos or any other source).
+    *   DO NOT UNDER ANY CIRCUMSTANCES GENERATE NEW IMAGE URLS. Your role is to use provided image URLs or ensure the field is an empty string if no URL is provided in 'existingData'.
 
 5.  **Schema Adherence:**
     *   Strictly adhere to the JSON output schema.
     *   Ensure all REQUIRED fields in the schema are populated, deriving content *only* from 'existingData' or using plausible generic content if 'existingData' is sparse. Use schema defaults only as a last resort if no plausible content can be generated based on input.
-    *   Do not add fields not present in the schema. Ensure values match expected types.
+    *   Do not add fields not present in the schema. Ensure values match expected types (e.g., strings for image URLs, even if empty).
 
 **Input Context:**
 
@@ -84,14 +83,14 @@ User Hint (Use ONLY if it clarifies provided data, do NOT treat as new informati
 {{/if}}
 
 {{#if existingData}}
-**Existing Brochure Data (Strictly base all generated content on this information. Expand and refine, but DO NOT ADD NEW, UNFOUNDED DETAILS):**
+**Existing Brochure Data (Strictly base all generated content on this information. Expand and refine text, but DO NOT ADD NEW, UNFOUNDED DETAILS. For image fields, use the provided URL or ensure an empty string if no URL is given in existingData. DO NOT GENERATE IMAGE URLs.):**
 Project Name: {{existingData.projectName}}
 Tagline: {{existingData.projectTagline}}
 RERA Info: {{existingData.reraInfo}}
-Intro Title: {{existingData.introTitle}} <!-- Generate based on Project Name/Tagline if empty -->
-Intro P1: {{existingData.introParagraph1}} <!-- Generate based on Project Name, Location, Developer, Amenities/Specs if empty -->
-Intro P2: {{existingData.introParagraph2}} <!-- Generate based on Project Name, Location, Developer, Amenities/Specs if empty -->
-Intro P3: {{existingData.introParagraph3}} <!-- Generate based on Project Name, Location, Developer, Amenities/Specs if empty -->
+Intro Title: {{existingData.introTitle}}
+Intro P1: {{existingData.introParagraph1}}
+Intro P2: {{existingData.introParagraph2}}
+Intro P3: {{existingData.introParagraph3}}
 Developer Name: {{existingData.developerName}}
 Developer Desc1: {{existingData.developerDesc1}}
 Developer Desc2: {{existingData.developerDesc2}}
@@ -109,8 +108,7 @@ Connectivity Points (Leisure): {{#if existingData.connectivityPointsLeisure}}{{#
 Connectivity Note: {{existingData.connectivityNote}}
 Connectivity District Label: {{existingData.connectivityDistrictLabel}}
 Amenities Intro Title: {{existingData.amenitiesIntroTitle}}
-Amenities Intro P1: {{existingData.amenitiesIntroP1}}
-Amenities Intro P2: {{existingData.amenitiesIntroP2}}
+Amenities Intro P1: {{existingData.amenitiesIntroP2}}
 Amenities Intro P3: {{existingData.amenitiesIntroP3}}
 Amenities List Title: {{existingData.amenitiesListTitle}}
 Amenities List Img Disclaimer: {{existingData.amenitiesListImageDisclaimer}}
@@ -129,7 +127,7 @@ Master Plan Desc1: {{existingData.masterPlanDesc1}}
 Master Plan Desc2: {{existingData.masterPlanDesc2}}
 Floor Plans Title: {{existingData.floorPlansTitle}}
 {{#each existingData.floorPlans}}
-Floor Plan: {{this.name}} (Area: {{this.area}}) - Features: {{#if this.features}}{{#each this.features}} {{this}}; {{/each}}{{else}} (features not specified) {{/if}} Image: {{#if this.image}} {{this.image}} {{else}} (image not specified) {{/if}}
+Floor Plan: {{this.name}} (Area: {{this.area}}) - Features: {{#if this.features}}{{#each this.features}} {{this}}; {{/each}}{{else}} (features not specified) {{/if}} Image URL: {{#if this.image}} {{this.image}} {{else}} (image not specified/empty) {{/if}}
 {{/each}}
 Floor Plans Disclaimer: {{existingData.floorPlansDisclaimer}}
 Back Cover CTA: {{existingData.callToAction}}
@@ -141,37 +139,35 @@ Contact Address: {{existingData.contactAddress}}
 Full Disclaimer: {{existingData.fullDisclaimer}}
 RERA Disclaimer (Back): {{existingData.reraDisclaimer}}
 
-Image fields from existing data (use these if provided, otherwise generate placeholders if field is optional and empty):
-Cover Image: {{existingData.coverImage}}
-Project Logo: {{existingData.projectLogo}}
-Intro Watermark: {{existingData.introWatermark}}
-Developer Image: {{existingData.developerImage}}
-Developer Logo (main): {{existingData.developerLogo}}
-Location Map Image: {{existingData.locationMapImage}}
-Location Watermark: {{existingData.locationWatermark}}
-Connectivity Image: {{existingData.connectivityImage}}
-Connectivity Watermark: {{existingData.connectivityWatermark}}
-Amenities Intro Watermark: {{existingData.amenitiesIntroWatermark}}
-Amenities List Image: {{existingData.amenitiesListImage}}
-Amenities Grid Image 1: {{existingData.amenitiesGridImage1}}
-Amenities Grid Image 2: {{existingData.amenitiesGridImage2}}
-Amenities Grid Image 3: {{existingData.amenitiesGridImage3}}
-Amenities Grid Image 4: {{existingData.amenitiesGridImage4}}
-Specs Image: {{existingData.specsImage}}
-Specs Watermark: {{existingData.specsWatermark}}
-Master Plan Image: {{existingData.masterPlanImage}}
-Back Cover Image: {{existingData.backCoverImage}}
-Back Cover Logo: {{existingData.backCoverLogo}}
+**Image fields from existing data (use these if provided, otherwise ensure the field is an empty string. DO NOT GENERATE IMAGE URLS):**
+Cover Image URL: {{existingData.coverImage}}
+Project Logo URL: {{existingData.projectLogo}}
+Intro Watermark URL: {{existingData.introWatermark}}
+Developer Image URL: {{existingData.developerImage}}
+Developer Logo URL (main): {{existingData.developerLogo}}
+Location Map Image URL: {{existingData.locationMapImage}}
+Location Watermark URL: {{existingData.locationWatermark}}
+Connectivity Image URL: {{existingData.connectivityImage}}
+Connectivity Watermark URL: {{existingData.connectivityWatermark}}
+Amenities Intro Watermark URL: {{existingData.amenitiesIntroWatermark}}
+Amenities List Image URL: {{existingData.amenitiesListImage}}
+Amenities Grid Image 1 URL: {{existingData.amenitiesGridImage1}}
+Amenities Grid Image 2 URL: {{existingData.amenitiesGridImage2}}
+Amenities Grid Image 3 URL: {{existingData.amenitiesGridImage3}}
+Amenities Grid Image 4 URL: {{existingData.amenitiesGridImage4}}
+Specs Image URL: {{existingData.specsImage}}
+Specs Watermark URL: {{existingData.specsWatermark}}
+Master Plan Image URL: {{existingData.masterPlanImage}}
+Back Cover Image URL: {{existingData.backCoverImage}}
+Back Cover Logo URL: {{existingData.backCoverLogo}}
 {{else}}
-**No existing data provided. Generate minimal, generic brochure content filling required fields with placeholders like 'Project Name Placeholder', 'Location details to be confirmed'. Do not invent details. Use schema defaults where possible.**
+**No existing data provided. Generate minimal, generic brochure content filling required text fields with placeholders like 'Project Name Placeholder', 'Location details to be confirmed'. Do not invent details. Ensure all image URL fields are empty strings. Use schema defaults where possible.**
 {{/if}}
 
-Now, generate the complete brochure data based *strictly* on these instructions and the provided context, adhering to the output JSON schema. Do not add information not present in the input.
+Now, generate the complete brochure data based *strictly* on these instructions and the provided context, adhering to the output JSON schema. Do not add information not present in the input. Ensure image URL fields are handled as specified in Rule 4.
 `,
   config: {
     temperature: 0.2, // Lower temperature for more factual, less creative output
-    // Ensure JSON output mode if the model supports it explicitly via response_mime_type
-    // For Gemini, structured output is requested by providing outputSchema.
   },
 });
 
