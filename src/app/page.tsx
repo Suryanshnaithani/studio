@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrochureDataSchema, type BrochureData, getDefaultBrochureData, SpecificFieldGeneratingSectionsEnum, type SpecificFieldGeneratingSection } from '@/components/brochure/data-schema';
+import { BrochureDataSchema, type BrochureData, getDefaultBrochureData, BrochureAIDataSectionsEnum, type BrochureAIDataSection } from '@/components/brochure/data-schema';
 import { BrochurePreview } from '@/components/brochure/brochure-preview';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,33 +30,28 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 // Import brochure specific CSS
 import './brochure.css';
 
-// AI features are currently disabled
-// import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow';
+// Import AI generation functionality
+import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow';
 import { z } from 'zod'; // Import z for ZodError
 
 interface FormSection {
   value: string;
   label: string;
   Component: React.FC<any>;
-  props?: Record<string, any>;
-  aiSection?: SpecificFieldGeneratingSection;
-  aiFields?: (keyof BrochureData)[];
+  aiSection?: BrochureAIDataSection; // Use the updated enum
 }
 
 const brochureThemes = [
-  "theme-default-minimal",
-  "theme-high-contrast",
-  "theme-grey-wash",
-  "theme-warm-professional",
+  "theme-brochure-builder", // Default professional theme
+  "theme-elegant-serif",
   "theme-cool-modern",
-  "theme-elegant-serif"
 ];
 
 export default function Home() {
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({}); // Track AI generation per section
+  const isPrintingRef = useRef(false); // Use ref to manage printing state to avoid rapid state updates
+  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({});
 
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -67,7 +62,7 @@ export default function Home() {
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
     defaultValues: getDefaultBrochureData(),
-    mode: 'onChange',
+    mode: 'onChange', // Consider 'onBlur' for less frequent AI calls if full-form AI is used
   });
 
   useEffect(() => {
@@ -75,7 +70,8 @@ export default function Home() {
   }, []);
 
   const isAnyAiGenerating = Object.values(isGeneratingAi).some(status => status);
-  const globalDisable = isPrinting || isAnyAiGenerating;
+  const globalDisable = isPrintingRef.current || isAnyAiGenerating;
+
 
   const handleGenerateOrUpdateBrochure = (newTheme: boolean = false) => {
     try {
@@ -89,7 +85,9 @@ export default function Home() {
       }
 
       setShowPreview(true);
-      toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
+      if (!isPrintingRef.current) { // Don't toast during print prep
+        toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
+      }
     } catch (error: any) {
       console.error("Validation failed for brochure generation/update:", error);
       let description = "Could not update the brochure. Please check the form data.";
@@ -99,13 +97,15 @@ export default function Home() {
         const errorMessages = Object.entries(fieldErrors)
           .map(([field, messages]) => `${field}: ${messages?.join(', ')}`)
           .join('; ');
-        toast({
-          variant: "destructive",
-          title: "Invalid Form Data",
-          description: `Please fix the errors: ${errorMessages}`,
-          duration: 7000
-        });
-      } else {
+        if (!isPrintingRef.current) {
+            toast({
+            variant: "destructive",
+            title: "Invalid Form Data",
+            description: `Please fix the errors: ${errorMessages}`,
+            duration: 7000
+            });
+        }
+      } else if (!isPrintingRef.current) {
         toast({
           variant: "destructive",
           title: "Update Error",
@@ -113,21 +113,22 @@ export default function Home() {
           duration: 7000
         });
       }
+       if (isPrintingRef.current) throw error; // Re-throw if printing so handlePrint can catch it
     }
   };
 
-  // Debounced version of handleGenerateOrUpdateBrochure for live updates
+
   const debouncedUpdatePreview = useRef(
     debounce(() => {
-      if (showPreview) { // Only auto-update if preview is already visible
-        handleGenerateOrUpdateBrochure(false); // Don't change theme on auto-update
+      if (showPreview && !isPrintingRef.current) {
+        handleGenerateOrUpdateBrochure(false);
       }
     }, 750)
   ).current;
 
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change' && showPreview) {
+      if (type === 'change' && showPreview && !isPrintingRef.current) {
         debouncedUpdatePreview();
       }
     });
@@ -148,43 +149,82 @@ export default function Home() {
 
 
   const handlePrint = async () => {
-    if (typeof window !== 'undefined' && generatedBrochureData) {
-      setIsPrinting(true);
-      try {
-        handleGenerateOrUpdateBrochure(false); // Ensure latest data is used for print
-        await new Promise(resolve => setTimeout(resolve, 100)); // Ensure UI updates with latest data
-        toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
-        window.print();
-      } catch (error: any) {
-        console.error("Printing failed:", error);
-        toast({
-          variant: "destructive",
-          title: "Printing Error",
-          description: "Could not prepare the PDF for printing. Please try again.",
-          duration: 5000
-        });
-      } finally {
-        // Use a double requestAnimationFrame to ensure print dialog is closed
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setIsPrinting(false);
-          });
-        });
-      }
-    } else if (!generatedBrochureData) {
+    if (isPrintingRef.current) return; // Prevent multiple print attempts
+    isPrintingRef.current = true;
+    form.trigger(); // Trigger validation before printing
+
+    // Force immediate re-render of buttons to reflect disabled state
+    // This is a bit of a hack, might need a more robust solution if issues persist
+    setGeneratedBrochureData(form.getValues());
+
+
+    try {
+      handleGenerateOrUpdateBrochure(false); // Ensure latest data is used for print
+      
+      // Wait for state updates and UI to settle
+      await new Promise(resolve => setTimeout(resolve, 200)); 
+
+      toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
+      
+      // Short delay before calling window.print()
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      window.print();
+
+    } catch (error: any) {
+      console.error("Printing failed:", error);
       toast({
         variant: "destructive",
-        title: "No Brochure Generated",
-        description: "Please generate the brochure first before downloading.",
+        title: "Printing Error",
+        description: "Could not prepare the PDF for printing. Please check form data and try again.",
         duration: 5000
       });
+    } finally {
+      // Delay resetting isPrinting to allow print dialog to fully process
+      setTimeout(() => {
+        isPrintingRef.current = false;
+        // Force re-render to update button states if needed
+        setGeneratedBrochureData(form.getValues());
+      }, 1000); // Increased delay
     }
   };
 
-  const handleAiGenerate = async (sectionKey: string, section: SpecificFieldGeneratingSection, fieldPaths?: string[]) => {
-    toast({ title: "AI Feature Disabled", description: "AI content generation is currently not available." });
-    return;
+
+  const handleAiGenerate = async (sectionKey: string, section: BrochureAIDataSection) => {
+    setIsGeneratingAi(prev => ({ ...prev, [sectionKey]: true }));
+    try {
+      const currentFormData = form.getValues();
+      // Validate before sending to AI (optional, but good practice)
+      BrochureDataSchema.parse(currentFormData);
+
+      const aiInput: GenerateBrochureInput = {
+        existingData: currentFormData,
+        sectionToGenerate: section,
+        promptHint: `Focus on making the content for the ${section} section engaging and professional.`,
+      };
+
+      const updatedData = await generateBrochureContent(aiInput);
+      form.reset(updatedData); // Reset form with AI-generated data
+      setGeneratedBrochureData(updatedData); // Update preview immediately
+      if (showPreview) {
+         handleGenerateOrUpdateBrochure(false); // Refresh preview with current theme
+      }
+      toast({ title: `AI Content Generated for ${section}`, description: "Section updated successfully." });
+
+    } catch (error: any) {
+      console.error(`AI generation error for section ${section}:`, error);
+      let desc = "An error occurred during AI content generation.";
+      if (error instanceof z.ZodError) {
+        desc = "Data validation failed before AI generation. Please check your inputs.";
+      } else if (error.message) {
+        desc = error.message;
+      }
+      toast({ variant: "destructive", title: "AI Generation Failed", description: desc, duration: 7000 });
+    } finally {
+      setIsGeneratingAi(prev => ({ ...prev, [sectionKey]: false }));
+    }
   };
+
 
   if (!isClient) {
     return (
@@ -196,45 +236,45 @@ export default function Home() {
   }
 
   const formSections: FormSection[] = [
-    { value: 'cover', label: 'Cover', Component: CoverForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.cover, aiFields: ['projectName', 'projectTagline'] },
-    { value: 'intro', label: 'Introduction', Component: IntroductionForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.introduction, aiFields: ['introTitle', 'introParagraph1', 'introParagraph2', 'introParagraph3'] },
-    { value: 'developer', label: 'Developer', Component: DeveloperForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.developer, aiFields: ['developerName', 'developerDesc1', 'developerDesc2'] },
-    { value: 'location', label: 'Location', Component: LocationForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.location, aiFields: ['locationTitle', 'locationDesc1', 'locationDesc2', 'keyDistances', 'locationNote'] },
-    { value: 'connectivity', label: 'Connectivity', Component: ConnectivityForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.connectivity, aiFields: ['connectivityTitle', 'connectivityNote'] },
-    { value: 'amenities-intro', label: 'Amenities Intro', Component: AmenitiesIntroForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.amenitiesIntro, aiFields: ['amenitiesIntroTitle', 'amenitiesIntroP1', 'amenitiesIntroP2', 'amenitiesIntroP3'] },
-    { value: 'amenities-list', label: 'Amenities List', Component: AmenitiesListForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.amenitiesListTitle, aiFields: ['amenitiesListTitle', 'amenitiesWellness', 'amenitiesRecreation'] },
-    { value: 'amenities-grid', label: 'Amenities Grid', Component: AmenitiesGridForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.amenitiesGridTitle, aiFields: ['amenitiesGridTitle', 'amenitiesGridLabel1', 'amenitiesGridLabel2', 'amenitiesGridLabel3', 'amenitiesGridLabel4'] },
-    { value: 'specs', label: 'Specifications', Component: SpecificationsForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.specificationsTitle, aiFields: ['specsTitle', 'specsInterior', 'specsBuilding'] },
-    { value: 'masterplan', label: 'Master Plan', Component: MasterPlanForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.masterPlan, aiFields: ['masterPlanTitle', 'masterPlanDesc1', 'masterPlanDesc2'] },
-    { value: 'floorplans', label: 'Floor Plans', Component: FloorPlansForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.floorPlansTitle, aiFields: ['floorPlansTitle' /* Individual floor plan fields handled by its component/AI */] },
-    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm, aiSection: SpecificFieldGeneratingSectionsEnum.enum.backCover, aiFields: ['callToAction', 'contactTitle', 'fullDisclaimer'] },
+    { value: 'cover', label: 'Cover', Component: CoverForm, aiSection: BrochureAIDataSectionsEnum.enum.cover },
+    { value: 'intro', label: 'Introduction', Component: IntroductionForm, aiSection: BrochureAIDataSectionsEnum.enum.introduction },
+    { value: 'developer', label: 'Developer', Component: DeveloperForm, aiSection: BrochureAIDataSectionsEnum.enum.developer },
+    { value: 'location', label: 'Location', Component: LocationForm, aiSection: BrochureAIDataSectionsEnum.enum.location },
+    { value: 'connectivity', label: 'Connectivity', Component: ConnectivityForm, aiSection: BrochureAIDataSectionsEnum.enum.connectivity },
+    { value: 'amenities-intro', label: 'Amenities Intro', Component: AmenitiesIntroForm, aiSection: BrochureAIDataSectionsEnum.enum.amenitiesIntro },
+    { value: 'amenities-list', label: 'Amenities List', Component: AmenitiesListForm, aiSection: BrochureAIDataSectionsEnum.enum.amenitiesListTitle },
+    { value: 'amenities-grid', label: 'Amenities Grid', Component: AmenitiesGridForm, aiSection: BrochureAIDataSectionsEnum.enum.amenitiesGridTitle },
+    { value: 'specs', label: 'Specifications', Component: SpecificationsForm, aiSection: BrochureAIDataSectionsEnum.enum.specificationsTitle },
+    { value: 'masterplan', label: 'Master Plan', Component: MasterPlanForm, aiSection: BrochureAIDataSectionsEnum.enum.masterPlan },
+    { value: 'floorplans', label: 'Floor Plans', Component: FloorPlansForm, aiSection: BrochureAIDataSectionsEnum.enum.floorPlansTitle },
+    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm, aiSection: BrochureAIDataSectionsEnum.enum.backCover },
   ];
 
 
   return (
     <FormProvider {...form}>
       <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-background text-foreground">
-        <Card id="sidebar-container" className="w-full md:w-[400px] lg:w-[450px] h-full flex flex-col rounded-none border-0 border-r md:border-r border-border shadow-md">
+        <Card id="sidebar-container" className="w-full md:w-[400px] lg:w-[450px] h-full flex flex-col rounded-none border-0 border-r md:border-r border-border shadow-md no-print">
           <CardHeader className="p-4 border-b border-border sticky top-0 bg-card z-20">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
               <CardTitle className="text-xl font-semibold">Brochure Editor</CardTitle>
               <div className="flex gap-2 w-full sm:w-auto">
-                <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-primary text-primary-foreground hover:bg-primary/90">
+                 <Button onClick={() => handleGenerateOrUpdateBrochure(!showPreview)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-primary text-primary-foreground hover:bg-primary/90">
                   <Palette className="mr-2 h-4 w-4" />
                   {showPreview ? 'New Theme' : 'Generate Brochure'}
                 </Button>
                 <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="flex-grow sm:flex-grow-0">
-                  {isPrinting ? (
+                  {isPrintingRef.current ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Download className="mr-2 h-4 w-4" />
                   )}
-                  {isPrinting ? 'Preparing...' : 'Download PDF'}
+                  {isPrintingRef.current ? 'Preparing...' : 'Download PDF'}
                 </Button>
               </div>
             </div>
             <CardDescription className="text-xs text-muted-foreground">
-              Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'} for a unique look. AI features are currently disabled.
+              Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'}. Use AI buttons in sections to enhance content.
             </CardDescription>
              {showPreview && (
                 <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-2">
@@ -256,11 +296,11 @@ export default function Home() {
                 {formSections.map(section => {
                   const sectionKey = section.value;
                   const commonProps = {
-                    form: form,
+                    form: form, // Pass the main form instance
                     disabled: globalDisable,
                     isGeneratingAi: !!isGeneratingAi[sectionKey],
                     onAiGenerate: section.aiSection
-                      ? () => toast({ title: "AI Feature Disabled" })
+                      ? () => handleAiGenerate(sectionKey, section.aiSection!)
                       : undefined
                   };
                   return (
@@ -277,7 +317,7 @@ export default function Home() {
         <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/50 dark:bg-gray-800/50">
           {showPreview && generatedBrochureData ? (
             <div className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
-              <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
+               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
             </div>
@@ -293,7 +333,7 @@ export default function Home() {
         </div>
       </div>
 
-      {showPreview && generatedBrochureData && (
+      {isClient && generatedBrochureData && ( // Only attempt to render PrintableBrochureLoader on client
         <div className="hidden print:block print:overflow-visible">
           <PrintableBrochureLoader data={generatedBrochureData} themeClass={activeTheme} />
         </div>
@@ -303,7 +343,7 @@ export default function Home() {
 }
 
 // This component is only for the print media query, ensuring the latest data is rendered.
-const PrintableBrochureLoader: React.FC<{ data: Partial<BrochureData>, themeClass: string }> = ({ data, themeClass }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string }> = ({ data, themeClass }) => {
   try {
     // Ensure data is valid before attempting to render for print
     const validatedData = BrochureDataSchema.parse(data);

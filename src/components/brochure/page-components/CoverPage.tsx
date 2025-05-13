@@ -11,16 +11,15 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
   return (
     <PageWrapper className="cover-page" id="cover-page">
       {data.coverImage && data.coverImage.trim() !== '' && (
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+        <div className="cover-image-container">
           <Image
             src={data.coverImage}
             alt="Luxury Property Cover"
             layout="fill"
             objectFit="cover"
-            className="cover-image" 
-            priority 
+            priority
             data-ai-hint="modern building facade"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            onError={(e) => { e.currentTarget.parentElement!.style.display = 'none'; }}
           />
         </div>
       )}
@@ -29,8 +28,8 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
           <Image
             src={data.projectLogo}
             alt={`${data.projectName} Logo`}
-            width={302} 
-            height={151} 
+            width={227} // approx 60mm at 96dpi
+            height={114} // maintain aspect ratio
             className="project-logo"
             data-ai-hint="minimalist company logo"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -39,11 +38,13 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
         <h1 className="project-name">{data.projectName}</h1>
         <p className="project-tagline">{data.projectTagline}</p>
       </div>
-      <div className="rera-text">
-        {data.reraInfo.split('\n').map((line, index) => (
-          <p key={index} className="text-[8.5px] leading-tight">{line}</p>
-        ))}
-      </div>
+      {data.reraInfo && (
+        <div className="rera-text">
+          {data.reraInfo.split('\n').map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </div>
+      )}
     </PageWrapper>
   );
 };

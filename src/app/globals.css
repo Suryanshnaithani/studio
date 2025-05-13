@@ -25,10 +25,10 @@ body {
     --popover: 0 0% 100%; /* White */
     --popover-foreground: 0 0% 10%; /* Very Dark Grey */
 
-    --primary: 0 0% 10%; /* Very Dark Grey for primary UI elements */
-    --primary-h: 0;
-    --primary-s: 0%;
-    --primary-l: 10%;
+    --primary: 216 80% 20%; /* Dark Blue */
+    --primary-h: 216;
+    --primary-s: 80%;
+    --primary-l: 20%;
     --primary-foreground: 0 0% 98%; /* Almost White */
 
     --secondary: 0 0% 96.1%; /* Light Grey for secondary UI elements */
@@ -37,163 +37,140 @@ body {
     --muted: 0 0% 96.1%; /* Light Grey for muted backgrounds */
     --muted-foreground: 0 0% 45.1%; /* Mid Grey for muted text */
 
-    --accent: 0 0% 90%; /* Slightly darker grey for accents in UI */
-    --accent-foreground: 0 0% 10%; /* Very Dark Grey */
+    --accent: 51 100% 50%; /* Gold */
+    --accent-foreground: 216 80% 20%; /* Dark Blue for text on gold */
+
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 89.8%; /* Light Grey border */
     --input: 0 0% 93%; /* Slightly darker light grey for input */
-    --ring: 0 0% 10%; /* Very Dark Grey for rings */
+    --ring: 216 80% 30%; /* Dark Blue for rings */
 
-    --chart-1: 0 0% 40%;
-    --chart-2: 0 0% 60%;
-    --chart-3: 0 0% 50%;
-    --chart-4: 0 0% 70%;
-    --chart-5: 0 0% 30%;
-    --radius: 0.3rem; /* Slightly smaller radius for minimalism */
+    --chart-1: 216 70% 50%;
+    --chart-2: 216 70% 70%;
+    --chart-3: 51 90% 60%;
+    --chart-4: 51 90% 80%;
+    --chart-5: 0 0% 50%; /* Neutral Grey */
+    --radius: 0.3rem; 
 
-    /* Sidebar vars to match main B&W theme */
+    /* Sidebar vars to match main B&W theme but with brochure primary */
     --sidebar-background: 0 0% 98%; /* White for sidebar */
     --sidebar-foreground: 0 0% 10%; /* Very Dark Grey for text */
-    --sidebar-primary: 0 0% 10%; /* Dark Grey for active/primary elements in sidebar */
+    --sidebar-primary: 216 80% 20%; /* Dark Blue for active/primary elements in sidebar */
     --sidebar-primary-foreground: 0 0% 98%; /* Almost White on primary */
-    --sidebar-accent: 0 0% 90%; /* Light Grey for hover/accent */
-    --sidebar-accent-foreground: 0 0% 10%; /* Dark Grey on accent */
+    --sidebar-accent: 216 30% 90%; /* Light blue-grey for hover/accent */
+    --sidebar-accent-foreground: 216 80% 20%; /* Dark Blue on accent */
     --sidebar-border: 0 0% 89.8%;
-    --sidebar-ring: 0 0% 10%;
+    --sidebar-ring: 216 80% 30%;
   }
 
   .dark {
-    /* Consistent B&W theme for dark mode or specific dark variant for editor UI */
-    --background: 0 0% 10%;
-    --background-h: 0;
-    --background-s: 0%;
+    --background: 216 30% 10%; /* Dark Slate Blue */
+    --background-h: 216;
+    --background-s: 30%;
     --background-l: 10%;
 
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 95%; /* Very Light Grey */
     --foreground-h: 0;
     --foreground-s: 0%;
-    --foreground-l: 98%;
+    --foreground-l: 95%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    --card: 216 30% 12%;
+    --card-foreground: 0 0% 95%;
+    --popover: 216 30% 8%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 0 0% 90%; 
-    --primary-h: 0;
-    --primary-s: 0%;
-    --primary-l: 90%;
-    --primary-foreground: 0 0% 10%;
+    --primary: 51 100% 60%; /* Brighter Gold for dark mode primary */
+    --primary-h: 51;
+    --primary-s: 100%;
+    --primary-l: 60%;
+    --primary-foreground: 216 80% 15%; /* Darker blue for text on gold */
 
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
+    --secondary: 216 25% 20%; /* Darker Grey-Blue */
+    --secondary-foreground: 0 0% 95%;
+    --muted: 216 20% 15%;
     --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 25%;
-    --accent-foreground: 0 0% 98%;
     
-    --border: 0 0% 25%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 90%;
+    --accent: 210 70% 55%; /* A lighter, desaturated blue for accent */
+    --accent-foreground: 0 0% 98%; /* White text on this accent */
     
-    --chart-1: 0 0% 60%;
-    --chart-2: 0 0% 40%;
-    --chart-3: 0 0% 50%;
-    --chart-4: 0 0% 30%;
+    --border: 216 20% 25%;
+    --input: 216 25% 20%;
+    --ring: 51 100% 70%; /* Brighter Gold for rings */
+    
+    --chart-1: 51 90% 70%;
+    --chart-2: 51 90% 50%;
+    --chart-3: 210 60% 65%;
+    --chart-4: 210 60% 45%;
     --chart-5: 0 0% 70%;
 
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 70%;
-    --sidebar-primary-foreground: 0 0% 8%;
-    --sidebar-accent: 0 0% 18%;
+    --sidebar-background: 216 30% 8%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 51 100% 60%; /* Gold for active sidebar in dark */
+    --sidebar-primary-foreground: 216 80% 15%;
+    --sidebar-accent: 216 25% 18%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 0 0% 50%;
+    --sidebar-border: 216 20% 15%;
+    --sidebar-ring: 51 100% 50%;
   }
 
-  /* Theme variants for Brochure Preview */
-  /* These themes will be applied to the .printable-brochure container */
+  /* Brochure Theme using Primary Color: Dark Blue (#1c2f4a), Secondary: Light Grey (#F8F8F8), Accent: Gold (#FFD700) */
+  .theme-brochure-builder {
+    --background: 220 14% 97%; /* hsl(0, 0%, 97%) - Light Grey #F8F8F8 */
+    --background-h: 220;
+    --background-s: 14%;
+    --background-l: 97%;
 
-  .theme-default-minimal {
-    --background: 0 0% 98%; /* Almost white */
-    --foreground: 0 0% 12%; /* Almost black */
-    --primary: 0 0% 16%; /* Dark grey */
-    --primary-foreground: 0 0% 98%; /* Almost white */
-    --accent: 0 0% 30%; /* Medium-dark grey */
-    --accent-foreground: 0 0% 98%;
-    --border: 0 0% 85%;
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 40%;
-    --brochure-font-family: 'Georgia', serif;
+    --foreground: 214 40% 10%; /* Darker than primary for main text if needed */
+    --foreground-h: 214;
+    --foreground-s: 40%;
+    --foreground-l: 10%;
+
+    --primary: 214 40% 20%; /* hsl(214, 40%, 20%) - Dark Blue #1c2f4a */
+    --primary-h: 214;
+    --primary-s: 40%;
+    --primary-l: 20%;
+
+    --primary-foreground: 0 0% 98%; /* Almost White for text on dark blue */
+    
+    --accent: 51 100% 50%; /* hsl(51, 100%, 50%) - Gold #FFD700 */
+    /* Accent foreground might need to be dark for readability on gold */
+    --accent-foreground: 214 40% 15%; /* Dark Blue, slightly darker for contrast */
+
+    /* Other theme variables for brochure consistency if needed */
+    --border: 214 20% 85%; /* Lighter blue-grey border */
+    --muted: 220 10% 92%; /* Slightly darker light grey for muted areas */
+    --muted-foreground: 214 30% 35%; /* Muted blue-grey text */
+
+    --brochure-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Professional Sans-Serif */
   }
 
-  .theme-high-contrast {
-    --background: 0 0% 100%; /* White */
-    --foreground: 0 0% 0%; /* Black */
-    --primary: 0 0% 0%; /* Black */
-    --primary-foreground: 0 0% 100%; /* White */
-    --accent: 0 0% 20%; /* Dark Grey */
-    --accent-foreground: 0 0% 100%;
-    --border: 0 0% 50%;
-    --muted: 0 0% 95%;
-    --muted-foreground: 0 0% 15%;
-    --brochure-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
-  
-  .theme-grey-wash {
-    --background: 0 0% 96%; /* Light Grey */
-    --foreground: 0 0% 25%; /* Dark Grey */
-    --primary: 0 0% 40%; /* Medium Grey */
-    --primary-foreground: 0 0% 92%; /* Off-white */
-    --accent: 0 0% 55%; /* Medium-Light Grey */
-    --accent-foreground: 0 0% 96%;
-    --border: 0 0% 80%;
-    --muted: 0 0% 92%;
-    --muted-foreground: 0 0% 45%;
-    --brochure-font-family: 'Lato', sans-serif;
-  }
-
-  .theme-warm-professional {
-    --background: 30 30% 97%; /* Light Beige */
-    --foreground: 30 10% 20%; /* Dark Brown */
-    --primary: 25 65% 50%;    /* Muted Terracotta/Brown */
-    --primary-foreground: 30 30% 97%; /* Light Beige */
-    --accent: 30 40% 65%;   /* Lighter Terracotta */
-    --accent-foreground: 30 10% 20%; /* Dark Brown */
-    --border: 30 20% 85%;
-    --muted: 30 30% 94%;
-    --muted-foreground: 30 10% 40%;
-    --brochure-font-family: 'Merriweather', serif;
-  }
-
-  .theme-cool-modern {
-    --background: 210 30% 98%; /* Very Light Blue-Grey */
-    --foreground: 210 20% 25%; /* Dark Slate Blue */
-    --primary: 205 65% 45%;    /* Steel Blue */
-    --primary-foreground: 210 30% 98%; /* Very Light Blue-Grey */
-    --accent: 200 50% 60%;   /* Lighter Steel Blue */
-    --accent-foreground: 210 20% 25%; /* Dark Slate Blue */
-    --border: 210 20% 88%;
-    --muted: 210 30% 95%;
-    --muted-foreground: 210 15% 50%;
-    --brochure-font-family: 'Open Sans', sans-serif;
-  }
-
-  .theme-elegant-serif {
+  /* Example of another theme for randomness - can add more */
+   .theme-elegant-serif {
     --background: 45 50% 98%; /* Creamy White */
     --foreground: 45 15% 20%; /* Dark Olive Green */
     --primary: 180 30% 35%;   /* Muted Teal */
     --primary-foreground: 45 50% 98%; /* Creamy White */
-    --accent: 180 25% 50%;  /* Lighter Muted Teal */
+    --accent: 30 80% 60%;  /* Warm Coral/Orange */
     --accent-foreground: 45 15% 20%; /* Dark Olive Green */
     --border: 45 30% 85%;
     --muted: 45 50% 95%;
     --muted-foreground: 45 15% 45%;
     --brochure-font-family: 'Playfair Display', serif;
+  }
+   .theme-cool-modern {
+    --background: 210 30% 98%; /* Very Light Blue-Grey */
+    --foreground: 210 20% 25%; /* Dark Slate Blue */
+    --primary: 205 65% 45%;    /* Steel Blue */
+    --primary-foreground: 210 30% 98%; /* Very Light Blue-Grey */
+    --accent: 330 70% 60%;   /* Vibrant Pink/Magenta */
+    --accent-foreground: 210 30% 98%; /* Very Light Blue-Grey */
+    --border: 210 20% 88%;
+    --muted: 210 30% 95%;
+    --muted-foreground: 210 15% 50%;
+    --brochure-font-family: 'Open Sans', sans-serif;
   }
 
 
@@ -205,53 +182,58 @@ body {
   }
 }
 
-/* Print specific styles for the entire document, including editor UI (which will be hidden by .no-print) */
+/* Print specific styles for the entire document */
 @media print {
   @page {
     size: A4;
-    margin: 0;
+    margin: 0 !important; /* Ensure no default browser margins */
   }
 
   html, body {
       height: auto !important;
-      background-color: hsl(var(--background)) !important; /* Base background for printing context */
+      background-color: transparent !important; /* Base background for printing context */
       color: hsl(var(--foreground)) !important; /* Base text color for printing context */
       print-color-adjust: exact !important;
       -webkit-print-color-adjust: exact !important;
-      font-family: var(--brochure-font-family, 'Georgia', serif); /* Fallback for print */
-      font-size: 10pt; 
+      font-family: var(--brochure-font-family, 'Georgia', serif) !important; /* Fallback for print */
+      font-size: 10pt;
       line-height: 1.3;
-      width: 210mm !important;
+      width: 210mm !important; /* Ensure body itself is A4 width */
       overflow: visible !important;
+      margin: 0 !important; /* Double ensure no margins */
+      padding: 0 !important; /* Double ensure no padding */
   }
 
-  .no-print { display: none !important; }
+  /* Hide elements not meant for printing */
+  .no-print, [data-radix-toast-provider] /* Hide ShadCN Toaster */ {
+     display: none !important;
+  }
   #sidebar-container { display: none !important; }
-  
-  .brochure-preview-container { 
-    padding: 0 !important; 
+
+
+  /* Ensure preview container and wrapper take no visual space in print */
+  .brochure-preview-container, #printable-brochure-wrapper {
+    padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
-    background-color: transparent !important; /* Ensure preview container doesn't add color */
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important; /* Let content dictate, or 100% if it's a direct child of body */
+    height: auto !important;
   }
 
-  .printable-brochure {
+  .printable-brochure { /* This is the direct child of #printable-brochure-wrapper */
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 100% !important;
+    width: 210mm !important; /* Set A4 width */
+    height: auto !important; /* Height will be sum of its pages */
     overflow: visible !important;
-    /* Theme variables will be applied here by the theme class */
+    /* Theme variables will be applied here by its theme class */
   }
-  
-  /* Theme-aware printing for brochure content specifically */
-  /* The specific theme class (.theme-default-minimal, .theme-high-contrast, etc.)
-     will be on .printable-brochure and its --background, --foreground, --primary etc.
-     will dictate the colors for elements inside .page.
-     The brochure.css already handles applying these to .page elements like .page-accent-bg
-  */
-  
+
   h1, h2, h3, h4, h5, h6, .section-title {
     page-break-after: avoid !important;
   }
@@ -262,20 +244,19 @@ body {
   ul, ol { page-break-before: auto; page-break-after: auto; }
 
   ::-webkit-scrollbar { display: none !important; }
-  
+
    a { color: inherit !important; text-decoration: none !important; }
    a[href]::after { content: none !important; }
 
     * {
         transform: none !important;
         filter: none !important;
-        /* visibility: visible !important; Temporarily removed, might cause issues */
-        box-shadow: none !important; /* Overriding brochure.css important */
-        text-shadow: none !important; /* Overriding brochure.css important */
+        box-shadow: none !important;
+        text-shadow: none !important;
     }
-    .cover-image { opacity: 0.5 !important; }
-    .developer-image { opacity: 0.7 !important; }
-    .back-cover-image { opacity: 0.25 !important; }
+    .cover-image-container { opacity: 0.5 !important; }
+    .developer-image-container { opacity: 0.65 !important; }
+    .back-cover-image-container { opacity: 0.4 !important; }
     .watermark { opacity: 0.05 !important; }
     .page-accent-bg .watermark {
         filter: brightness(0) invert(1) !important;

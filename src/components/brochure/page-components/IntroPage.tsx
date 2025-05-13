@@ -8,6 +8,13 @@ interface IntroPageProps {
 }
 
 export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
+  const hasTextContent = data.introTitle || data.introParagraph1 || data.introParagraph2 || data.introParagraph3;
+  const hasVisualContent = !!data.introWatermark;
+
+  if (!hasTextContent && !hasVisualContent) {
+    return null;
+  }
+
   return (
     <PageWrapper className="page-light-bg" id="intro-page">
       <div className="page-content">
@@ -15,19 +22,23 @@ export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
            <Image
             src={data.introWatermark}
             alt="Watermark"
-            width={227} 
-            height={227} 
+            width={227}
+            height={227}
             className="watermark"
             data-ai-hint="geometric pattern subtle"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        <div className="section-title">{data.introTitle}</div>
-        <div className="intro-text">
-          <p>{data.introParagraph1}</p>
-          <p>{data.introParagraph2}</p>
-          <p>{data.introParagraph3}</p>
-        </div>
+        {hasTextContent && (
+            <>
+                <div className="section-title">{data.introTitle}</div>
+                <div className="intro-text">
+                {data.introParagraph1 && <p>{data.introParagraph1}</p>}
+                {data.introParagraph2 && <p>{data.introParagraph2}</p>}
+                {data.introParagraph3 && <p>{data.introParagraph3}</p>}
+                </div>
+            </>
+        )}
       </div>
     </PageWrapper>
   );
