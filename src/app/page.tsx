@@ -33,7 +33,7 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 import './brochure.css';
 
 // Import AI generation functionality
-import { generateBrochureSection, type GenerateBrochureSectionInput } from '@/ai/flows/generate-brochure-flow';
+import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow';
 import { z } from 'zod'; // Import z for ZodError
 
 interface FormSection {
@@ -42,8 +42,8 @@ interface FormSection {
   Component: React.FC<any>;
   props?: Record<string, any>;
   generateContent?: {
-    handler: (section: GenerateBrochureSectionInput['sectionToGenerate'], fieldsToUpdate: (keyof BrochureData)[], toastTitle: string) => Promise<void>;
-    sectionName: GenerateBrochureSectionInput['sectionToGenerate'];
+    handler: (section: GenerateBrochureInput['sectionToGenerate'], fieldsToUpdate: (keyof BrochureData)[], toastTitle: string) => Promise<void>;
+    sectionName: GenerateBrochureInput['sectionToGenerate'];
     loadingStateKey: string; // e.g., 'isGeneratingIntro'
     fields: (keyof BrochureData)[];
     toastTitle: string;
@@ -105,7 +105,7 @@ export default function Home() {
 
   // Check if any AI generation is in progress
   const anySectionGenerating = Object.values(aiLoadingStates).some(loading => loading);
-  const globalDisable = isPrinting || anySectionGenerating; // Now includes isPrinting
+  const globalDisable = isPrinting || anySectionGenerating;
 
 
   // Function to update a specific loading state
@@ -175,12 +175,12 @@ export default function Home() {
         // Validate before sending to AI
         BrochureDataSchema.parse(currentFormData);
 
-        const aiInput: GenerateBrochureSectionInput = {
+        const aiInput: GenerateBrochureInput = {
             promptHint: aiPromptHint,
             existingData: currentFormData,
             // No sectionToGenerate, so AI enhances full brochure
         };
-        const generatedData = await generateBrochureSection(aiInput);
+        const generatedData = await generateBrochureContent(aiInput);
         form.reset(generatedData); // Reset form with all new data
         setBrochureData(generatedData); // Update preview
         toast({ title: "AI Enhancement Complete", description: "Brochure content has been updated." });
@@ -211,7 +211,7 @@ export default function Home() {
 
   // Generic section content generator
   const handleGenerateSectionContent = async (
-    section: GenerateBrochureSectionInput['sectionToGenerate'],
+    section: GenerateBrochureInput['sectionToGenerate'],
     loadingStateKey: string, // Use the key to update the correct loading state
     fieldsToUpdate: (keyof BrochureData)[],
     toastTitle: string
@@ -224,14 +224,14 @@ export default function Home() {
       // Validate before sending
       BrochureDataSchema.parse(currentFormData);
 
-      const aiInput: GenerateBrochureSectionInput = {
+      const aiInput: GenerateBrochureInput = {
         promptHint: `Generate content for the ${section} section, focusing ONLY on the fields: ${fieldsToUpdate.join(', ')}. Expand concisely based ONLY on existing relevant data in the form (like project name, location, developer, etc.). Do NOT invent information. Keep other fields unchanged.`,
         existingData: currentFormData,
         sectionToGenerate: section,
         fieldsToGenerate: fieldsToUpdate, // Pass specific fields to generate
       };
 
-      const aiGeneratedFullData = await generateBrochureSection(aiInput);
+      const aiGeneratedFullData = await generateBrochureContent(aiInput);
 
       // Create a partial data object for resetting specific fields
       const dataToReset: Partial<BrochureData> = {};
@@ -474,12 +474,23 @@ export default function Home() {
                                const aiProps = section.generateContent ? {
                                    onGenerateContent: () => section.generateContent!.handler(
                                        section.generateContent!.sectionName,
-                                       section.generateContent!.fields, // Pass fields to generate
+                                       section.generateContent!.loadingStateKey, // This was 'fields' previously, should be loadingStateKey based on handler's expectation or needs adjustment. Assuming loadingStateKey for now.
+                                       section.generateContent!.fields, 
                                        section.generateContent!.toastTitle
                                    ),
                                    isGeneratingContent: aiLoadingStates[section.generateContent.loadingStateKey],
                                    generateHandlerKey: section.generateContent.loadingStateKey, // Pass the key itself
                                } : {};
+
+                               // Adjusting the handler call to match the updated handleGenerateSectionContent signature
+                               if (section.generateContent) {
+                                    aiProps.onGenerateContent = () => section.generateContent!.handler(
+                                       section.generateContent!.sectionName,
+                                       section.generateContent!.loadingStateKey, // Corrected: pass loadingStateKey
+                                       section.generateContent!.fields,         // Corrected: pass fields
+                                       section.generateContent!.toastTitle       // Corrected: pass toastTitle
+                                   );
+                               }
 
 
                                return (
