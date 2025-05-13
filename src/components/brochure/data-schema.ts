@@ -19,144 +19,113 @@ const optionalEmailSchema = (message: string = "Invalid email format. Must be a 
 
 const FloorPlanSchema = z.object({
   id: z.string().optional().default(() => `fp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`),
-  name: z.string().min(1, 'Floor plan name is required').default('Elegant 3BHK Apartment'),
-  area: z.string().min(1, 'Area is required').default('Approx. 1850 sq. ft.'),
-  features: z.array(z.string().min(1, "Feature description cannot be empty.")).min(1, 'At least one feature is required').default(['Spacious Living Area', 'Modern Kitchen Layout', 'Private Balcony']),
+  name: z.string().min(1, 'Floor plan name is required').default('New Floor Plan'),
+  area: z.string().min(1, 'Area is required').default('0 sq. ft.'),
+  features: z.array(z.string().min(1, "Feature description cannot be empty.")).min(1, 'At least one feature is required').default(['Feature 1']),
   image: optionalUrlSchema("Invalid URL format for floor plan image.").describe("URL for the floor plan image. Use picsum.photos or leave empty."),
 });
 
 const AmenityGridItemSchema = z.object({
   id: z.string().optional().default(() => `grid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`),
   image: optionalUrlSchema("Invalid URL for grid image.").describe("URL for the grid item image. Use picsum.photos or leave empty."),
-  label: z.string().min(1, "Amenity label cannot be empty.").default('Amenity Feature').describe("Label for the grid item."),
+  label: z.string().min(1, "Amenity label cannot be empty.").default('New Amenity').describe("Label for the grid item."),
 });
 
 
 export const BrochureDataSchema = z.object({
   // Cover Page
-  projectName: z.string().min(1, "Project name is required.").default('Elysian Estates'),
-  projectTagline: z.string().default('Where Luxury Meets Serenity'),
+  projectName: z.string().min(1, "Project name is required.").default('Untitled Project'),
+  projectTagline: z.string().default('Your compelling tagline here'),
   coverImage: optionalUrlSchema().describe("URL for the main cover image."),
   projectLogo: optionalUrlSchema().describe("URL for the project logo."),
-  reraInfo: z.string().default('RERA No: A123-B456-C789 | Project Approved by State RERA Authority.\nFull details: state.rera.gov.in/project/elysian-estates'),
+  reraInfo: z.string().default('RERA No: PENDING | Project Approved by State RERA Authority.\nFull details: state.rera.gov.in/project/your-project-name'),
 
   // Introduction
-  introTitle: z.string().default('Welcome to Elysian Estates: A New Paradigm of Living'),
-  introParagraph1: z.string().default('Nestled in the city\'s most vibrant corridor, Elysian Estates presents a unique blend of contemporary architecture and thoughtful community planning. This premier residential enclave is designed for those who seek an elevated lifestyle, offering a sanctuary of peace and sophistication amidst the urban energy.'),
-  introParagraph2: z.string().default('Each residence within Elysian Estates is a masterpiece of design, featuring expansive layouts, premium finishes, and an abundance of natural light. With meticulous attention to detail, these homes are crafted to provide unparalleled comfort and a timeless aesthetic, promising a living experience that is both luxurious and intimately personal.'),
-  introParagraph3: z.string().default('Discover a community where every element is curated to enhance your well-being. From lush landscaped gardens to world-class amenities, Elysian Estates is more than just a home—it’s a destination for a fulfilling and inspired life.'),
+  introTitle: z.string().default('Welcome to [Project Name]'),
+  introParagraph1: z.string().default('Introduce your project here. Briefly describe its essence and what makes it unique. This is the first impression, make it count.'),
+  introParagraph2: z.string().default('Elaborate on key highlights or the vision behind the project. Focus on the lifestyle or benefits it offers to potential residents or investors.'),
+  introParagraph3: z.string().default('Conclude the introduction with a compelling statement or a transition to the detailed sections of the brochure.'),
   introWatermark: optionalUrlSchema().describe("Subtle watermark image URL for intro page."),
 
   // Developer Profile
-  developerName: z.string().default('Zenith Developers Pvt. Ltd.'),
-  developerDesc1: z.string().default('Zenith Developers has been at the forefront of creating landmark properties for over two decades. Our commitment to quality, innovation, and sustainable development has earned us a reputation for excellence in the real estate sector.'),
-  developerDesc2: z.string().default('We believe in building not just structures, but vibrant communities that enrich lives. Our portfolio reflects a dedication to superior craftsmanship, customer-centric design, and a vision for a better urban future.'),
+  developerName: z.string().default('Your Company Name'),
+  developerDesc1: z.string().default('Briefly introduce the developer, highlighting experience, mission, or key achievements in the real estate sector.'),
+  developerDesc2: z.string().default('Provide more details about the developer\'s philosophy, commitment to quality, or past successful projects.'),
   developerImage: optionalUrlSchema().describe("Background image URL for developer page."),
-  developerLogo: optionalUrlSchema().describe("Developer's logo URL."),
+  developerLogo: optionalUrlSchema().describe("Developer\'s logo URL."),
   developerDisclaimer: z.string().default("Developer profile and image are for representation. Company details as per official records."),
 
   // Location
-  locationTitle: z.string().default('Prime Location, Unmatched Convenience'),
-  locationDesc1: z.string().default('Elysian Estates enjoys a coveted location, offering strategic proximity to major business hubs, educational institutions, healthcare facilities, and premier entertainment zones. Experience the ease of city living with everything you need just moments away.'),
-  locationDesc2: z.string().default('With excellent connectivity via arterial roads and public transport, your daily commute is simplified. The surrounding neighborhood is a vibrant tapestry of culture, dining, and recreation, ensuring a dynamic and convenient lifestyle.'),
-  keyDistances: z.array(z.string().min(1, "Key distance description cannot be empty.")).default([
-      'City Metro Link - 2 min walk',
-      'Orion Business Park - 5 min drive',
-      'Global International School - 10 min drive',
-      'Apollo Multi-specialty Hospital - 12 min drive',
-      'Grand Central Mall - 15 min drive',
-      'International Airport Connect - 30 min drive',
-  ]).describe("List of nearby locations and their approximate distance/time."),
+  locationTitle: z.string().default('Prime Location & Unmatched Convenience'),
+  locationDesc1: z.string().default('Describe the strategic advantages of the project\'s location. Mention proximity to key areas, infrastructure, or natural surroundings.'),
+  locationDesc2: z.string().default('Detail the connectivity options, nearby amenities (schools, hospitals, shopping), and the overall lifestyle benefits offered by the location.'),
+  keyDistances: z.array(z.string().min(1, "Key distance description cannot be empty.")).default([]).describe("List of nearby locations and their approximate distance/time."),
   locationMapImage: optionalUrlSchema().describe("URL for the location map image."),
-  mapDisclaimer: z.string().default('*Map is for illustrative purposes only, not to scale. Actual travel times may vary based on traffic conditions.'),
+  mapDisclaimer: z.string().default('*Map is for illustrative purposes only, not to scale. Actual travel times may vary.'),
   locationWatermark: optionalUrlSchema().describe("Subtle watermark image URL for location page."),
-  locationNote: z.string().default('All mentioned landmarks and travel times are approximate and sourced from public information. Verify independently.').describe("Optional note regarding location or distances."),
+  locationNote: z.string().default('All mentioned landmarks and travel times are approximate. Please verify independently.').describe("Optional note regarding location or distances."),
 
   // Connectivity
-  connectivityTitle: z.string().default('Effortless Connectivity to Key Destinations'),
-  connectivityPointsBusiness: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([
-    'Business & Tech Parks', 'Alpha Tech Hub', 'Omega Business Center', 'Innovation Square'
-  ]).describe("List of nearby business points, first item is category title."),
-   connectivityPointsHealthcare: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([
-    'Leading Hospitals', 'City General Hospital', 'Apex Heart Institute', 'Serene Wellness Clinic'
-   ]).describe("List of nearby healthcare points, first item is category title."),
-   connectivityPointsEducation: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([
-    'Educational Institutions', 'Presidency International School', 'Horizon University', 'National Management Institute'
-   ]).describe("List of nearby education points, first item is category title."),
-  connectivityPointsLeisure: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([
-    'Shopping & Entertainment', 'Galleria Mall', 'City Art Museum', 'Gourmet Food Street', 'Regal Multiplex'
-  ]).describe("List of nearby leisure/retail points, first item is category title."),
-  connectivityNote: z.string().default('Proposed infrastructure developments may further enhance connectivity. Information is subject to change.'),
+  connectivityTitle: z.string().default('Effortless Connectivity'),
+  connectivityPointsBusiness: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([]).describe("List of nearby business points, first item is category title."),
+   connectivityPointsHealthcare: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([]).describe("List of nearby healthcare points, first item is category title."),
+   connectivityPointsEducation: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([]).describe("List of nearby education points, first item is category title."),
+  connectivityPointsLeisure: z.array(z.string().min(1, "Connectivity point cannot be empty.")).default([]).describe("List of nearby leisure/retail points, first item is category title."),
+  connectivityNote: z.string().default('Proposed infrastructure developments may further enhance connectivity.'),
   connectivityImage: optionalUrlSchema().describe("Image URL illustrating connectivity."),
-  connectivityDistrictLabel: z.string().default('Urban Connect').describe("Label text overlaid on the connectivity image."),
+  connectivityDistrictLabel: z.string().default('District Name').describe("Label text overlaid on the connectivity image."),
   connectivityWatermark: optionalUrlSchema().describe("Subtle watermark image URL for connectivity page."),
 
   // Amenities Intro
-  amenitiesIntroTitle: z.string().default('A World of Amenities for an Enriched Lifestyle'),
-  amenitiesIntroP1: z.string().default('At Elysian Estates, resident well-being is paramount. We offer a comprehensive suite of amenities designed to cater to diverse interests, promoting relaxation, fitness, and social engagement within a secure and beautifully landscaped environment.'),
-  amenitiesIntroP2: z.string().default('Experience leisure and recreation like never before. Our thoughtfully curated facilities provide the perfect setting for unwinding after a busy day, pursuing fitness goals, or creating lasting memories with family and friends.'),
-  amenitiesIntroP3: z.string().default('From serene green spaces to active recreational zones, every amenity at Elysian Estates is crafted to the highest standards, ensuring an exceptional living experience for all residents.'),
+  amenitiesIntroTitle: z.string().default('A World of Amenities'),
+  amenitiesIntroP1: z.string().default('Introduce the range of amenities offered. Focus on how they enhance resident well-being and lifestyle.'),
+  amenitiesIntroP2: z.string().default('Describe the quality and thoughtfulness behind the curated amenities, catering to diverse interests like relaxation, fitness, and social engagement.'),
+  amenitiesIntroP3: z.string().default('Conclude by emphasizing the exceptional living experience provided by these top-tier facilities.'),
   amenitiesIntroWatermark: optionalUrlSchema().describe("Subtle watermark image URL for amenities intro page."),
 
   // Amenities List
-  amenitiesListTitle: z.string().default('Curated Amenities for Every Resident'),
+  amenitiesListTitle: z.string().default('Curated Amenities'),
   amenitiesListImage: optionalUrlSchema().describe("Image URL for the amenities list page."),
   amenitiesListImageDisclaimer: z.string().default("Artist's impression. Actual amenities may differ."),
-  amenitiesWellness: z.array(z.string().min(1, "Amenity description cannot be empty.")).default([
-    'Temperature-Controlled Infinity Pool', 'Holistic Spa & Sauna', 'Yoga & Meditation Deck', 'Landscaped Zen Gardens'
-  ]).describe("List of wellness/leisure amenities."),
-  amenitiesRecreation: z.array(z.string().min(1, "Amenity description cannot be empty.")).default([
-    'State-of-the-Art Gymnasium', 'Multipurpose Sports Court', 'Luxury Residents\' Clubhouse', "Children's Adventure Park", 'Private Cinema / AV Room'
-  ]).describe("List of recreation amenities."),
+  amenitiesWellness: z.array(z.string().min(1, "Amenity description cannot be empty.")).default([]).describe("List of wellness/leisure amenities."),
+  amenitiesRecreation: z.array(z.string().min(1, "Amenity description cannot be empty.")).default([]).describe("List of recreation amenities."),
 
   // Amenities Grid
   amenitiesGridTitle: z.string().default('Signature Lifestyle Enhancements'),
-  amenitiesGridItems: z.array(AmenityGridItemSchema).default([
-    { id: 'agi1', image: 'https://picsum.photos/seed/gridGym/400/300', label: 'Modern Fitness Center' },
-    { id: 'agi2', image: 'https://picsum.photos/seed/gridClubhouse/400/300', label: 'Elegant Clubhouse Lounge' },
-    { id: 'agi3', image: 'https://picsum.photos/seed/gridRooftop/400/300', label: 'Rooftop Sky Lounge' },
-    { id: 'agi4', image: 'https://picsum.photos/seed/gridKidsZone/400/300', label: 'Interactive Kids\' Zone' },
-  ]).describe("Array of amenity grid items, each with an image and a label."),
+  amenitiesGridItems: z.array(AmenityGridItemSchema).default([]).describe("Array of amenity grid items, each with an image and a label."),
   amenitiesGridDisclaimer: z.string().default("Images are indicative. Final amenities are subject to design and availability."),
 
   // Specifications
-  specsTitle: z.string().default('Premium Finishes and Intelligent Features'),
+  specsTitle: z.string().default('Premium Finishes & Features'),
   specsImage: optionalUrlSchema().describe("Image URL for specifications page."),
-  specsImageDisclaimer: z.string().default("Interior depiction is conceptual and for illustrative purposes only."),
-  specsInterior: z.array(z.string().min(1, "Specification detail cannot be empty.")).default([
-    'Living/Dining: Imported Marble Flooring', 'Bedrooms: Premium Laminated Wooden Flooring', 'Kitchen: Designer Modular Kitchen with Quartz Countertop', 'Bathrooms: High-end Sanitary Fixtures & Fittings', 'Windows: UPVC Soundproof Glazed Windows', 'Integrated Smart Home Automation'
-  ]).describe("List of interior specifications."),
-  specsBuilding: z.array(z.string().min(1, "Building feature cannot be empty.")).default([
-    'Structure: Earthquake-Resistant RCC Framed Structure', 'Security: Advanced 3-Tier Security System with CCTV Surveillance', 'Elevators: High-Speed Elevators (Passenger & Service)', 'Power Backup: 100% DG Power Backup for All Apartments & Common Areas', 'Sustainable Features: Rainwater Harvesting, STP'
-  ]).describe("List of building features/specifications."),
+  specsImageDisclaimer: z.string().default("Interior depiction is conceptual."),
+  specsInterior: z.array(z.string().min(1, "Specification detail cannot be empty.")).default([]).describe("List of interior specifications."),
+  specsBuilding: z.array(z.string().min(1, "Building feature cannot be empty.")).default([]).describe("List of building features/specifications."),
   specsWatermark: optionalUrlSchema().describe("Subtle watermark image URL for specs page."),
 
   // Master Plan
-  masterPlanTitle: z.string().default('Thoughtfully Designed Site Master Plan'),
+  masterPlanTitle: z.string().default('Thoughtfully Designed Master Plan'),
   masterPlanImage: optionalUrlSchema().describe("URL for the master plan image."),
-  masterPlanImageDisclaimer: z.string().default('Master plan is conceptual and subject to approval and modification by relevant authorities.'),
-  masterPlanDesc1: z.string().default('The master plan of Elysian Estates is a harmonious blend of architectural ingenuity and landscape design, ensuring optimal space utilization, natural light, and ventilation for every residence. Towers are strategically placed to offer panoramic views and maintain privacy.'),
-  masterPlanDesc2: z.string().default('Extensive green spaces, pedestrian-friendly pathways, and dedicated zones for amenities create a cohesive and vibrant community environment. The layout prioritizes resident convenience, safety, and a seamless connection with nature.'),
+  masterPlanImageDisclaimer: z.string().default('Master plan is conceptual and subject to approval and modification.'),
+  masterPlanDesc1: z.string().default('Describe the overall layout and design philosophy of the master plan, highlighting optimal space utilization, natural light, and ventilation.'),
+  masterPlanDesc2: z.string().default('Detail key features like green spaces, pedestrian pathways, amenity zones, and tower placements for views and privacy.'),
 
   // Floor Plans
-  floorPlansTitle: z.string().default('Spacious and Functional Floor Plans'),
-  floorPlans: z.array(FloorPlanSchema).default([
-    { id: 'fp1', name: 'The Sapphire - 3 Bedroom + Study', area: 'Approx. 2100 sq. ft.', features: ['Grand Living & Dining Area', 'Master Suite with Walk-in Wardrobe', 'Study/Home Office Space', 'Large Balconies', 'Modern Kitchen with Utility'], image: 'https://picsum.photos/seed/fpSapphire/800/600' },
-    { id: 'fp2', name: 'The Emerald - 4 Bedroom Sky Residence', area: 'Approx. 2850 sq. ft.', features: ['Expansive Living Space with City Views', 'Two Master Suites', 'Private Elevator Lobby', 'Generous Sundeck', 'Servant Quarters with Separate Entry'], image: 'https://picsum.photos/seed/fpEmerald/800/600' },
-  ]).describe("Array of floor plan objects."),
-  floorPlansDisclaimer: z.string().default('Floor plans are indicative and not to scale. Areas are approximate and subject to final measurement. Furniture layout is suggestive and not included.'),
+  floorPlansTitle: z.string().default('Spacious & Functional Floor Plans'),
+  floorPlans: z.array(FloorPlanSchema).default([]).describe("Array of floor plan objects."),
+  floorPlansDisclaimer: z.string().default('Floor plans are indicative and not to scale. Areas are approximate. Furniture layout is suggestive.'),
 
   // Back Cover
   backCoverImage: optionalUrlSchema().describe("Background image URL for back cover."),
   backCoverLogo: optionalUrlSchema().describe("Logo URL for back cover."),
-  callToAction: z.string().default('Discover Your Dream Home at Elysian Estates'),
-  contactTitle: z.string().default('Connect With Us Today'),
-  contactPhone: z.string().default('+91 98765 43210'),
-  contactEmail: optionalEmailSchema().default('sales@elysianestates.dev').describe("Contact email address."),
-  contactWebsite: optionalUrlSchema().default('https://www.elysianestates.dev').describe("Contact website URL."),
-  contactAddress: z.string().default('Sales Gallery & Site Office: 1 Elysian Avenue, Metro City - 500001'),
-  fullDisclaimer: z.string().default('Disclaimer: This brochure is intended for informational purposes only and does not constitute an offer or contract. All images, specifications, layouts, and amenities are indicative and subject to change or revision by the developer or competent authorities without prior notice. Artistic impressions and stock images may have been used. The final terms and conditions will be as per the registered agreement for sale. E&OE.'),
-  reraDisclaimer: z.string().default('RERA Registration No: A123-B456-C789. This project is registered under the Real Estate (Regulation and Development) Act, 2016. Please visit state.rera.gov.in for details.'),
+  callToAction: z.string().default('Discover Your Dream Home'),
+  contactTitle: z.string().default('Connect With Us'),
+  contactPhone: z.string().default('+00 123 456 7890'),
+  contactEmail: optionalEmailSchema().default('sales@example.com').describe("Contact email address."),
+  contactWebsite: optionalUrlSchema().default('https://www.example.com').describe("Contact website URL."),
+  contactAddress: z.string().default('Sales Gallery & Site Office: 1 Example Avenue, City - 000001'),
+  fullDisclaimer: z.string().default('Disclaimer: This brochure is for informational purposes only and does not constitute an offer or contract. All details are indicative and subject to change. Verify all information independently. E&OE.'),
+  reraDisclaimer: z.string().default('RERA Registration No: PENDING. Visit state.rera.gov.in for details.'),
 });
 
 export type BrochureData = z.infer<typeof BrochureDataSchema>;
@@ -168,43 +137,35 @@ export const getDefaultBrochureData = (): BrochureData => {
         return BrochureDataSchema.parse({});
     } catch (e) {
         console.error("Error parsing default BrochureDataSchema:", e);
-        // Fallback to a manually defined basic structure if parse fails
-        // This is a safeguard and should ideally not be hit if schemas are correct.
+        // This fallback is a last resort and should ideally not be hit.
+        // It manually constructs a basic object if Zod parsing fails.
         const fallbackData: Record<string, any> = {};
-        for (const key in BrochureDataSchema.shape) {
+        Object.keys(BrochureDataSchema.shape).forEach(key => {
             const fieldSchema = (BrochureDataSchema.shape as any)[key];
             if (fieldSchema._def.typeName === 'ZodDefault') {
                 fallbackData[key] = fieldSchema._def.defaultValue();
             } else if (fieldSchema._def.typeName === 'ZodOptional') {
-                fallbackData[key] = undefined; // Optional fields can be undefined initially
-            } else {
-                // For other types, like plain z.string() without default, they would be required.
-                // This part of the fallback might need specific handling based on your schema's needs
-                // if not all fields have defaults or are optional.
-                // For this schema, all fields are either defaulted or optional with a default.
+                 // For optional fields, especially those that might not have a .default() directly
+                 // but are wrapped in optionalUrlSchema (which has .default(''))
+                 // we ensure they get a sensible default if parse({}) fails.
+                if (fieldSchema._def.innerType?._def?.typeName === 'ZodDefault') {
+                     fallbackData[key] = fieldSchema._def.innerType._def.defaultValue();
+                } else {
+                    fallbackData[key] = ''; // Default to empty string for other optional strings
+                }
+            } else if (fieldSchema._def.typeName === 'ZodArray') {
+                 fallbackData[key] = []; // Default to empty array for arrays
             }
-        }
-        // Manually ensure URL fields are empty strings if undefined after fallback
-        const urlFields: (keyof BrochureData)[] = [
-            'coverImage', 'projectLogo', 'introWatermark', 'developerImage', 'developerLogo',
-            'locationMapImage', 'locationWatermark', 'connectivityImage', 'connectivityWatermark',
-            'amenitiesIntroWatermark', 'amenitiesListImage', 'specsImage', 'specsWatermark',
-            'masterPlanImage', 'backCoverImage', 'backCoverLogo'
-        ];
-        urlFields.forEach(field => {
-            if (fallbackData[field] === undefined) fallbackData[field] = '';
+             else {
+                // This case should be rare if all fields are optional or have defaults.
+                // For strictly required fields without defaults, this would be an issue.
+                fallbackData[key] = ''; // Or some other sensible default.
+            }
         });
-        if(fallbackData.amenitiesGridItems === undefined) {
-            fallbackData.amenitiesGridItems = []; // Default to empty array
-        }
-        if(fallbackData.floorPlans === undefined) {
-             fallbackData.floorPlans = []; // Default to empty array
-        }
-         // Handle array fields if not covered by Zod's default (though they should be)
-        if(fallbackData.keyDistances === undefined) fallbackData.keyDistances = [];
-        if(fallbackData.connectivityPointsBusiness === undefined) fallbackData.connectivityPointsBusiness = [];
-        // ... and so on for all array fields.
-
+        // Ensure specific complex array types are empty arrays
+        fallbackData.floorPlans = fallbackData.floorPlans || [];
+        fallbackData.amenitiesGridItems = fallbackData.amenitiesGridItems || [];
+        
         return fallbackData as BrochureData;
     }
 }

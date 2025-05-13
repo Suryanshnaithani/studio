@@ -54,7 +54,7 @@ export default function Home() {
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
-  const [printKey, setPrintKey] = useState(0);
+  const [printKey, setPrintKey] = useState(0); // Used to force re-render of print component
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
 
@@ -92,7 +92,7 @@ export default function Home() {
         } else {
           randomTheme = brochureThemes[0];
         }
-        setActiveTheme(randomTheme); // This will trigger the useEffect to update document.documentElement.className
+        setActiveTheme(randomTheme);
       }
 
       if (!showPreview) {
@@ -176,16 +176,18 @@ export default function Home() {
         
         // 2. Update state for the print-only component
         setGeneratedBrochureData(validatedDataForPrint);
+        // Ensure activeTheme is also current for print
+        document.documentElement.className = activeTheme; 
         setPrintKey(prev => prev + 1); 
 
         // 3. Wait for DOM update
-        // This timeout allows React to re-render the PrintableBrochureLoader.
-        await new Promise(resolve => setTimeout(resolve, 150)); // Adjusted timeout
+        await new Promise(resolve => setTimeout(resolve, 250)); // Increased timeout slightly
 
         // 4. Call window.print()
         window.print();
 
-    } catch (error: any) {
+    } catch (error: any)
+     {
       console.error("Printing failed:", error);
       let errorDesc = "Could not prepare the PDF. Check form data.";
        if (error instanceof z.ZodError) {
@@ -202,23 +204,26 @@ export default function Home() {
         duration: 7000
       });
     } finally {
+      // Delay resetting isPrintingRef to allow print dialog to fully process
       setTimeout(() => {
         isPrintingRef.current = false;
-        // Re-sync live preview with current form data
+        // Re-sync live preview with current form data after print operation attempt
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
-            setGeneratedBrochureData(validatedLive);
-            if (!showPreview && Object.keys(validatedLive).length > 0) { // Check if data is not empty
+            setGeneratedBrochureData(validatedLive); // Update live preview state
+             if (!showPreview && Object.keys(validatedLive).some(key => {
+                const val = validatedLive[key as keyof BrochureData];
+                if (Array.isArray(val)) return val.length > 0;
+                return !!val;
+            })) {
                 setShowPreview(true);
             }
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           // Optionally set to a safe default or the raw (potentially invalid) data
-           // setGeneratedBrochureData(getDefaultBrochureData()); 
-           setGeneratedBrochureData(currentLiveFormData); 
+           setGeneratedBrochureData(currentLiveFormData); // Show potentially invalid data to allow user to fix
         }
-      }, 2500);
+      }, 2500); // Increased timeout for reset
     }
   };
 
@@ -299,7 +304,7 @@ export default function Home() {
             <ScrollArea className="flex-grow">
                 <CardContent className="p-0">
                 <Tabs defaultValue="cover" className="w-full" orientation="vertical">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-accent/30 z-10 border-b border-sidebar-border">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-background z-10 border-b border-sidebar-border">
                     {formSections.map(section => (
                         <TabsTrigger key={section.value} value={section.value} className="text-xs px-1.5 py-2 h-auto data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground data-[state=active]:shadow-md text-sidebar-foreground hover:bg-sidebar-accent/70">
                         {section.label}
@@ -326,11 +331,14 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        const tabsInstance = document.querySelector('[data-orientation="vertical"]');
-                        if (tabsInstance) {
-                            const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
-                            trigger?.click();
-                        }
+                        // Ensure the tab is activated after sidebar opens
+                        setTimeout(() => {
+                            const tabsInstance = document.querySelector('[data-orientation="vertical"]');
+                            if (tabsInstance) {
+                                const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
+                                trigger?.click();
+                            }
+                        }, 50); // Small delay to allow sidebar to open
                      }}>
                         <Edit className="h-5 w-5" />
                      </Button>
@@ -352,7 +360,7 @@ export default function Home() {
               </div>
           ) : (
             <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
-               <div ref={livePreviewRef} id="printable-brochure-wrapper-live" className={cn(activeTheme, "transition-all duration-300")}>
+               <div ref={livePreviewRef} id="live-printable-brochure" className={cn(activeTheme, "transition-all duration-300")}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
             </div>
@@ -363,11 +371,11 @@ export default function Home() {
       {/* Print-Only Section */}
       {isClient && (
           <div id="print-only-section-wrapper" className="hidden print:block">
-            {generatedBrochureData && (
+            {generatedBrochureData && ( // Render only if data exists
               <PrintableBrochureLoader 
-                key={`print-${printKey}-${activeTheme}`}
                 data={generatedBrochureData} 
-                themeClass={activeTheme} 
+                themeClass={activeTheme}
+                printKeyProp={`print-${printKey}-${activeTheme}`} // Pass printKey as a prop to force re-render
               />
             )}
           </div>
@@ -376,13 +384,14 @@ export default function Home() {
   );
 }
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string }> = React.memo(({ data, themeClass }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, printKeyProp: string }> = React.memo(({ data, themeClass, printKeyProp }) => {
+  // Using printKeyProp in the key of the outer element of BrochurePreview if needed, or just to ensure this component re-renders.
+  // The key for PrintableBrochureLoader itself is handled by its parent.
   try {
     const validatedData = BrochureDataSchema.parse(data);
     return <BrochurePreview data={validatedData} themeClass={themeClass} />;
   } catch (error) {
     console.error("Data validation failed for print render:", error);
-    // This fallback will be part of the printed output if data is bad *at print time*
     return (
       <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={{ boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
         <h1>Brochure Generation Error (for Print)</h1>
