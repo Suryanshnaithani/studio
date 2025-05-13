@@ -49,7 +49,7 @@ const brochureThemes = [
 export default function Home() {
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const isPrintingRef = useRef(false);
+  const isPrintingRef = useRef(false); // Ref to track print state
 
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -58,7 +58,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
 
-  const livePreviewRef = useRef<HTMLDivElement>(null);
+  const printableRef = useRef<HTMLDivElement>(null); // Ref for the printable content wrapper in live preview
 
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
@@ -72,8 +72,6 @@ export default function Home() {
       document.documentElement.className = activeTheme;
     }
   }, [activeTheme]);
-
-  const globalDisable = isPrintingRef.current;
 
 
  const handleGenerateOrUpdateBrochure = (newThemeChange: boolean = false) => {
@@ -93,15 +91,20 @@ export default function Home() {
           randomTheme = brochureThemes[0];
         }
         setActiveTheme(randomTheme);
+         toast({ title: "Theme Changed", description: "New theme applied to the brochure." });
+      } else if (showPreview) { // Only toast "Brochure Updated" if it's not a theme change and already showing
+         toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
+
 
       if (!showPreview) {
         setShowPreview(true);
+        // Toast for first generation, unless it was a theme change button that also revealed it
+        if (!newThemeChange) {
+           toast({ title: "Brochure Generated", description: "Preview is now visible." });
+        }
       }
-
-      if (!isPrintingRef.current) {
-        toast({ title: newThemeChange && showPreview ? "Theme Changed" : "Brochure Updated", description: "Preview reflects the latest data." });
-      }
+      
     } catch (error: any) {
       console.error("Validation failed for brochure generation/update:", error);
       let description = "Could not update the brochure. Please check the form data.";
@@ -111,15 +114,13 @@ export default function Home() {
         const errorMessages = Object.entries(fieldErrors)
           .map(([field, messages]) => `${field}: ${messages?.join(', ')}`)
           .join('; ');
-        if (!isPrintingRef.current) {
             toast({
             variant: "destructive",
             title: "Invalid Form Data",
             description: `Please fix the errors: ${errorMessages}`,
             duration: 7000
             });
-        }
-      } else if (!isPrintingRef.current) {
+      } else {
         toast({
           variant: "destructive",
           title: "Update Error",
@@ -127,7 +128,6 @@ export default function Home() {
           duration: 7000
         });
       }
-       if (isPrintingRef.current && error instanceof z.ZodError) throw error; 
     }
   };
 
@@ -169,25 +169,19 @@ export default function Home() {
     toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
 
     try {
-        // 1. Validate current form data
         await form.trigger(); 
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
-        // 2. Update state for the print-only component
         setGeneratedBrochureData(validatedDataForPrint);
-        // Ensure activeTheme is also current for print
         document.documentElement.className = activeTheme; 
         setPrintKey(prev => prev + 1); 
 
-        // 3. Wait for DOM update
-        await new Promise(resolve => setTimeout(resolve, 250)); // Increased timeout slightly
-
-        // 4. Call window.print()
+        await new Promise(resolve => setTimeout(resolve, 300)); // DOM update and style application
+        
         window.print();
 
-    } catch (error: any)
-     {
+    } catch (error: any) {
       console.error("Printing failed:", error);
       let errorDesc = "Could not prepare the PDF. Check form data.";
        if (error instanceof z.ZodError) {
@@ -204,26 +198,17 @@ export default function Home() {
         duration: 7000
       });
     } finally {
-      // Delay resetting isPrintingRef to allow print dialog to fully process
       setTimeout(() => {
         isPrintingRef.current = false;
-        // Re-sync live preview with current form data after print operation attempt
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
-            setGeneratedBrochureData(validatedLive); // Update live preview state
-             if (!showPreview && Object.keys(validatedLive).some(key => {
-                const val = validatedLive[key as keyof BrochureData];
-                if (Array.isArray(val)) return val.length > 0;
-                return !!val;
-            })) {
-                setShowPreview(true);
-            }
+            setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           setGeneratedBrochureData(currentLiveFormData); // Show potentially invalid data to allow user to fix
+           setGeneratedBrochureData(currentLiveFormData);
         }
-      }, 2500); // Increased timeout for reset
+      }, 2500); 
     }
   };
 
@@ -252,10 +237,12 @@ export default function Home() {
     { value: 'backcover', label: 'Back Cover', Component: BackCoverForm },
   ];
 
+  const globalDisable = isPrintingRef.current;
+
 
   return (
     <FormProvider {...form}>
-      <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-background text-foreground">
+      <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-muted/30 dark:bg-background/10 text-foreground">
         <Card id="sidebar-container" className={cn(
           "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar-background text-sidebar-foreground transition-all duration-300 ease-in-out",
           sidebarOpen ? "w-full md:w-[420px] lg:w-[480px]" : "w-0 md:w-16 overflow-hidden"
@@ -274,7 +261,7 @@ export default function Home() {
             <>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
               <div className="flex gap-2 w-full sm:w-auto">
-                 <Button onClick={() => handleGenerateOrUpdateBrochure(!showPreview || brochureThemes.length > 1)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm">
+                 <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm">
                   <Palette className="mr-2 h-4 w-4" />
                   {showPreview ? 'New Theme' : 'Generate Brochure'}
                 </Button>
@@ -289,9 +276,15 @@ export default function Home() {
               </div>
             </div>
             <CardDescription className="text-xs text-sidebar-foreground/80 mt-2">
-              Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'}.
+               Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'}.
             </CardDescription>
-             {showPreview && (
+             {!showPreview && ( // Show "Generate" button only if preview is not shown
+                <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" disabled={globalDisable} className="w-full mt-3 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90">
+                    <Palette className="mr-2 h-4 w-4" />
+                    Generate Brochure
+                </Button>
+            )}
+            {showPreview && ( // Show "Update Preview" only if preview is shown
                 <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-3 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
                     <RefreshCcw className="mr-2 h-4 w-4" />
                     Update Preview
@@ -304,7 +297,7 @@ export default function Home() {
             <ScrollArea className="flex-grow">
                 <CardContent className="p-0">
                 <Tabs defaultValue="cover" className="w-full" orientation="vertical">
-                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-background z-10 border-b border-sidebar-border">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-background z-10 border-b border-sidebar-border transform-gpu">
                     {formSections.map(section => (
                         <TabsTrigger key={section.value} value={section.value} className="text-xs px-1.5 py-2 h-auto data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground data-[state=active]:shadow-md text-sidebar-foreground hover:bg-sidebar-accent/70">
                         {section.label}
@@ -331,14 +324,13 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        // Ensure the tab is activated after sidebar opens
                         setTimeout(() => {
                             const tabsInstance = document.querySelector('[data-orientation="vertical"]');
                             if (tabsInstance) {
                                 const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
                                 trigger?.click();
                             }
-                        }, 50); // Small delay to allow sidebar to open
+                        }, 50); 
                      }}>
                         <Edit className="h-5 w-5" />
                      </Button>
@@ -347,7 +339,7 @@ export default function Home() {
            )}
         </Card>
 
-        <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/40 dark:bg-background/30">
+        <div className="flex-grow h-full overflow-y-auto brochure-preview-container bg-muted/40 dark:bg-background/30 print:bg-transparent print:p-0">
           {!showPreview || !generatedBrochureData ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-6 md:p-8">
                 <Palette className="w-20 h-20 text-muted-foreground/30 mb-6" />
@@ -360,7 +352,7 @@ export default function Home() {
               </div>
           ) : (
             <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
-               <div ref={livePreviewRef} id="live-printable-brochure" className={cn(activeTheme, "transition-all duration-300")}>
+               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
             </div>
@@ -368,14 +360,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Print-Only Section */}
+      {/* Print-Only Section - critical for correct PDF generation */}
       {isClient && (
           <div id="print-only-section-wrapper" className="hidden print:block">
-            {generatedBrochureData && ( // Render only if data exists
+            {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme}
-                printKeyProp={`print-${printKey}-${activeTheme}`} // Pass printKey as a prop to force re-render
+                printKeyProp={`print-${printKey}-${activeTheme}`}
               />
             )}
           </div>
@@ -385,8 +377,6 @@ export default function Home() {
 }
 
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, printKeyProp: string }> = React.memo(({ data, themeClass, printKeyProp }) => {
-  // Using printKeyProp in the key of the outer element of BrochurePreview if needed, or just to ensure this component re-renders.
-  // The key for PrintableBrochureLoader itself is handled by its parent.
   try {
     const validatedData = BrochureDataSchema.parse(data);
     return <BrochurePreview data={validatedData} themeClass={themeClass} />;
@@ -407,3 +397,4 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
   }
 });
 PrintableBrochureLoader.displayName = 'PrintableBrochureLoader';
+
