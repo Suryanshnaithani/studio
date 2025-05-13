@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI flow for generating or enhancing brochure content sections.
@@ -17,7 +16,7 @@ import {
     BrochureDataSchema,
     type BrochureData,
     SpecificFieldGeneratingSectionsEnum,
-    SafeStringSchema // Import SafeStringSchema
+    SafeStringSchema
 } from '@/components/brochure/data-schema';
 
 
@@ -45,7 +44,6 @@ const PromptInternalInputSchema = z.object({
 // Public function to call the flow
 export async function generateBrochureContent(input: GenerateBrochureInput): Promise<GenerateBrochureOutput> {
     console.log("Calling generateBrochureFlow with input. Section:", input.sectionToGenerate, "Fields:", input.fieldsToGenerate);
-    // Validate input strictly before calling the AI flow
     try {
         ExternalGenerateBrochureInputSchema.parse(input);
     } catch (error) {
@@ -62,7 +60,7 @@ export async function generateBrochureContent(input: GenerateBrochureInput): Pro
 // Define the prompt for content generation
 const generateContentPrompt = ai.definePrompt({
     name: 'generateBrochureContentPrompt',
-    input: { schema: PromptInternalInputSchema }, // Use internal schema
+    input: { schema: PromptInternalInputSchema },
     output: { schema: BrochureDataSchema }, 
     model: 'googleai/gemini-2.0-flash',
     prompt: `
@@ -94,6 +92,7 @@ const generateContentPrompt = ai.definePrompt({
     9.  **No External Knowledge:** Do not use any external knowledge or make assumptions beyond what is strictly provided in 'existingDataString', unless it's for general stylistic enhancement or plausible expansion of directly related, sparse existing data.
     10. **Structure Preservation:** Strictly maintain the JSON structure of 'existingDataString'. All original keys must be present in the output. Ensure all fields from the schema are present.
     11. **Default Content Handling**: If a text field in \`existingDataString\` contains only default placeholder content (e.g., "Default text...") and is targeted for generation, treat it as empty and generate fresh content based on other \`existingDataString\` context and the \`promptHint\`.
+    12. **CRITICAL - Handling Nulls and Empties**: For any field in the schema that is not explicitly defined as nullable, YOU MUST NOT return \`null\` as its value. If a string field is intended to be empty, return an empty string \`""\`. If an optional field is not being set or has no content, either omit it from your response (if the schema allows and it was omitted in the input) or ensure its value conforms to its type (e.g., an empty string \`""\` for optional string fields if they are to be empty, or retain the original value from 'existingDataString' if not targeted for change). Adherence to this rule is paramount for successful data parsing.
 
     **User Input:**
     Hint: {{#if promptHint}}"{{promptHint}}"{{else}}None{{/if}}
@@ -120,7 +119,9 @@ const generateContentPrompt = ai.definePrompt({
 
     Output the result as a valid JSON object matching the BrochureData schema.
 `,
-    // Removed helpers block
+    helpers: {
+        jsonStringify: (value: any) => JSON.stringify(value, null, 0), 
+    },
     config: {
         responseSchema: BrochureDataSchema, 
         safetySettings: [
@@ -138,51 +139,56 @@ const generateContentPrompt = ai.definePrompt({
 const generateBrochureFlow = ai.defineFlow(
     {
         name: 'generateBrochureFlow',
-        inputSchema: ExternalGenerateBrochureInputSchema, // Use external schema for the flow's public interface
+        inputSchema: ExternalGenerateBrochureInputSchema,
         outputSchema: BrochureDataSchema,
     },
-    async (input) => { // input here is GenerateBrochureInput (matches ExternalGenerateBrochureInputSchema)
+    async (input) => {
         console.log("Executing generateBrochureFlow prompt with sectionToGenerate:", input.sectionToGenerate);
 
-        // Prepare input for the prompt according to PromptInternalInputSchema
         const promptInputPayload = {
             promptHint: input.promptHint,
-            existingDataString: JSON.stringify(input.existingData, null, 0), // Compact JSON
+            existingDataString: JSON.stringify(input.existingData, null, 0),
             sectionToGenerate: input.sectionToGenerate,
             fieldsToGenerateString: (input.fieldsToGenerate && input.fieldsToGenerate.length > 0)
                                       ? JSON.stringify(input.fieldsToGenerate)
                                       : undefined,
         };
         
-        const {output} = await generateContentPrompt(promptInputPayload); // Pass the transformed input
+        const {output} = await generateContentPrompt(promptInputPayload);
         
         if (!output) {
+          console.error("AI failed to generate brochure content. No output received. Input to AI:", JSON.stringify(promptInputPayload, null, 2));
           throw new Error("AI failed to generate brochure content. No output received.");
         }
     
-        // Validate the output against the schema before returning
         try {
-            // Merge AI output with the original existingData to ensure no fields are lost
-            // if the AI doesn't return them all (though it's instructed to).
-            // input.existingData is the original object structure.
             const mergedOutput = { ...input.existingData, ...output };
             const validatedOutput = BrochureDataSchema.parse(mergedOutput);
             console.log("AI Generation Successful for:", input.sectionToGenerate || "Full Brochure");
             return validatedOutput;
-        } catch (error) {
-            console.error("AI output validation failed. Input to AI (promptInputPayload):", JSON.stringify(promptInputPayload, null, 2));
-            console.error("Original input.existingData:", JSON.stringify(input.existingData, null, 2));
+        } catch (validationError) {
+            console.error("AI output (merged with existing) failed validation. Input to AI (promptInputPayload):", JSON.stringify(promptInputPayload, null, 2));
+            console.error("Original input.existingData (before AI call):", JSON.stringify(input.existingData, null, 2));
             console.error("Raw AI output:", JSON.stringify(output, null, 2));
             
-            if (error instanceof z.ZodError) {
-                 const fieldErrors = error.flatten().fieldErrors;
-                 console.error("Validation Errors:", JSON.stringify(fieldErrors, null, 2));
-                 // Fallback to original data if AI output is critically flawed
-                 console.warn("Returning existing data due to AI output validation failure.");
-                 return BrochureDataSchema.parse(input.existingData); // Ensure original data is valid
+            if (validationError instanceof z.ZodError) {
+                 const fieldErrors = validationError.flatten().fieldErrors;
+                 console.error("Validation Errors from mergedOutput:", JSON.stringify(fieldErrors, null, 2));
+                 console.warn("AI output was problematic. Attempting to return original data if it's valid.");
+                 try {
+                    const validatedOriginalData = BrochureDataSchema.parse(input.existingData);
+                    console.log("Successfully validated original data. Returning original data as fallback.");
+                    return validatedOriginalData;
+                 } catch (originalDataValidationError) {
+                    console.error("CRITICAL: Original input.existingData also failed validation. This indicates an issue with data integrity before AI call or a schema mismatch during fallback.", originalDataValidationError);
+                    if (originalDataValidationError instanceof z.ZodError) {
+                        console.error("Original Data Validation Errors (during fallback parse):", JSON.stringify(originalDataValidationError.flatten().fieldErrors, null, 2));
+                    }
+                 }
+            } else {
+                console.error("Validation error on mergedOutput was not a ZodError:", validationError);
             }
-            console.error("Unknown validation error:", error);
-            throw new Error("AI output validation failed and could not be automatically corrected.");
+            throw new Error("AI output validation failed and could not be automatically corrected. Check logs for details on AI output and original data validation.");
         }
     }
 );
