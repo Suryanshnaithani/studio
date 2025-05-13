@@ -12,13 +12,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Trash2, Wand2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-export interface SpecificationsFormProps { // Exporting the interface
+export interface SpecificationsFormProps {
   form: UseFormReturn<BrochureData>;
-  onGenerateContent: () => Promise<void>;
-  isGeneratingContent: boolean;
   disabled?: boolean;
 }
 
@@ -74,7 +72,7 @@ const SpecArrayInput: React.FC<{
 }
 
 
-export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
+export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
@@ -91,22 +89,6 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, on
             </FormItem>
             )}
          />
-        <Button 
-          type="button" 
-          onClick={onGenerateContent} 
-          disabled={isGeneratingContent || disabled}
-          variant="outline"
-          size="sm"
-          title="Use AI to refine the specifications title"
-          className="ml-2 mt-6" // Adjust margin for alignment
-        >
-          {isGeneratingContent ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Wand2 className="mr-2 h-4 w-4" />
-          )}
-          {isGeneratingContent ? 'Working...' : 'AI Refine Title'}
-        </Button>
       </div>
        <ImageUploadInput
             form={form}

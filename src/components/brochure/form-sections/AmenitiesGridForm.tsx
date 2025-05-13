@@ -11,17 +11,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
 
-export interface AmenitiesGridFormProps { // Exporting the interface
+export interface AmenitiesGridFormProps {
   form: UseFormReturn<BrochureData>;
-  onGenerateContent: () => Promise<void>;
-  isGeneratingContent: boolean;
   disabled?: boolean;
 }
 
-export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
+export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
@@ -38,22 +34,6 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, onGe
                 </FormItem>
                 )}
             />
-            <Button 
-            type="button" 
-            onClick={onGenerateContent} 
-            disabled={isGeneratingContent || disabled}
-            variant="outline"
-            size="sm"
-            title="Use AI to refine the amenities grid title"
-            className="ml-2 mt-6" // Adjust margin for alignment
-            >
-            {isGeneratingContent ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-                <Wand2 className="mr-2 h-4 w-4" />
-            )}
-            {isGeneratingContent ? 'Working...' : 'AI Refine Title'}
-            </Button>
        </div>
 
 

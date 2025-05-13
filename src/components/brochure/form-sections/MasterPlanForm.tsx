@@ -12,36 +12,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
 
-export interface MasterPlanFormProps { // Exporting the interface
+export interface MasterPlanFormProps {
   form: UseFormReturn<BrochureData>;
-  onGenerateContent: () => Promise<void>;
-  isGeneratingContent: boolean;
   disabled?: boolean;
 }
 
-export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
+export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Master Plan Details</h3>
-            <Button 
-            type="button" 
-            onClick={onGenerateContent} 
-            disabled={isGeneratingContent || disabled}
-            variant="outline"
-            size="sm"
-            title="Use AI to generate master plan descriptions"
-            >
-            {isGeneratingContent ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-                <Wand2 className="mr-2 h-4 w-4" />
-            )}
-            {isGeneratingContent ? 'Generating...' : 'AI Generate Desc.'}
-            </Button>
        </div>
        <FormField
         control={form.control}

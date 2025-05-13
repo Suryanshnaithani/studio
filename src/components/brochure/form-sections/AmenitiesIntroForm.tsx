@@ -12,36 +12,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-import { Button } from '@/components/ui/button';
-import { Loader2, Wand2 } from 'lucide-react';
 
-export interface AmenitiesIntroFormProps { // Exporting the interface
+export interface AmenitiesIntroFormProps {
   form: UseFormReturn<BrochureData>;
-  onGenerateContent: () => Promise<void>;
-  isGeneratingContent: boolean;
   disabled?: boolean;
 }
 
-export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
+export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Amenities Introduction</h3>
-        <Button 
-          type="button" 
-          onClick={onGenerateContent} 
-          disabled={isGeneratingContent || disabled}
-          variant="outline"
-          size="sm"
-          title="Use AI to generate amenities introduction paragraphs"
-        >
-          {isGeneratingContent ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Wand2 className="mr-2 h-4 w-4" />
-          )}
-          {isGeneratingContent ? 'Generating...' : 'AI Generate Intro'}
-        </Button>
       </div>
       <FormField
         control={form.control}

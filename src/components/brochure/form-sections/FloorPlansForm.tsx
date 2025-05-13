@@ -12,18 +12,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Trash2, Wand2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
 export interface FloorPlansFormProps { 
   form: UseFormReturn<BrochureData>;
-  onGenerateContent: () => Promise<void>;
-  isGeneratingContent: boolean;
   disabled?: boolean;
 }
 
-export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
+export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }) => {
    const { fields, append, remove } = useFieldArray({
      control: form.control,
      name: "floorPlans",
@@ -45,22 +43,6 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, onGenerate
             </FormItem>
             )}
         />
-        <Button 
-          type="button" 
-          onClick={onGenerateContent} 
-          disabled={isGeneratingContent || disabled}
-          variant="outline"
-          size="sm"
-          title="Use AI to refine the floor plans title"
-          className="ml-2 mt-6" 
-        >
-          {isGeneratingContent ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Wand2 className="mr-2 h-4 w-4" />
-          )}
-          {isGeneratingContent ? 'Working...' : 'AI Refine Title'}
-        </Button>
       </div>
 
 
