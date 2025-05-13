@@ -65,15 +65,15 @@ body {
     --chart-5: 0 0% 50%; /* Neutral Grey */
     --radius: 0.3rem;
 
-    /* Sidebar vars based on primary/secondary/accent but can be themed */
-    --sidebar-background: 0 0% 98%; /* Default: Very Light Grey / White */
-    --sidebar-foreground: 0 0% 10%; /* Default: Dark Grey */
-    --sidebar-primary: 216 80% 25%; /* Default: Brochure Primary (Dark Blue) */
-    --sidebar-primary-foreground: 0 0% 98%; /* Default: Almost White */
-    --sidebar-accent: 216 30% 90%; /* Default: Light blue-grey for hover */
-    --sidebar-accent-foreground: 216 80% 20%; /* Default: Dark Blue on accent */
-    --sidebar-border: 0 0% 89.8%; /* Default: Light Grey */
-    --sidebar-ring: 216 80% 30%; /* Default: Brochure Primary for rings */
+    /* Sidebar vars for a professional, minimalist theme */
+    --sidebar-background: 0 0% 98%; /* Very Light Grey / Almost White */
+    --sidebar-foreground: 0 0% 10%; /* Dark Grey */
+    --sidebar-primary: 216 80% 20%; /* Consistent with main primary (Dark Blue) */
+    --sidebar-primary-foreground: 0 0% 98%; /* Almost White */
+    --sidebar-accent: 0 0% 93%; /* Neutral light grey for hover */
+    --sidebar-accent-foreground: 0 0% 10%; /* Dark Grey text on hover */
+    --sidebar-border: 0 0% 89.8%; /* Light Grey */
+    --sidebar-ring: 216 80% 30%; /* Dark Blue for rings, consistent with main ring */
   }
 
   .dark {
@@ -128,14 +128,14 @@ body {
     --chart-5: 0 0% 70%;
 
     /* Dark mode sidebar */
-    --sidebar-background: 216 30% 8%;
-    --sidebar-foreground: 0 0% 92%;
-    --sidebar-primary: 51 100% 60%; /* Gold for active sidebar in dark */
-    --sidebar-primary-foreground: 216 80% 15%;
-    --sidebar-accent: 216 25% 18%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 216 20% 15%;
-    --sidebar-ring: 51 100% 50%;
+    --sidebar-background: 216 30% 8%; /* Very Dark Slate Blue */
+    --sidebar-foreground: 0 0% 92%;   /* Light Grey */
+    --sidebar-primary: 51 100% 60%;  /* Gold for active sidebar in dark - consistent with main primary */
+    --sidebar-primary-foreground: 216 80% 15%; /* Darker blue on gold - consistent */
+    --sidebar-accent: 216 30% 12%; /* Subtle darker blue for hover (slightly lighter than bg) */
+    --sidebar-accent-foreground: 0 0% 95%; /* Light Grey text on hover */
+    --sidebar-border: 216 20% 15%;   /* Darker border */
+    --sidebar-ring: 51 100% 50%;    /* Gold for rings, consistent */
   }
 
   /* Brochure Theme using Primary Color: Dark Blue (#1c2f4a), Secondary: Light Grey (#F8F8F8), Accent: Gold (#FFD700) */

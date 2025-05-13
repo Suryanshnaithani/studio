@@ -57,6 +57,9 @@ export default function Home() {
   const [printKey, setPrintKey] = useState(0); // Used to force re-render of print component
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [placeholderVisible, setPlaceholderVisible] = useState(true);
+
 
   const printableRef = useRef<HTMLDivElement>(null); // Ref for the printable content wrapper in live preview
 
@@ -72,6 +75,18 @@ export default function Home() {
       document.documentElement.className = activeTheme;
     }
   }, [activeTheme]);
+
+  useEffect(() => {
+    if (showPreview && generatedBrochureData) {
+      setPlaceholderVisible(false);
+      const timer = setTimeout(() => setPreviewVisible(true), 50); 
+      return () => clearTimeout(timer);
+    } else {
+      setPreviewVisible(false);
+      const timer = setTimeout(() => setPlaceholderVisible(true), showPreview ? 50 : 550); // Quicker if already hidden, slower if preview was visible
+      return () => clearTimeout(timer);
+    }
+  }, [showPreview, generatedBrochureData]);
 
 
  const handleGenerateOrUpdateBrochure = (newThemeChange: boolean = false) => {
@@ -346,7 +361,10 @@ export default function Home() {
 
         <div className="flex-grow h-full overflow-y-auto brochure-preview-container bg-muted/40 dark:bg-background/30 print:bg-transparent print:p-0">
           {!showPreview || !generatedBrochureData ? (
-              <div className="flex flex-col items-center justify-center h-full text-center p-6 md:p-8">
+              <div className={cn(
+                "flex flex-col items-center justify-center h-full text-center p-6 md:p-8 transition-opacity duration-500 ease-in-out",
+                 placeholderVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+              )}>
                 <Palette className="w-20 h-20 text-muted-foreground/30 mb-6" />
                 <h3 className="text-2xl font-semibold text-foreground mb-3">Your Brochure Awaits Creation</h3>
                 <p className="text-muted-foreground max-w-md text-sm">
@@ -356,7 +374,10 @@ export default function Home() {
                 </p>
               </div>
           ) : (
-            <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
+            <div id="live-preview-content-wrapper" className={cn(
+                "flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full transition-opacity duration-700 ease-in-out",
+                previewVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+              )}>
                <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
@@ -372,7 +393,7 @@ export default function Home() {
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme}
-                printKeyProp={`print-${printKey}-${activeTheme}`} // Changed prop name to avoid conflict
+                printKeyProp={`print-${printKey}-${activeTheme}`}
               />
             )}
           </div>
