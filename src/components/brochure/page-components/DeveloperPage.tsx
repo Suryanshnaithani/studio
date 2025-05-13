@@ -10,15 +10,16 @@ interface DeveloperPageProps {
 export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
   return (
     <PageWrapper className="developer-page" id="developer-page">
-       {data.developerImage && (
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden"> {/* Added wrapper with overflow:hidden */}
+       {data.developerImage && data.developerImage.trim() !== '' && (
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden"> 
           <Image
             src={data.developerImage}
             alt="Developer Background"
             layout="fill"
             objectFit="cover"
-            className="developer-image" // developer-image class has opacity and z-index
+            className="developer-image" 
             data-ai-hint="construction site progress"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         </div>
        )}
@@ -27,14 +28,15 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
           <h2>{data.developerName}</h2>
           <p>{data.developerDesc1}</p>
           <p>{data.developerDesc2}</p>
-          {data.developerLogo && (
+          {data.developerLogo && data.developerLogo.trim() !== '' && (
             <Image
               src={data.developerLogo}
               alt={`${data.developerName} Logo`}
-              width={227} // 60mm
-              height={151} // Adjust height as needed
+              width={227} 
+              height={151} 
               className="developer-logo"
               data-ai-hint="corporate building logo"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
            )}
         </div>

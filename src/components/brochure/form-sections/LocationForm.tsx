@@ -13,15 +13,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Loader2, Trash2, Wand2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-export interface LocationFormProps {
+export interface LocationFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  isGeneratingAi?: boolean;
+  onAiGenerate?: () => void;
 }
 
-export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) => {
+export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
    const { fields, append, remove } = useFieldArray({
      control: form.control,
      name: "keyDistances",
@@ -31,6 +33,12 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Location Details</h3>
+        {onAiGenerate && (
+            <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="ml-2 shrink-0">
+                {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                AI Generate
+            </Button>
+        )}
       </div>
       <FormField
         control={form.control}
@@ -39,7 +47,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
           <FormItem>
             <FormLabel>Location Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Prime Location" {...field} value={field.value ?? ''} disabled={disabled}/>
+              <Input placeholder="e.g., Prime Location" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -52,7 +60,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
           <FormItem>
             <FormLabel>Location Description 1</FormLabel>
             <FormControl>
-              <Textarea placeholder="Describe the location..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
+              <Textarea placeholder="Describe the location..." {...field} value={field.value ?? ''} rows={3} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -65,7 +73,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
           <FormItem>
             <FormLabel>Location Description 2</FormLabel>
             <FormControl>
-              <Textarea placeholder="More details about connectivity..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
+              <Textarea placeholder="More details about connectivity..." {...field} value={field.value ?? ''} rows={3} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -83,13 +91,13 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
                 render={({ field: arrayField }) => (
                   <FormItem className="flex-grow">
                     <FormControl>
-                      <Input placeholder={`e.g., Metro Station - 500m`} {...arrayField} value={arrayField.value ?? ''} disabled={disabled}/>
+                      <Input placeholder={`e.g., Metro Station - 500m`} {...arrayField} value={arrayField.value ?? ''} disabled={disabled || isGeneratingAi}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled}>
+              <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled || isGeneratingAi}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -101,7 +109,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
            size="sm"
            className="mt-2"
            onClick={() => append("")}
-           disabled={disabled}
+           disabled={disabled || isGeneratingAi}
          >
            Add Distance
          </Button>
@@ -113,7 +121,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
           <FormItem>
             <FormLabel>Location Note (Optional)</FormLabel>
             <FormControl>
-              <Textarea placeholder="Brief note about the location or distances..." {...field} value={field.value ?? ''} rows={2} disabled={disabled}/>
+              <Textarea placeholder="Brief note about the location or distances..." {...field} value={field.value ?? ''} rows={2} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -133,7 +141,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
           <FormItem>
             <FormLabel>Map Disclaimer</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., *Map not to scale." {...field} value={field.value ?? ''} disabled={disabled}/>
+              <Input placeholder="e.g., *Map not to scale." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>

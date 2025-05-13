@@ -12,18 +12,19 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    return (
     <div className="floor-plan">
         <div className="plan-image">
-        {plan.image ? (
+        {plan.image && plan.image.trim() !== '' ? (
             <Image
             src={plan.image}
             alt={`${plan.name} Floor Plan`}
-            width={300} // Width based on 80mm column
-            height={250} // Example height based on typical plan aspect ratio
-            className="w-full h-auto max-h-[100mm] object-contain border border-gray-300 rounded-[2mm]"
+            width={300} 
+            height={250} 
+            className="w-full h-auto max-h-[90mm] object-contain border border-gray-300 rounded-[1.5mm]"
             data-ai-hint="architectural floor plan detailed"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
         ) : (
-             <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm] border border-gray-300">
-                Floor Plan Placeholder
+             <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-300 text-xs p-2 text-center">
+                {plan.name} Plan
             </div>
         )}
         </div>
@@ -48,13 +49,8 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   const floorPlans = data.floorPlans?.filter(fp => fp.name && fp.area) || [];
 
   if (floorPlans.length === 0) {
-    return null; // Don't render page if no valid floor plans
+    return null; 
   }
-
-  // Simple grouping: Put max 2 plans per page visually.
-  // This doesn't create separate <PageWrapper> components,
-  // relies on CSS page-break logic which might split within a plan if too large.
-  // For guaranteed separation, would need to render separate PageWrapper components.
 
   return (
     <PageWrapper className="page-light-bg" id="floor-plans-page">

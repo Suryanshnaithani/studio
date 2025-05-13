@@ -11,16 +11,28 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Loader2, Wand2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-interface CoverFormProps {
+interface CoverFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  isGeneratingAi?: boolean;
+  onAiGenerate?: () => void;
 }
 
-export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
+export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
   return (
     <div className="space-y-4">
+        <div className="flex justify-end items-center mb-2">
+         {onAiGenerate && (
+            <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="shrink-0">
+                {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                AI Enhance
+            </Button>
+        )}
+       </div>
       <FormField
         control={form.control}
         name="projectName"
@@ -28,7 +40,7 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
           <FormItem>
             <FormLabel>Project Name</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Luxury Residences" {...field} value={field.value ?? ''} disabled={disabled}/>
+              <Input placeholder="e.g., Luxury Residences" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -41,7 +53,7 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
           <FormItem>
             <FormLabel>Project Tagline</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Where Elegance Meets Modern Living" {...field} value={field.value ?? ''} disabled={disabled}/>
+              <Input placeholder="e.g., Where Elegance Meets Modern Living" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -64,7 +76,7 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
           <FormItem>
             <FormLabel>RERA Information (use line breaks)</FormLabel>
             <FormControl>
-              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
+              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={3} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -73,4 +85,3 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
     </div>
   );
 };
-

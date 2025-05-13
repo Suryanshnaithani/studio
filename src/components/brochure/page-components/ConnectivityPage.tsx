@@ -8,9 +8,9 @@ interface ConnectivityPageProps {
 }
 
 const renderPointList = (items: string[] = []) => {
-     if (!items || items.length <= 1) return null; // Need at least title + 1 item
-     const heading = items[0]; // Assume first item is the category title
-     const listItems = items.slice(1).filter(item => item?.trim()); // Filter empty items
+     if (!items || items.length <= 1) return null; 
+     const heading = items[0]; 
+     const listItems = items.slice(1).filter(item => item?.trim()); 
      if (listItems.length === 0) return null;
 
      return (
@@ -27,21 +27,21 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
   return (
     <PageWrapper className="page-light-bg" id="connectivity-page">
       <div className="page-content">
-         {data.connectivityWatermark && (
+         {data.connectivityWatermark && data.connectivityWatermark.trim() !== '' && (
            <Image
             src={data.connectivityWatermark}
             alt="Watermark"
-            width={189} // 50mm
-            height={189} // 50mm
+            width={189} 
+            height={189} 
             className="watermark"
             data-ai-hint="network lines abstract"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
         <div className="section-title">{data.connectivityTitle}</div>
         <div className="connectivity-container">
           <div className="connectivity-text">
             <h3>Nearby Points of Interest</h3>
-             {/* Use columns within the text section */}
             <div className="list-columns">
                 {renderPointList(data.connectivityPointsBusiness)}
                 {renderPointList(data.connectivityPointsHealthcare)}
@@ -51,23 +51,24 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
             <p className="location-note">{data.connectivityNote}</p>
           </div>
           <div className="connectivity-image">
-             {data.connectivityImage ? (
+             {data.connectivityImage && data.connectivityImage.trim() !== '' ? (
                <figure className="relative">
                  <Image
                     src={data.connectivityImage}
                     alt="Connectivity Highlight"
-                    width={700} // Guide width
-                    height={500} // Guide height
-                    className="w-full h-auto max-h-[100mm] object-cover rounded-[2mm]" // Adjusted max-height
+                    width={700} 
+                    height={500} 
+                    className="w-full h-auto max-h-[100mm] object-cover rounded-[1.5mm]" 
                     data-ai-hint="cityscape aerial view highway"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                  />
                  {data.connectivityDistrictLabel && (
                     <figcaption className="district-label">{data.connectivityDistrictLabel}</figcaption>
                  )}
               </figure>
             ) : (
-                 <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm]">
-                    Image Placeholder
+                 <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
+                    Connectivity Image
                 </div>
             )}
           </div>

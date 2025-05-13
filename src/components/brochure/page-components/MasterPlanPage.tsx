@@ -13,25 +13,26 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
       <div className="page-content">
         <div className="section-title">{data.masterPlanTitle}</div>
         <div className="master-plan-image">
-          {data.masterPlanImage ? (
+          {data.masterPlanImage && data.masterPlanImage.trim() !== '' ? (
              <figure className="relative">
                  <Image
                     src={data.masterPlanImage}
                     alt="Master Plan Layout"
-                    width={700} // Guide width
-                    height={500} // Guide height
-                    className="w-full h-auto object-contain rounded-[2mm] border border-gray-200 max-h-[160mm]"
+                    width={700} 
+                    height={500} 
+                    className="w-full h-auto object-contain rounded-[1.5mm] border border-gray-200 max-h-[150mm]"
                     data-ai-hint="architectural site plan color legend"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                  />
                  {data.masterPlanImageDisclaimer && (
-                     <figcaption className="map-disclaimer absolute bottom-1 right-1 text-black bg-white/70">
+                     <figcaption className="map-disclaimer">
                         <p>{data.masterPlanImageDisclaimer}</p>
                      </figcaption>
                  )}
              </figure>
           ) : (
-               <div className="w-full h-[160mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[2mm] border border-gray-200">
-                    Master Plan Placeholder
+               <div className="w-full h-[150mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
+                    Master Plan Image
                </div>
           )}
         </div>

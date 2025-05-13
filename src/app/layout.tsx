@@ -15,7 +15,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-[Georgia,serif] antialiased bg-background text-foreground">
+      {/* The body class will now primarily use system fonts defined in globals.css for the editor UI */}
+      <body className="antialiased bg-background text-foreground">
         {children}
         <div className="no-print">
           <Toaster />

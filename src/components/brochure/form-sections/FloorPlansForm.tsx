@@ -12,16 +12,18 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Loader2, Trash2, Wand2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-export interface FloorPlansFormProps { 
+export interface FloorPlansFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  isGeneratingAi?: boolean;
+  onAiGenerate?: () => void;
 }
 
-export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }) => {
+export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled, isGeneratingAi, onAiGenerate }) => {
    const { fields, append, remove } = useFieldArray({
      control: form.control,
      name: "floorPlans",
@@ -37,12 +39,18 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
             <FormItem className="flex-grow">
                 <FormLabel>Floor Plans Title</FormLabel>
                 <FormControl>
-                <Input placeholder="e.g., Thoughtfully Designed Floor Plans" {...field} value={field.value ?? ''} disabled={disabled}/>
+                <Input placeholder="e.g., Thoughtfully Designed Floor Plans" {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
                 </FormControl>
                 <FormMessage />
             </FormItem>
             )}
         />
+         {onAiGenerate && (
+            <Button type="button" onClick={onAiGenerate} disabled={disabled || isGeneratingAi} size="sm" variant="outline" className="ml-2 shrink-0">
+                {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                AI Generate Title
+            </Button>
+        )}
       </div>
 
 
@@ -56,7 +64,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                 size="icon"
                 className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
                 onClick={() => remove(index)}
-                disabled={disabled}
+                disabled={disabled || isGeneratingAi}
              >
                 <Trash2 className="h-4 w-4" />
              </Button>
@@ -68,7 +76,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                     <FormItem>
                         <FormLabel>Plan Name</FormLabel>
                         <FormControl>
-                        <Input placeholder="e.g., Luxury 2 Bedroom" {...arrayField} value={arrayField.value ?? ''} disabled={disabled}/>
+                        <Input placeholder="e.g., Luxury 2 Bedroom" {...arrayField} value={arrayField.value ?? ''} disabled={disabled || isGeneratingAi}/>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -81,7 +89,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                     <FormItem>
                         <FormLabel>Area</FormLabel>
                         <FormControl>
-                        <Input placeholder="e.g., 1,200 sq. ft." {...arrayField} value={arrayField.value ?? ''} disabled={disabled}/>
+                        <Input placeholder="e.g., 1,200 sq. ft." {...arrayField} value={arrayField.value ?? ''} disabled={disabled || isGeneratingAi}/>
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -92,7 +100,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                     name={`floorPlans.${index}.image`}
                     label="Image (URL or Upload)"
                 />
-                 <FeatureArrayInput form={form} planIndex={index} disabled={disabled}/>
+                 <FeatureArrayInput form={form} planIndex={index} disabled={disabled} isGeneratingAi={isGeneratingAi}/>
              </CardContent>
            </Card>
         ))}
@@ -108,7 +116,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                 features: ['New Feature'], 
                 image: '' 
             })}
-            disabled={disabled}
+            disabled={disabled || isGeneratingAi}
          >
            Add Floor Plan
          </Button>
@@ -121,7 +129,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
           <FormItem>
             <FormLabel>Floor Plans Disclaimer</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Floor plans are indicative..." {...field} value={field.value ?? ''} disabled={disabled}/>
+              <Input placeholder="e.g., Floor plans are indicative..." {...field} value={field.value ?? ''} disabled={disabled || isGeneratingAi}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -132,7 +140,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
 };
 
 
-const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex: number, disabled?: boolean }> = ({ form, planIndex, disabled }) => {
+const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex: number, disabled?: boolean, isGeneratingAi?: boolean }> = ({ form, planIndex, disabled, isGeneratingAi }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: `floorPlans.${planIndex}.features`,
@@ -150,13 +158,13 @@ const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     <FormControl>
-                                        <Input placeholder={`Feature ${featureIndex + 1}`} {...arrayField} value={arrayField.value ?? ''} disabled={disabled}/>
+                                        <Input placeholder={`Feature ${featureIndex + 1}`} {...arrayField} value={arrayField.value ?? ''} disabled={disabled || isGeneratingAi}/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="outline" size="icon" onClick={() => remove(featureIndex)} disabled={disabled || fields.length <= 1}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => remove(featureIndex)} disabled={disabled || fields.length <= 1 || isGeneratingAi}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -168,7 +176,7 @@ const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex
                 size="sm"
                 className="mt-2"
                 onClick={() => append("New Feature")}
-                disabled={disabled}
+                disabled={disabled || isGeneratingAi}
             >
                 Add Feature
             </Button>

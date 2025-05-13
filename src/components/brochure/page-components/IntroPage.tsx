@@ -11,14 +11,15 @@ export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
   return (
     <PageWrapper className="page-light-bg" id="intro-page">
       <div className="page-content">
-        {data.introWatermark && (
+        {data.introWatermark && data.introWatermark.trim() !== '' && (
            <Image
             src={data.introWatermark}
             alt="Watermark"
-            width={227} // 60mm
-            height={227} // 60mm
+            width={227} 
+            height={227} 
             className="watermark"
             data-ai-hint="geometric pattern subtle"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
         <div className="section-title">{data.introTitle}</div>
