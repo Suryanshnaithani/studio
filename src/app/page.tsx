@@ -32,15 +32,15 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 // Import brochure specific CSS
 import './brochure.css';
 
-// Import AI generation functionality
-import { generateBrochureContent, type GenerateBrochureContentInput } from '@/ai/flows/generate-brochure-flow';
-import { z } from 'zod'; // Import z for ZodError
+// AI generation functionality (currently disabled, can be re-enabled)
+// import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow'; 
+import { z } from 'zod';
 
 interface FormSection {
   value: string;
   label: string;
   Component: React.FC<any>;
-  aiSection?: BrochureAIDataSection;
+  aiSection?: BrochureAIDataSection; // Kept for potential future AI re-integration
 }
 
 const brochureThemes = [
@@ -53,11 +53,12 @@ export default function Home() {
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
   const isPrintingRef = useRef(false);
-  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({});
+  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({}); // Kept for AI
 
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
+  const [printKey, setPrintKey] = useState(0); // Key to force re-render of printable component
 
   const printableRef = useRef<HTMLDivElement>(null);
 
@@ -75,15 +76,14 @@ export default function Home() {
   const globalDisable = isPrintingRef.current || isAnyAiGenerating;
 
 
-  const handleGenerateOrUpdateBrochure = (newTheme: boolean = false) => {
+  const handleGenerateOrUpdateBrochure = (newThemeChange: boolean = false) => {
     try {
       const currentFormData = form.getValues();
       const validatedData = BrochureDataSchema.parse(currentFormData);
       setGeneratedBrochureData(validatedData);
 
-      if (newTheme) { 
+      if (newThemeChange) { 
         let randomTheme = activeTheme;
-        // Ensure a different theme is selected if possible
         if (brochureThemes.length > 1) {
           while(randomTheme === activeTheme) {
             randomTheme = brochureThemes[Math.floor(Math.random() * brochureThemes.length)];
@@ -126,7 +126,7 @@ export default function Home() {
           duration: 7000
         });
       }
-       if (isPrintingRef.current) throw error;
+       if (isPrintingRef.current) throw error; // Rethrow if printing so handlePrint can catch
     }
   };
 
@@ -164,78 +164,80 @@ export default function Home() {
   const handlePrint = async () => {
     if (isPrintingRef.current) return;
     isPrintingRef.current = true;
+
     // Force a state update to ensure PrintComponent re-renders with latest data
-    // This is a bit of a hack, but ensures fresh data for print
-    setGeneratedBrochureData(prev => prev ? ({...prev} as BrochureData) : null);
+    setPrintKey(prev => prev + 1); // This will trigger re-render of PrintableBrochureLoader via its key
 
-
+    form.trigger(); // This validates all fields
+    const currentFormData = form.getValues(); // Get latest values after trigger
+    
     try {
-      // Ensure form data is validated and brochure data is updated
-      form.trigger(); // This validates all fields
-      handleGenerateOrUpdateBrochure(false); // This updates generatedBrochureData
-      
-      // Wait for state updates and DOM re-render
-      await new Promise(resolve => setTimeout(resolve, 200)); 
+        const validatedData = BrochureDataSchema.parse(currentFormData);
+        setGeneratedBrochureData(validatedData); // Update state used by PrintableBrochureLoader
 
-      toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
-      
-      // Additional delay to allow browser to render complex elements before printing
-      await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay slightly for complex renders
+        // Wait for React to commit state updates and for print CSS to apply.
+        // This ensures PrintableBrochureLoader has the latest data & styles.
+        await new Promise(resolve => setTimeout(resolve, 100)); 
 
-      window.print();
+        toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
+        
+        // Additional delay to allow browser to render complex elements before printing
+        await new Promise(resolve => setTimeout(resolve, 400)); // Total delay 500ms
+
+        window.print();
 
     } catch (error: any) {
       console.error("Printing failed:", error);
+      let errorDesc = "Could not prepare the PDF for printing. Please check form data and try again.";
+       if (error instanceof z.ZodError) {
+        const fieldErrors = error.flatten().fieldErrors;
+        const errorMessages = Object.entries(fieldErrors)
+          .map(([field, messages]) => `${field}: ${messages?.join(', ')}`)
+          .join('; ');
+          errorDesc = `Invalid data: ${errorMessages}`;
+       }
       toast({
         variant: "destructive",
         title: "Printing Error",
-        description: "Could not prepare the PDF for printing. Please check form data and try again.",
-        duration: 5000
+        description: errorDesc,
+        duration: 7000
       });
     } finally {
-      // Reset printing flag after a delay to allow print dialog to close
       setTimeout(() => {
         isPrintingRef.current = false;
-        // Optionally re-render preview component to reset any print-specific states
-        setGeneratedBrochureData(prev => prev ? ({...prev} as BrochureData) : null);
-      }, 1000); // Delay to allow print dialog to close
+      }, 1000); 
     }
   };
 
+  // AI Generate function (currently unused, kept for potential re-integration)
   const handleAiGenerate = async (sectionKey: string, section: BrochureAIDataSection, promptHint?: string) => {
     setIsGeneratingAi(prev => ({ ...prev, [sectionKey]: true }));
     try {
         const currentData = form.getValues();
-        // Validate current data before sending to AI
-        BrochureDataSchema.parse(currentData);
-
-        const aiInput: GenerateBrochureContentInput = {
-            existingData: currentData,
-            sectionToGenerate: section,
-            promptHint: promptHint || `Generate content for the ${section} section.`,
-        };
-
-        const aiGeneratedData = await generateBrochureContent(aiInput);
+        BrochureDataSchema.parse(currentData); // Validate before sending
         
-        // Merge AI generated data back into the form
-        // The AI flow is expected to return the full BrochureData object with modifications
-        Object.keys(aiGeneratedData).forEach(key => {
-            form.setValue(key as keyof BrochureData, aiGeneratedData[key as keyof BrochureData] as any, { shouldValidate: true, shouldDirty: true });
-        });
+        // const aiInput: GenerateBrochureInput = { // Type from generate-brochure-flow
+        //     existingData: currentData,
+        //     sectionToGenerate: section,
+        //     promptHint: promptHint || `Generate content for the ${section} section.`,
+        // };
+        // const aiGeneratedData = await generateBrochureContent(aiInput); // Call to AI flow
 
-        // Update the live preview
-        handleGenerateOrUpdateBrochure(false);
+        // Object.keys(aiGeneratedData).forEach(key => {
+        //     form.setValue(key as keyof BrochureData, aiGeneratedData[key as keyof BrochureData] as any, { shouldValidate: true, shouldDirty: true });
+        // });
+        // handleGenerateOrUpdateBrochure(false); // Update preview
 
         toast({
-            title: `AI Content Generated for ${section}`,
-            description: "The brochure section has been updated with AI-generated content.",
+            title: `AI Content for ${section} (Simulated)`,
+            description: "AI generation is currently disabled. This is a placeholder action.",
         });
 
     } catch (error: any) {
         console.error(`AI Generation Error for ${section}:`, error);
-        let description = `Failed to generate content for ${section}.`;
+        let description = `Failed to generate content for ${section}. AI features are currently inactive.`;
         if (error instanceof z.ZodError) {
-            description = `Invalid data before AI generation: ${error.flatten().fieldErrors}`;
+            description = `Invalid data before AI generation: ${JSON.stringify(error.flatten().fieldErrors)}`;
         } else if (error.message) {
             description = error.message;
         }
@@ -323,10 +325,9 @@ export default function Home() {
                   const commonProps = {
                     form: form,
                     disabled: globalDisable,
-                    isGeneratingAi: !!isGeneratingAi[sectionKey],
-                    onAiGenerate: section.aiSection 
-                      ? (promptHint?: string) => handleAiGenerate(sectionKey, section.aiSection!, promptHint) 
-                      : undefined
+                    // AI features are currently disabled. Pass undefined or a dummy handler.
+                    isGeneratingAi: false, // !!isGeneratingAi[sectionKey],
+                    onAiGenerate: undefined, // section.aiSection ? (promptHint?: string) => handleAiGenerate(sectionKey, section.aiSection!, promptHint) : undefined
                   };
                   return (
                     <TabsContent key={section.value} value={section.value} className="p-3 md:p-4 focus-visible:outline-none focus-visible:ring-0 mt-0">
@@ -341,9 +342,9 @@ export default function Home() {
 
         <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/40 dark:bg-gray-900/60">
           {showPreview && generatedBrochureData ? (
-            <div className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
-               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
-                <BrochurePreview key={`screen-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
+            <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
+               <div ref={printableRef} id="printable-brochure-wrapper-live" className={cn(activeTheme, "transition-all duration-300")}>
+                <BrochurePreview key={`screen-${printKey}-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
               </div>
             </div>
           ) : (
@@ -360,19 +361,21 @@ export default function Home() {
 
       {isClient && generatedBrochureData && (
         <div className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none print:overflow-visible">
-          <PrintableBrochureLoader key={`print-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
+          <PrintableBrochureLoader key={`print-${printKey}-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
         </div>
       )}
     </FormProvider>
   );
 }
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, key?: string }> = ({ data, themeClass, key }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, key?: string }> = React.memo(({ data, themeClass, key }) => {
   try {
+    // Ensure data is validated before rendering. This is critical for print.
     const validatedData = BrochureDataSchema.parse(data);
     return <BrochurePreview key={key} data={validatedData} themeClass={themeClass} />;
   } catch (error) {
     console.error("Data validation failed for print render:", error);
+    // Return a visible error page for print if data is invalid
     return (
       <div className={`p-10 text-red-600 font-bold text-center page page-light-bg ${themeClass}`} style={{ pageBreakBefore: 'always', boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
         <h1>Brochure Generation Error</h1>
@@ -386,4 +389,5 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
       </div>
     );
   }
-};
+});
+PrintableBrochureLoader.displayName = 'PrintableBrochureLoader';
