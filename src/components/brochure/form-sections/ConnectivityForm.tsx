@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from "react-hook-form";
@@ -12,21 +13,25 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
-import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
+import { Loader2, Trash2, Wand2 } from 'lucide-react';
+import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
-interface ConnectivityFormProps {
+export interface ConnectivityFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
+  onGenerateContent: () => Promise<void>;
+  isGeneratingContent: boolean;
+  disabled?: boolean;
 }
 
 const PointOfInterestArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
     name: keyof BrochureData;
     label: string;
-}> = ({ form, name, label }) => {
+    disabled?: boolean;
+}> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        // @ts-ignore // Type assertion needed here due to dynamic name
+        // @ts-ignore 
         name: name as any,
     });
 
@@ -40,24 +45,23 @@ const PointOfInterestArrayInput: React.FC<{
                             control={form.control}
                             // @ts-ignore
                             name={`${name}.${index}`}
-                            render={({ field }) => (
+                            render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     {index === 0 ? (
                                         <FormControl>
-                                            <Input placeholder="Category (e.g., Business Hubs)" {...field} className="font-semibold" />
+                                            <Input placeholder="Category (e.g., Business Hubs)" {...arrayField} value={arrayField.value ?? ''} className="font-semibold" disabled={disabled} />
                                         </FormControl>
                                     ) : (
                                          <FormControl>
-                                            <Input placeholder={`Point ${index}`} {...field} />
+                                            <Input placeholder={`Point ${index}`} {...arrayField} value={arrayField.value ?? ''} disabled={disabled}/>
                                         </FormControl>
                                     )}
-
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        {index > 0 && ( // Don't allow removing the category title
-                            <Button type="button" variant="outline" size="icon" onClick={() => remove(index)}>
+                        {index > 0 && ( 
+                            <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         )}
@@ -70,6 +74,7 @@ const PointOfInterestArrayInput: React.FC<{
                 size="sm"
                 className="mt-2"
                 onClick={() => append("")}
+                disabled={disabled}
             >
                 Add Point
             </Button>
@@ -77,9 +82,27 @@ const PointOfInterestArrayInput: React.FC<{
     );
 }
 
-export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
+export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
   return (
     <div className="space-y-4">
+       <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-medium">Connectivity Details</h3>
+        <Button 
+          type="button" 
+          onClick={onGenerateContent} 
+          disabled={isGeneratingContent || disabled}
+          variant="outline"
+          size="sm"
+          title="Use AI to generate connectivity note based on points of interest"
+        >
+          {isGeneratingContent ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Wand2 className="mr-2 h-4 w-4" />
+          )}
+          {isGeneratingContent ? 'Generating...' : 'AI Generate Note'}
+        </Button>
+      </div>
       <FormField
         control={form.control}
         name="connectivityTitle"
@@ -87,17 +110,17 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Connectivity Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Exceptional Connectivity" {...field} />
+              <Input placeholder="e.g., Exceptional Connectivity" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      <PointOfInterestArrayInput form={form} name="connectivityPointsBusiness" label="Points of Interest: Business"/>
-      <PointOfInterestArrayInput form={form} name="connectivityPointsHealthcare" label="Points of Interest: Healthcare"/>
-      <PointOfInterestArrayInput form={form} name="connectivityPointsEducation" label="Points of Interest: Education"/>
-      <PointOfInterestArrayInput form={form} name="connectivityPointsLeisure" label="Points of Interest: Leisure"/>
+      <PointOfInterestArrayInput form={form} name="connectivityPointsBusiness" label="Points of Interest: Business" disabled={disabled}/>
+      <PointOfInterestArrayInput form={form} name="connectivityPointsHealthcare" label="Points of Interest: Healthcare" disabled={disabled}/>
+      <PointOfInterestArrayInput form={form} name="connectivityPointsEducation" label="Points of Interest: Education" disabled={disabled}/>
+      <PointOfInterestArrayInput form={form} name="connectivityPointsLeisure" label="Points of Interest: Leisure" disabled={disabled}/>
 
       <FormField
         control={form.control}
@@ -106,13 +129,12 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Connectivity Note</FormLabel>
             <FormControl>
-              <Textarea placeholder="e.g., Connectivity subject to change..." {...field} rows={2}/>
+              <Textarea placeholder="e.g., Connectivity subject to change..." {...field} value={field.value ?? ''} rows={2} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-       {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="connectivityImage"
@@ -125,13 +147,12 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>District Label on Image</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Central District" {...field} />
+              <Input placeholder="e.g., Central District" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-        {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="connectivityWatermark"

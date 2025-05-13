@@ -18,29 +18,29 @@ import { Label } from '@/components/ui/label';
 // Import Form Section Components
 import { CoverForm } from '@/components/brochure/form-sections/CoverForm';
 import { IntroductionForm, type IntroductionFormProps } from '@/components/brochure/form-sections/IntroductionForm';
-import { DeveloperForm } from '@/components/brochure/form-sections/DeveloperForm';
-import { LocationForm } from '@/components/brochure/form-sections/LocationForm';
-import { ConnectivityForm } from '@/components/brochure/form-sections/ConnectivityForm';
-import { AmenitiesIntroForm } from '@/components/brochure/form-sections/AmenitiesIntroForm';
-import { AmenitiesListForm } from '@/components/brochure/form-sections/AmenitiesListForm';
-import { AmenitiesGridForm } from '@/components/brochure/form-sections/AmenitiesGridForm';
-import { SpecificationsForm } from '@/components/brochure/form-sections/SpecificationsForm';
-import { MasterPlanForm } from '@/components/brochure/form-sections/MasterPlanForm';
-import { FloorPlansForm } from '@/components/brochure/form-sections/FloorPlansForm';
+import { DeveloperForm, type DeveloperFormProps } from '@/components/brochure/form-sections/DeveloperForm';
+import { LocationForm, type LocationFormProps } from '@/components/brochure/form-sections/LocationForm';
+import { ConnectivityForm, type ConnectivityFormProps } from '@/components/brochure/form-sections/ConnectivityForm';
+import { AmenitiesIntroForm, type AmenitiesIntroFormProps } from '@/components/brochure/form-sections/AmenitiesIntroForm';
+import { AmenitiesListForm, type AmenitiesListFormProps } from '@/components/brochure/form-sections/AmenitiesListForm';
+import { AmenitiesGridForm, type AmenitiesGridFormProps } from '@/components/brochure/form-sections/AmenitiesGridForm';
+import { SpecificationsForm, type SpecificationsFormProps } from '@/components/brochure/form-sections/SpecificationsForm';
+import { MasterPlanForm, type MasterPlanFormProps } from '@/components/brochure/form-sections/MasterPlanForm';
+import { FloorPlansForm, type FloorPlansFormProps } from '@/components/brochure/form-sections/FloorPlansForm';
 import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm';
 
 // Import brochure specific CSS
 import './brochure.css';
 
 // Import AI generation functionality
-import { generateBrochureContent } from '@/ai/flows/generate-brochure-flow';
+import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow';
 import { z } from 'zod'; // Import z for ZodError
 
 interface FormSection {
   value: string;
   label: string;
-  Component: React.FC<any>; // Allow any props for now, can be more specific
-  props?: Record<string, any>; // Optional additional props for the component
+  Component: React.FC<any>; 
+  props?: Record<string, any>; 
 }
 
 
@@ -48,33 +48,43 @@ export default function Home() {
   const { toast } = useToast();
   const [brochureData, setBrochureData] = useState<BrochureData>(getDefaultBrochureData());
   const [isClient, setIsClient] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false); // State for general AI generation
-  const [isGeneratingIntro, setIsGeneratingIntro] = useState(false); // State for AI intro generation
-  const [aiPromptHint, setAiPromptHint] = useState(''); // State for AI prompt hint
+  const [isPrinting, setIsPrinting] = useState(isPrinting);
+  const [aiPromptHint, setAiPromptHint] = useState(''); 
+
+  // General AI generation for full brochure
+  const [isGeneratingFull, setIsGeneratingFull] = useState(false);
+
+  // Section-specific AI generation states
+  const [isGeneratingIntro, setIsGeneratingIntro] = useState(false);
+  const [isGeneratingDeveloper, setIsGeneratingDeveloper] = useState(false);
+  const [isGeneratingLocation, setIsGeneratingLocation] = useState(false);
+  const [isGeneratingConnectivity, setIsGeneratingConnectivity] = useState(false);
+  const [isGeneratingAmenitiesIntro, setIsGeneratingAmenitiesIntro] = useState(false);
+  const [isGeneratingAmenitiesListTitle, setIsGeneratingAmenitiesListTitle] = useState(false);
+  const [isGeneratingAmenitiesGridTitle, setIsGeneratingAmenitiesGridTitle] = useState(false);
+  const [isGeneratingSpecsTitle, setIsGeneratingSpecsTitle] = useState(false);
+  const [isGeneratingMasterPlan, setIsGeneratingMasterPlan] = useState(false);
+  const [isGeneratingFloorPlansTitle, setIsGeneratingFloorPlansTitle] = useState(false);
+
   const printableRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
     defaultValues: getDefaultBrochureData(),
-    mode: 'onChange', // Update preview on change
+    mode: 'onChange', 
   });
 
   useEffect(() => {
     setIsClient(true);
     const initialData = form.getValues();
-    setBrochureData(initialData); // Set initial data for preview
+    setBrochureData(initialData); 
 
-    // Watch for changes and update the preview state
     const subscription = form.watch((value) => {
       try {
-        // Use safeParse on the complete form data to avoid preview flickering with invalid intermediate states
         const parsedData = BrochureDataSchema.safeParse(value);
         if (parsedData.success) {
           setBrochureData(parsedData.data);
         } else {
-          // If the form is temporarily invalid during typing, keep the last valid preview data
-          // This prevents the preview from clearing unnecessarily
           console.warn("Form watch update - validation failed (likely intermediate state):", parsedData.error.flatten().fieldErrors);
         }
       } catch (error) {
@@ -82,29 +92,27 @@ export default function Home() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form]); // Form dependency is correct here
+  }, [form]);
+
+  const anySectionGenerating = isGeneratingIntro || isGeneratingDeveloper || isGeneratingLocation || isGeneratingConnectivity || isGeneratingAmenitiesIntro || isGeneratingAmenitiesListTitle || isGeneratingAmenitiesGridTitle || isGeneratingSpecsTitle || isGeneratingMasterPlan || isGeneratingFloorPlansTitle;
+  const globalDisable = isPrinting || isGeneratingFull || anySectionGenerating;
+
 
   const handlePrint = async () => {
     if (typeof window !== 'undefined') {
       setIsPrinting(true);
-      // Ensure the latest data from the form is used for the printable version
       try {
         const currentFormData = form.getValues();
-        // Validate data before triggering print
         const validatedData = BrochureDataSchema.parse(currentFormData);
-        setBrochureData(validatedData); // Update state just before printing
+        setBrochureData(validatedData); 
         toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
-
-        // Add a small delay to ensure DOM updates with the latest state
         await new Promise(resolve => setTimeout(resolve, 300));
-
-         window.print(); // Trigger browser print dialog
+        window.print(); 
       } catch (error: any) {
           console.error("Validation or Printing failed:", error);
           let description = "Could not generate the PDF. Please try again.";
            if (error instanceof z.ZodError) {
                description = "Form data is invalid. Please check the form fields for errors.";
-               // Highlight errors (React Hook Form does this by default with the resolver)
                 toast({
                     variant: "destructive",
                     title: "Invalid Form Data",
@@ -118,26 +126,25 @@ export default function Home() {
                 });
            }
       } finally {
-          // Use a slightly longer delay to accommodate slower systems/print dialog closing
           await new Promise(resolve => setTimeout(resolve, 1000));
           setIsPrinting(false);
       }
     }
   };
 
-   // AI generation handler for entire brochure
-   const handleGenerateContent = async () => {
-    setIsGenerating(true);
+   const handleGenerateFullContent = async () => {
+    setIsGeneratingFull(true);
     toast({ title: "AI Enhancement Started", description: "AI is processing your brochure data..." });
     try {
         const currentFormData = form.getValues();
-        const aiInput = {
+        const aiInput: GenerateBrochureInput = {
             promptHint: aiPromptHint,
             existingData: currentFormData,
+            // No sectionToGenerate, so AI enhances full brochure
         };
         const generatedData = await generateBrochureContent(aiInput);
-        form.reset(generatedData);
-        setBrochureData(generatedData);
+        form.reset(generatedData); // Reset form with all new data
+        setBrochureData(generatedData); // Update preview
         toast({ title: "AI Enhancement Complete", description: "Brochure content has been updated." });
     } catch (error: any) {
       console.error("AI Enhancement failed:", error);
@@ -153,59 +160,60 @@ export default function Home() {
         description: description,
       });
     } finally {
-      setIsGenerating(false);
+      setIsGeneratingFull(false);
     }
   };
 
-  // AI generation handler for Introduction section only
-  const handleGenerateIntroduction = async () => {
-    setIsGeneratingIntro(true);
-    toast({ title: "AI Introduction Generation", description: "AI is crafting the introduction..." });
+  // Generic section content generator
+  const handleGenerateSectionContent = async (
+    section: GenerateBrochureInput['sectionToGenerate'],
+    setIsLoading: (loading: boolean) => void,
+    fieldsToUpdate: (keyof BrochureData)[],
+    toastTitle: string
+  ) => {
+    if (!section) return;
+    setIsLoading(true);
+    toast({ title: `AI ${toastTitle} Generation`, description: `AI is crafting content for ${toastTitle.toLowerCase()}...` });
     try {
       const currentFormData = form.getValues();
-      const aiInput = {
-        // This hint guides the AI to focus on the intro, leveraging its existing strict rules for intro generation
-        promptHint: "Please refine or generate only the introduction section (introTitle, introParagraph1, introParagraph2, introParagraph3) based strictly on the provided existingData such as projectName, projectTagline, and relevant location or developer details. All other fields in existingData are for context. Do not hallucinate. Preserve other parts of the brochure.",
+      const aiInput: GenerateBrochureInput = {
+        promptHint: `Generate content for the ${section} section.`,
         existingData: currentFormData,
+        sectionToGenerate: section,
       };
 
       const aiGeneratedFullData = await generateBrochureContent(aiInput);
 
-      // Selectively update only the introduction fields in the form
-      form.setValue('introTitle', aiGeneratedFullData.introTitle, { shouldValidate: true, shouldDirty: true });
-      form.setValue('introParagraph1', aiGeneratedFullData.introParagraph1, { shouldValidate: true, shouldDirty: true });
-      form.setValue('introParagraph2', aiGeneratedFullData.introParagraph2, { shouldValidate: true, shouldDirty: true });
-      form.setValue('introParagraph3', aiGeneratedFullData.introParagraph3, { shouldValidate: true, shouldDirty: true });
+      fieldsToUpdate.forEach(fieldName => {
+        // @ts-ignore
+        form.setValue(fieldName, aiGeneratedFullData[fieldName], { shouldValidate: true, shouldDirty: true });
+      });
       
-      // The form.watch should pick this up and update brochureData for preview,
-      // but to be absolutely sure, trigger a re-parse or selective update of brochureData state:
-      // This ensures the preview updates correctly after specific fields are set.
-      // The form.watch will eventually catch up, but this can make it more immediate.
       setBrochureData(prev => BrochureDataSchema.parse({
-        ...prev, // keep existing brochure data
-        introTitle: aiGeneratedFullData.introTitle,
-        introParagraph1: aiGeneratedFullData.introParagraph1,
-        introParagraph2: aiGeneratedFullData.introParagraph2,
-        introParagraph3: aiGeneratedFullData.introParagraph3,
+        ...prev,
+        ...fieldsToUpdate.reduce((acc, fieldName) => {
+          // @ts-ignore
+          acc[fieldName] = aiGeneratedFullData[fieldName];
+          return acc;
+        }, {} as Partial<BrochureData>)
       }));
 
-
-      toast({ title: "AI Introduction Complete", description: "Introduction has been updated." });
+      toast({ title: `AI ${toastTitle} Complete`, description: `${toastTitle} has been updated.` });
     } catch (error: any) {
-      console.error("AI Introduction Generation failed:", error);
-      let description = "Could not generate introduction. Please try again.";
+      console.error(`AI ${toastTitle} Generation failed:`, error);
+      let description = `Could not generate ${toastTitle.toLowerCase()}. Please try again.`;
       if (error instanceof z.ZodError) {
-        description = "AI returned data for introduction that could not be validated.";
+        description = `AI returned data for ${toastTitle.toLowerCase()} that could not be validated.`;
       } else if (error.message) {
         description = error.message;
       }
       toast({
         variant: "destructive",
-        title: "AI Introduction Error",
+        title: `AI ${toastTitle} Error`,
         description: description,
       });
     } finally {
-      setIsGeneratingIntro(false);
+      setIsLoading(false);
     }
   };
 
@@ -219,29 +227,109 @@ export default function Home() {
     );
   }
 
-
   const formSections: FormSection[] = [
-    { value: 'cover', label: 'Cover', Component: CoverForm, props: {} },
+    { value: 'cover', label: 'Cover', Component: CoverForm, props: { disabled: globalDisable } },
     { 
       value: 'intro', 
       label: 'Introduction', 
       Component: IntroductionForm, 
       props: { 
-        onGenerateIntro: handleGenerateIntroduction, 
-        isGeneratingIntro: isGeneratingIntro,
-        disabled: isGenerating || isPrinting || isGeneratingIntro, // Combined disabled state
+        onGenerateContent: () => handleGenerateSectionContent('introduction', setIsGeneratingIntro, ['introTitle', 'introParagraph1', 'introParagraph2', 'introParagraph3'], "Introduction"),
+        isGeneratingContent: isGeneratingIntro,
+        disabled: globalDisable,
       } 
     },
-    { value: 'developer', label: 'Developer', Component: DeveloperForm, props: {} },
-    { value: 'location', label: 'Location', Component: LocationForm, props: {} },
-    { value: 'connectivity', label: 'Connectivity', Component: ConnectivityForm, props: {} },
-    { value: 'amenities-intro', label: 'Amenities Intro', Component: AmenitiesIntroForm, props: {} },
-    { value: 'amenities-list', label: 'Amenities List', Component: AmenitiesListForm, props: {} },
-    { value: 'amenities-grid', label: 'Amenities Grid', Component: AmenitiesGridForm, props: {} },
-    { value: 'specs', label: 'Specifications', Component: SpecificationsForm, props: {} },
-    { value: 'masterplan', label: 'Master Plan', Component: MasterPlanForm, props: {} },
-    { value: 'floorplans', label: 'Floor Plans', Component: FloorPlansForm, props: {} },
-    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm, props: {} },
+    { 
+      value: 'developer', 
+      label: 'Developer', 
+      Component: DeveloperForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('developer', setIsGeneratingDeveloper, ['developerDesc1', 'developerDesc2'], "Developer Info"),
+        isGeneratingContent: isGeneratingDeveloper,
+        disabled: globalDisable,
+      } 
+    },
+    { 
+      value: 'location', 
+      label: 'Location', 
+      Component: LocationForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('location', setIsGeneratingLocation, ['locationDesc1', 'locationDesc2', 'locationNote'], "Location Details"),
+        isGeneratingContent: isGeneratingLocation,
+        disabled: globalDisable,
+      }  
+    },
+    { 
+      value: 'connectivity', 
+      label: 'Connectivity', 
+      Component: ConnectivityForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('connectivity', setIsGeneratingConnectivity, ['connectivityNote'], "Connectivity Note"),
+        isGeneratingContent: isGeneratingConnectivity,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'amenities-intro', 
+      label: 'Amenities Intro', 
+      Component: AmenitiesIntroForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('amenitiesIntro', setIsGeneratingAmenitiesIntro, ['amenitiesIntroP1', 'amenitiesIntroP2', 'amenitiesIntroP3'], "Amenities Intro"),
+        isGeneratingContent: isGeneratingAmenitiesIntro,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'amenities-list', 
+      label: 'Amenities List', 
+      Component: AmenitiesListForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('amenitiesListTitle', setIsGeneratingAmenitiesListTitle, ['amenitiesListTitle'], "Amenities List Title"),
+        isGeneratingContent: isGeneratingAmenitiesListTitle,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'amenities-grid', 
+      label: 'Amenities Grid', 
+      Component: AmenitiesGridForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('amenitiesGridTitle', setIsGeneratingAmenitiesGridTitle, ['amenitiesGridTitle'], "Amenities Grid Title"),
+        isGeneratingContent: isGeneratingAmenitiesGridTitle,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'specs', 
+      label: 'Specifications', 
+      Component: SpecificationsForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('specificationsTitle', setIsGeneratingSpecsTitle, ['specsTitle'], "Specifications Title"),
+        isGeneratingContent: isGeneratingSpecsTitle,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'masterplan', 
+      label: 'Master Plan', 
+      Component: MasterPlanForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('masterPlan', setIsGeneratingMasterPlan, ['masterPlanDesc1', 'masterPlanDesc2'], "Master Plan Details"),
+        isGeneratingContent: isGeneratingMasterPlan,
+        disabled: globalDisable,
+      }
+    },
+    { 
+      value: 'floorplans', 
+      label: 'Floor Plans', 
+      Component: FloorPlansForm, 
+      props: { 
+        onGenerateContent: () => handleGenerateSectionContent('floorPlansTitle', setIsGeneratingFloorPlansTitle, ['floorPlansTitle'], "Floor Plans Title"),
+        isGeneratingContent: isGeneratingFloorPlansTitle,
+        disabled: globalDisable,
+      }
+    },
+    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm, props: { disabled: globalDisable } },
   ];
 
   return (
@@ -251,7 +339,7 @@ export default function Home() {
               <CardHeader className="p-4 border-b border-border">
                   <div className="flex justify-between items-center gap-2 mb-3">
                     <CardTitle className="text-lg font-semibold text-foreground">Brochure Editor</CardTitle>
-                    <Button onClick={handlePrint} size="sm" disabled={isPrinting || isGenerating || isGeneratingIntro} title="Download Brochure as PDF">
+                    <Button onClick={handlePrint} size="sm" disabled={globalDisable} title="Download Brochure as PDF">
                         {isPrinting ? (
                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
@@ -270,16 +358,16 @@ export default function Home() {
                         value={aiPromptHint}
                         onChange={(e) => setAiPromptHint(e.target.value)}
                         className="flex-grow h-9 text-sm"
-                        disabled={isGenerating || isPrinting || isGeneratingIntro}
+                        disabled={globalDisable}
                         title="Provide an optional hint to guide the AI for full brochure enhancement"
                      />
-                     <Button onClick={handleGenerateContent} size="sm" variant="outline" disabled={isGenerating || isPrinting || isGeneratingIntro} title="Use AI to enhance or complete the entire brochure content">
-                       {isGenerating ? (
+                     <Button onClick={handleGenerateFullContent} size="sm" variant="outline" disabled={globalDisable} title="Use AI to enhance or complete the entire brochure content">
+                       {isGeneratingFull ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                        ) : (
                           <Wand2 className="mr-2 h-4 w-4" />
                        )}
-                       {isGenerating ? 'Working...' : 'Enhance All'}
+                       {isGeneratingFull ? 'Working...' : 'Enhance All'}
                      </Button>
                   </div>
               </CardHeader>
@@ -337,5 +425,3 @@ const PrintableBrochureLoader: React.FC<{ data: Partial<BrochureData> }> = ({ da
         );
     }
 };
-
-    

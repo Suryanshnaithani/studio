@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -10,22 +11,21 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
+import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
 interface BackCoverFormProps {
   form: UseFormReturn<BrochureData>;
+  disabled?: boolean;
 }
 
-export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
+export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
-       {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="backCoverImage"
             label="Back Cover Image (URL or Upload)"
        />
-       {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="backCoverLogo"
@@ -38,7 +38,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Call To Action Text</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Experience Luxury Living" {...field} />
+              <Input placeholder="e.g., Experience Luxury Living" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -51,7 +51,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Contact Info Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Contact Us" {...field} />
+              <Input placeholder="e.g., Contact Us" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -64,7 +64,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Contact Phone</FormLabel>
             <FormControl>
-              <Input type="tel" placeholder="+91..." {...field} />
+              <Input type="tel" placeholder="+91..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -77,7 +77,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Contact Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="sales@..." {...field} />
+              <Input type="email" placeholder="sales@..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -90,7 +90,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Contact Website</FormLabel>
             <FormControl>
-              <Input type="url" placeholder="https://..." {...field} />
+              <Input type="url" placeholder="https://..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -103,7 +103,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Contact Address / Visit Info</FormLabel>
             <FormControl>
-              <Input placeholder="Experience Center, ..." {...field} />
+              <Input placeholder="Experience Center, ..." {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -116,7 +116,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Full Disclaimer</FormLabel>
             <FormControl>
-              <Textarea placeholder="This brochure is conceptual..." {...field} rows={5}/>
+              <Textarea placeholder="This brochure is conceptual..." {...field} value={field.value ?? ''} rows={5} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -129,7 +129,7 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>RERA Disclaimer (repeat)</FormLabel>
             <FormControl>
-              <Textarea placeholder="RERA Registration No..." {...field} rows={2}/>
+              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={2} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>

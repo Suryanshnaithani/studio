@@ -15,32 +15,32 @@ import { ImageUploadInput } from '@/components/ui/image-upload-input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Wand2 } from 'lucide-react';
 
-export interface IntroductionFormProps { // Exporting the interface
+export interface IntroductionFormProps {
   form: UseFormReturn<BrochureData>;
-  onGenerateIntro: () => Promise<void>;
-  isGeneratingIntro: boolean;
-  disabled?: boolean; // General disabled state for all inputs/buttons in this form section
+  onGenerateContent: () => Promise<void>; // Changed from onGenerateIntro
+  isGeneratingContent: boolean;      // Changed from isGeneratingIntro
+  disabled?: boolean;
 }
 
-export const IntroductionForm: React.FC<IntroductionFormProps> = ({ form, onGenerateIntro, isGeneratingIntro, disabled }) => {
+export const IntroductionForm: React.FC<IntroductionFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <FormLabel>Introduction Content</FormLabel>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-medium">Introduction Details</h3>
         <Button 
           type="button" 
-          onClick={onGenerateIntro} 
-          disabled={isGeneratingIntro || disabled}
+          onClick={onGenerateContent} 
+          disabled={isGeneratingContent || disabled}
           variant="outline"
           size="sm"
           title="Generate introduction using AI based on project name and other details"
         >
-          {isGeneratingIntro ? (
+          {isGeneratingContent ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Wand2 className="mr-2 h-4 w-4" />
           )}
-          {isGeneratingIntro ? 'Generating...' : 'AI Generate Intro'}
+          {isGeneratingContent ? 'Generating...' : 'AI Generate'}
         </Button>
       </div>
 
@@ -105,5 +105,3 @@ export const IntroductionForm: React.FC<IntroductionFormProps> = ({ form, onGene
     </div>
   );
 };
-
-    

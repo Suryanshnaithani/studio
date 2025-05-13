@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -10,15 +11,38 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
+import { ImageUploadInput } from '@/components/ui/image-upload-input';
+import { Button } from '@/components/ui/button';
+import { Loader2, Wand2 } from 'lucide-react';
 
-interface AmenitiesIntroFormProps {
+export interface AmenitiesIntroFormProps { // Exporting the interface
   form: UseFormReturn<BrochureData>;
+  onGenerateContent: () => Promise<void>;
+  isGeneratingContent: boolean;
+  disabled?: boolean;
 }
 
-export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) => {
+export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, onGenerateContent, isGeneratingContent, disabled }) => {
   return (
     <div className="space-y-4">
+       <div className="flex justify-between items-center mb-2">
+        <h3 className="text-lg font-medium">Amenities Introduction</h3>
+        <Button 
+          type="button" 
+          onClick={onGenerateContent} 
+          disabled={isGeneratingContent || disabled}
+          variant="outline"
+          size="sm"
+          title="Use AI to generate amenities introduction paragraphs"
+        >
+          {isGeneratingContent ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Wand2 className="mr-2 h-4 w-4" />
+          )}
+          {isGeneratingContent ? 'Generating...' : 'AI Generate Intro'}
+        </Button>
+      </div>
       <FormField
         control={form.control}
         name="amenitiesIntroTitle"
@@ -26,7 +50,7 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) 
           <FormItem>
             <FormLabel>Amenities Intro Title</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., World-Class Amenities" {...field} />
+              <Input placeholder="e.g., World-Class Amenities" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -39,7 +63,7 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) 
           <FormItem>
             <FormLabel>Amenities Intro Paragraph 1</FormLabel>
             <FormControl>
-              <Textarea placeholder="Describe the amenities..." {...field} rows={4}/>
+              <Textarea placeholder="Describe the amenities..." {...field} value={field.value ?? ''} rows={4} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -52,7 +76,7 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) 
           <FormItem>
             <FormLabel>Amenities Intro Paragraph 2</FormLabel>
             <FormControl>
-              <Textarea placeholder="Highlight key features..." {...field} rows={4}/>
+              <Textarea placeholder="Highlight key features..." {...field} value={field.value ?? ''} rows={4} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -65,13 +89,12 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form }) 
           <FormItem>
             <FormLabel>Amenities Intro Paragraph 3</FormLabel>
             <FormControl>
-              <Textarea placeholder="Further details..." {...field} rows={4}/>
+              <Textarea placeholder="Further details..." {...field} value={field.value ?? ''} rows={4} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-       {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="amenitiesIntroWatermark"

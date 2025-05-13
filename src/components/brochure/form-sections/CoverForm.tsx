@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -10,13 +11,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ImageUploadInput } from '@/components/ui/image-upload-input'; // Import the new component
+import { ImageUploadInput } from '@/components/ui/image-upload-input';
 
 interface CoverFormProps {
   form: UseFormReturn<BrochureData>;
+  disabled?: boolean;
 }
 
-export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
+export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
   return (
     <div className="space-y-4">
       <FormField
@@ -26,7 +28,7 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Project Name</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Luxury Residences" {...field} />
+              <Input placeholder="e.g., Luxury Residences" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -39,19 +41,17 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>Project Tagline</FormLabel>
             <FormControl>
-              <Input placeholder="e.g., Where Elegance Meets Modern Living" {...field} />
+              <Input placeholder="e.g., Where Elegance Meets Modern Living" {...field} value={field.value ?? ''} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-       {/* Use ImageUploadInput */}
         <ImageUploadInput
             form={form}
             name="coverImage"
             label="Cover Image (URL or Upload)"
         />
-       {/* Use ImageUploadInput */}
        <ImageUploadInput
             form={form}
             name="projectLogo"
@@ -64,7 +64,7 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
           <FormItem>
             <FormLabel>RERA Information (use line breaks)</FormLabel>
             <FormControl>
-              <Textarea placeholder="RERA Registration No..." {...field} rows={3} />
+              <Textarea placeholder="RERA Registration No..." {...field} value={field.value ?? ''} rows={3} disabled={disabled}/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -73,3 +73,4 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form }) => {
     </div>
   );
 };
+
