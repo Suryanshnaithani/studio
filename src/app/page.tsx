@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Download, Loader2, Palette, RefreshCcw, Wand2 } from 'lucide-react';
+import { Download, Loader2, Palette, RefreshCcw, Wand2, SidebarClose, SidebarOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -32,19 +32,19 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 // Import brochure specific CSS
 import './brochure.css';
 
-// AI generation functionality (currently disabled, can be re-enabled)
-// import { generateBrochureContent, type GenerateBrochureInput } from '@/ai/flows/generate-brochure-flow'; 
-import { z } from 'zod';
+// Import AI generation functionality
+// import { generateBrochureContent, type GenerateBrochureContentInput } from '@/ai/flows/generate-brochure-flow'; // AI features temporarily disabled
+import { z } from 'zod'; // Import z for ZodError
 
 interface FormSection {
   value: string;
   label: string;
   Component: React.FC<any>;
-  aiSection?: BrochureAIDataSection; // Kept for potential future AI re-integration
+  aiSection?: BrochureAIDataSection; // Corrected type
 }
 
 const brochureThemes = [
-  "theme-brochure-builder", 
+  "theme-brochure-builder",
   "theme-elegant-serif",
   "theme-cool-modern",
 ];
@@ -53,12 +53,14 @@ export default function Home() {
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
   const isPrintingRef = useRef(false);
-  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({}); // Kept for AI
+  const [isGeneratingAi, setIsGeneratingAi] = useState<Record<string, boolean>>({});
 
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
   const [printKey, setPrintKey] = useState(0); // Key to force re-render of printable component
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
 
   const printableRef = useRef<HTMLDivElement>(null);
 
@@ -70,7 +72,9 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    // Set initial theme to default brochure builder theme
+    document.documentElement.className = activeTheme;
+  }, [activeTheme]);
 
   const isAnyAiGenerating = Object.values(isGeneratingAi).some(status => status);
   const globalDisable = isPrintingRef.current || isAnyAiGenerating;
@@ -82,22 +86,24 @@ export default function Home() {
       const validatedData = BrochureDataSchema.parse(currentFormData);
       setGeneratedBrochureData(validatedData);
 
-      if (newThemeChange) { 
+      if (newThemeChange) {
         let randomTheme = activeTheme;
         if (brochureThemes.length > 1) {
           while(randomTheme === activeTheme) {
             randomTheme = brochureThemes[Math.floor(Math.random() * brochureThemes.length)];
           }
         } else {
-          randomTheme = brochureThemes[0];
+          randomTheme = brochureThemes[0]; // Fallback if only one theme
         }
         setActiveTheme(randomTheme);
+         // Update HTML root class for theme change
+        document.documentElement.className = randomTheme;
       }
 
-      if (!showPreview) { 
+      if (!showPreview) {
         setShowPreview(true);
       }
-      
+
       if (!isPrintingRef.current) {
         toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
@@ -134,7 +140,7 @@ export default function Home() {
   const debouncedUpdatePreview = useRef(
     debounce(() => {
       if (showPreview && !isPrintingRef.current) {
-        handleGenerateOrUpdateBrochure(false); 
+        handleGenerateOrUpdateBrochure(false);
       }
     }, 750)
   ).current;
@@ -164,31 +170,31 @@ export default function Home() {
   const handlePrint = async () => {
     if (isPrintingRef.current) return;
     isPrintingRef.current = true;
+    setShowPreview(true); // Ensure preview is shown for printing
+    setPrintKey(prev => prev + 1); // Force re-render of PrintableBrochureLoader
 
-    // Force a state update to ensure PrintComponent re-renders with latest data
-    setPrintKey(prev => prev + 1); // This will trigger re-render of PrintableBrochureLoader via its key
+    form.trigger(); // Ensure form validation runs
+    const currentFormData = form.getValues();
 
-    form.trigger(); // This validates all fields
-    const currentFormData = form.getValues(); // Get latest values after trigger
-    
     try {
         const validatedData = BrochureDataSchema.parse(currentFormData);
-        setGeneratedBrochureData(validatedData); // Update state used by PrintableBrochureLoader
+        setGeneratedBrochureData(validatedData); // Set data for print
 
-        // Wait for React to commit state updates and for print CSS to apply.
-        // This ensures PrintableBrochureLoader has the latest data & styles.
-        await new Promise(resolve => setTimeout(resolve, 100)); 
+        // Wait for DOM updates to complete
+        await new Promise(resolve => setTimeout(resolve, 200)); // Increased delay might help complex renders
 
         toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
         
-        // Additional delay to allow browser to render complex elements before printing
-        await new Promise(resolve => setTimeout(resolve, 400)); // Total delay 500ms
+        // Another delay before calling window.print()
+        // This gives browser more time to apply styles and render images
+        await new Promise(resolve => setTimeout(resolve, 500));
+
 
         window.print();
 
     } catch (error: any) {
       console.error("Printing failed:", error);
-      let errorDesc = "Could not prepare the PDF for printing. Please check form data and try again.";
+      let errorDesc = "Could not prepare the PDF. Check form data.";
        if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
         const errorMessages = Object.entries(fieldErrors)
@@ -205,41 +211,72 @@ export default function Home() {
     } finally {
       setTimeout(() => {
         isPrintingRef.current = false;
-      }, 1000); 
+         // Reset the generatedBrochureData for print back to current form values for live preview
+        const currentFormDataForLive = form.getValues();
+        try {
+            const validatedLive = BrochureDataSchema.parse(currentFormDataForLive);
+            setGeneratedBrochureData(validatedLive);
+        } catch {
+           // If current form data is invalid, live preview will show last valid state or error
+           // Forcing update to ensure consistency even if form becomes invalid.
+           console.warn("Form data became invalid after print attempt, live preview might reflect older state or be empty.");
+           setGeneratedBrochureData(null); // Or set to form.getValues() if you want to show potentially invalid state
+           setShowPreview(false); // Potentially hide preview if data is bad.
+        }
+      }, 1500); // Increased delay for post-print cleanup
     }
   };
 
-  // AI Generate function (currently unused, kept for potential re-integration)
+
   const handleAiGenerate = async (sectionKey: string, section: BrochureAIDataSection, promptHint?: string) => {
     setIsGeneratingAi(prev => ({ ...prev, [sectionKey]: true }));
+    toast({
+        title: `AI Content Generation Started`,
+        description: `Generating content for ${section}... This may take a moment.`,
+    });
     try {
         const currentData = form.getValues();
-        BrochureDataSchema.parse(currentData); // Validate before sending
-        
-        // const aiInput: GenerateBrochureInput = { // Type from generate-brochure-flow
+        // Validate before sending to AI to ensure it's a good base
+        BrochureDataSchema.parse(currentData);
+
+        // const aiInput: GenerateBrochureContentInput = { // AI features temporarily disabled
         //     existingData: currentData,
         //     sectionToGenerate: section,
-        //     promptHint: promptHint || `Generate content for the ${section} section.`,
+        //     promptHint: promptHint || `Generate content for the ${section} section. Be professional and concise.`,
         // };
-        // const aiGeneratedData = await generateBrochureContent(aiInput); // Call to AI flow
+        // const aiGeneratedData = await generateBrochureContent(aiInput); // AI features temporarily disabled
 
-        // Object.keys(aiGeneratedData).forEach(key => {
-        //     form.setValue(key as keyof BrochureData, aiGeneratedData[key as keyof BrochureData] as any, { shouldValidate: true, shouldDirty: true });
-        // });
-        // handleGenerateOrUpdateBrochure(false); // Update preview
+        // Dummy AI data for now
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        const aiGeneratedData = { ...currentData };
+        // Example: If section is 'introduction', update relevant fields
+        if (section === BrochureAIDataSectionsEnum.enum.introduction) {
+           aiGeneratedData.introTitle = currentData.projectName ? `Discover the Excellence of ${currentData.projectName}` : "A New Standard in Living";
+           aiGeneratedData.introParagraph1 = `Welcome to ${currentData.projectName || 'this premier development'}. Experience a unique blend of modern design and thoughtful amenities, crafted for an unparalleled lifestyle. This is more than a home; it's a statement.`;
+           aiGeneratedData.introParagraph2 = `Located in a prime area, ${currentData.projectName || 'this project'} offers convenience and serenity. Explore the meticulously planned spaces and envision your future here.`;
+        } else if (section === BrochureAIDataSectionsEnum.enum.cover && currentData.projectName) {
+             aiGeneratedData.projectTagline = `Experience ${currentData.projectName}: Your Gateway to an Inspired Lifestyle.`;
+        }
+        // Add more dummy generations for other sections as needed based on `section` argument
+
+
+        Object.keys(aiGeneratedData).forEach(key => {
+            form.setValue(key as keyof BrochureData, aiGeneratedData[key as keyof BrochureData] as any, { shouldValidate: true, shouldDirty: true });
+        });
+        handleGenerateOrUpdateBrochure(false);
 
         toast({
-            title: `AI Content for ${section} (Simulated)`,
-            description: "AI generation is currently disabled. This is a placeholder action.",
+            title: `AI Content for ${section} Generated (Placeholder)`,
+            description: "Content has been updated with AI suggestions. (Currently using placeholder data)",
         });
 
     } catch (error: any) {
         console.error(`AI Generation Error for ${section}:`, error);
-        let description = `Failed to generate content for ${section}. AI features are currently inactive.`;
+        let description = `Failed to generate content for ${section}.`;
         if (error instanceof z.ZodError) {
             description = `Invalid data before AI generation: ${JSON.stringify(error.flatten().fieldErrors)}`;
         } else if (error.message) {
-            description = error.message;
+            description = error.message; // Use the error message from AI flow if available
         }
         toast({
             variant: "destructive",
@@ -281,16 +318,29 @@ export default function Home() {
   return (
     <FormProvider {...form}>
       <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-background text-foreground">
-        <Card id="sidebar-container" className="w-full md:w-[400px] lg:w-[450px] h-full flex flex-col rounded-none border-0 border-r md:border-r border-border shadow-md no-print bg-card text-card-foreground">
-          <CardHeader className="p-4 border-b border-border sticky top-0 bg-card z-20">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-1">
-              <CardTitle className="text-xl font-semibold">Brochure Editor</CardTitle>
+        <Card id="sidebar-container" className={cn(
+          "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out",
+          sidebarOpen ? "w-full md:w-[420px] lg:w-[480px]" : "w-0 md:w-16 overflow-hidden"
+        )}>
+          <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar z-20">
+             <div className="flex justify-between items-center mb-2">
+               {sidebarOpen && <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>}
+                <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-primary-foreground hover:bg-sidebar-accent">
+                    {sidebarOpen ? <SidebarClose /> : <SidebarOpen />}
+                </Button>
+                 <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="hidden md:flex text-sidebar-primary hover:bg-sidebar-accent">
+                    {sidebarOpen ? <SidebarClose /> : <SidebarOpen />}
+                </Button>
+            </div>
+           {sidebarOpen && (
+            <>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
               <div className="flex gap-2 w-full sm:w-auto">
-                 <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-primary text-primary-foreground hover:bg-primary/90">
+                 <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm">
                   <Palette className="mr-2 h-4 w-4" />
                   {showPreview ? 'New Theme' : 'Generate Brochure'}
                 </Button>
-                <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="flex-grow sm:flex-grow-0">
+                <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="flex-grow sm:flex-grow-0 bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 shadow-sm">
                   {isPrintingRef.current ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
@@ -300,82 +350,108 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-            <CardDescription className="text-xs text-muted-foreground">
+            <CardDescription className="text-xs text-sidebar-foreground/80 mt-2">
               Fill details &amp; click {showPreview ? '"New Theme"' : '"Generate Brochure"'}.
             </CardDescription>
              {showPreview && (
-                <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-2">
+                <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-3 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
                     <RefreshCcw className="mr-2 h-4 w-4" />
-                    Update Current Preview
+                    Update Preview
                 </Button>
             )}
+            </>
+           )}
           </CardHeader>
-          <ScrollArea className="flex-grow">
-            <CardContent className="p-0">
-              <Tabs defaultValue="cover" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-muted z-10 border-b border-border">
-                  {formSections.map(section => (
-                    <TabsTrigger key={section.value} value={section.value} className="text-xs px-1 py-1.5 h-auto data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow">
-                      {section.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                {formSections.map(section => {
-                  const sectionKey = section.value;
-                  const commonProps = {
-                    form: form,
-                    disabled: globalDisable,
-                    // AI features are currently disabled. Pass undefined or a dummy handler.
-                    isGeneratingAi: false, // !!isGeneratingAi[sectionKey],
-                    onAiGenerate: undefined, // section.aiSection ? (promptHint?: string) => handleAiGenerate(sectionKey, section.aiSection!, promptHint) : undefined
-                  };
-                  return (
-                    <TabsContent key={section.value} value={section.value} className="p-3 md:p-4 focus-visible:outline-none focus-visible:ring-0 mt-0">
-                      <section.Component {...commonProps} />
-                    </TabsContent>
-                  );
-                })}
-              </Tabs>
-            </CardContent>
-          </ScrollArea>
+          {sidebarOpen && (
+            <ScrollArea className="flex-grow">
+                <CardContent className="p-0">
+                <Tabs defaultValue="cover" className="w-full" orientation="vertical">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 h-auto rounded-none p-1 gap-0.5 sticky top-0 bg-sidebar-accent/30 z-10 border-b border-sidebar-border">
+                    {formSections.map(section => (
+                        <TabsTrigger key={section.value} value={section.value} className="text-xs px-1.5 py-2 h-auto data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground data-[state=active]:shadow-md text-sidebar-foreground hover:bg-sidebar-accent/70">
+                        {section.label}
+                        </TabsTrigger>
+                    ))}
+                    </TabsList>
+                    {formSections.map(section => {
+                    const sectionKey = section.value;
+                    const commonProps = {
+                        form: form,
+                        disabled: globalDisable,
+                        isGeneratingAi: !!isGeneratingAi[sectionKey],
+                        onAiGenerate: section.aiSection ? (promptHint?: string) => handleAiGenerate(sectionKey, section.aiSection!, promptHint) : undefined
+                    };
+                    return (
+                        <TabsContent key={section.value} value={section.value} className="p-3 md:p-4 focus-visible:outline-none focus-visible:ring-0 mt-0">
+                        <section.Component {...commonProps} />
+                        </TabsContent>
+                    );
+                    })}
+                </Tabs>
+                </CardContent>
+            </ScrollArea>
+           )}
+           {!sidebarOpen && ( // Minimal icons when sidebar is collapsed (desktop only)
+             <div className="hidden md:flex flex-col items-center mt-4 space-y-2 p-2">
+                {formSections.map(section => (
+                     <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
+                        setSidebarOpen(true);
+                        // Potentially switch tab
+                        const tabsInstance = document.querySelector('[data-radix-orientation="vertical"]');
+                        if (tabsInstance) {
+                            // This is a bit hacky, directly interacting with DOM might be better handled via state
+                            const trigger = tabsInstance.querySelector(`button[value="${section.value}"]`) as HTMLButtonElement | null;
+                            trigger?.click();
+                        }
+                     }}>
+                        {/* Placeholder - replace with actual icons or a generic edit icon */}
+                        <Wand2 className="h-5 w-5" />
+                     </Button>
+                 ))}
+             </div>
+           )}
         </Card>
 
-        <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/40 dark:bg-gray-900/60">
-          {showPreview && generatedBrochureData ? (
+        <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/30 dark:bg-gray-900/50">
+          {!showPreview || !generatedBrochureData ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6 md:p-8">
+                <Palette className="w-20 h-20 text-muted-foreground/20 mb-6" />
+                <h3 className="text-2xl font-semibold text-foreground mb-3">Your Brochure Awaits Creation</h3>
+                <p className="text-muted-foreground max-w-md text-sm">
+                  Fill in the details for your property in the editor on the left.
+                  Once ready, click "Generate Brochure" to see your professional real estate brochure come to life.
+                  You can then try different themes or download it as a PDF.
+                </p>
+              </div>
+          ) : (
             <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
                <div ref={printableRef} id="printable-brochure-wrapper-live" className={cn(activeTheme, "transition-all duration-300")}>
-                <BrochurePreview key={`screen-${printKey}-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
+                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-6 md:p-8">
-              <Palette className="w-16 h-16 text-muted-foreground/30 mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">Your Brochure Awaits</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Fill in the details in the editor on the left, then click "Generate Brochure" to create and preview your professional real estate brochure.
-              </p>
             </div>
           )}
         </div>
       </div>
 
-      {isClient && generatedBrochureData && (
-        <div className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none print:overflow-visible">
-          <PrintableBrochureLoader key={`print-${printKey}-${activeTheme}`} data={generatedBrochureData} themeClass={activeTheme} />
-        </div>
+      {/* Hidden div for printing, content managed by PrintableBrochureLoader */}
+      {isClient && (
+          <div className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none print:overflow-visible">
+            {generatedBrochureData && <PrintableBrochureLoader printKey={printKey} data={generatedBrochureData} themeClass={activeTheme} />}
+          </div>
       )}
     </FormProvider>
   );
 }
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, key?: string }> = React.memo(({ data, themeClass, key }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, printKey: number }> = React.memo(({ data, themeClass, printKey }) => {
+  // The key on the component instance in Home already forces re-mount for print.
+  // This component now just focuses on validating and rendering.
   try {
-    // Ensure data is validated before rendering. This is critical for print.
     const validatedData = BrochureDataSchema.parse(data);
-    return <BrochurePreview key={key} data={validatedData} themeClass={themeClass} />;
+    return <BrochurePreview data={validatedData} themeClass={themeClass} />;
   } catch (error) {
     console.error("Data validation failed for print render:", error);
-    // Return a visible error page for print if data is invalid
+    // This error display will appear on the printed page if data is invalid.
     return (
       <div className={`p-10 text-red-600 font-bold text-center page page-light-bg ${themeClass}`} style={{ pageBreakBefore: 'always', boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
         <h1>Brochure Generation Error</h1>
