@@ -48,7 +48,7 @@
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
   }
-   .page:not(:last-child) {
+   .page:not(:last-child) { /* Ensures each page (except the last) breaks after itself */
        page-break-after: always !important;
    }
   .page-content {
@@ -259,7 +259,7 @@ li::before {
 h1, h2, h3, h4, h5, h6, .section-title {
   page-break-after: avoid !important;
 }
-p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div), img, figure, table, thead, tbody {
+p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div):not(#print-only-section-wrapper):not(.printable-brochure), img, figure, table, thead, tbody {
     page-break-inside: avoid !important;
 }
 p, li { orphans: 3; widows: 3; }

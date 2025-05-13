@@ -76,7 +76,7 @@ export default function Home() {
   const globalDisable = isPrintingRef.current;
 
 
-  const handleGenerateOrUpdateBrochure = (newThemeChange: boolean = false) => {
+ const handleGenerateOrUpdateBrochure = (newThemeChange: boolean = false) => {
     try {
       const currentFormData = form.getValues();
       const validatedData = BrochureDataSchema.parse(currentFormData);
@@ -92,7 +92,7 @@ export default function Home() {
         } else {
           randomTheme = brochureThemes[0];
         }
-        setActiveTheme(randomTheme);
+        setActiveTheme(randomTheme); // This will trigger the useEffect to update document.documentElement.className
       }
 
       if (!showPreview) {
@@ -100,7 +100,7 @@ export default function Home() {
       }
 
       if (!isPrintingRef.current) {
-        toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
+        toast({ title: newThemeChange && showPreview ? "Theme Changed" : "Brochure Updated", description: "Preview reflects the latest data." });
       }
     } catch (error: any) {
       console.error("Validation failed for brochure generation/update:", error);
@@ -169,20 +169,20 @@ export default function Home() {
     toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
 
     try {
+        // 1. Validate current form data
         await form.trigger(); 
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
-        // Update data and key for the print-only component
+        // 2. Update state for the print-only component
         setGeneratedBrochureData(validatedDataForPrint);
         setPrintKey(prev => prev + 1); 
 
-        // Wait for React to render the PrintableBrochureLoader with the new data.
-        // A slightly longer delay can be more robust for complex rendering.
-        await new Promise(resolve => setTimeout(resolve, 50)); // Initial delay for state updates
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); // Wait for paint
-        await new Promise(resolve => setTimeout(resolve, 250)); // Additional delay for rendering completion
+        // 3. Wait for DOM update
+        // This timeout allows React to re-render the PrintableBrochureLoader.
+        await new Promise(resolve => setTimeout(resolve, 150)); // Adjusted timeout
 
+        // 4. Call window.print()
         window.print();
 
     } catch (error: any) {
@@ -205,17 +205,18 @@ export default function Home() {
       setTimeout(() => {
         isPrintingRef.current = false;
         // Re-sync live preview with current form data
-        // This ensures the live preview doesn't get stuck on the print data if form changes occurred
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
             setGeneratedBrochureData(validatedLive);
-        } catch {
-           console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.");
-           setGeneratedBrochureData(currentLiveFormData); // Show raw data if validation fails
-        }
-        if (!showPreview && currentLiveFormData) {
-            setShowPreview(true);
+            if (!showPreview && Object.keys(validatedLive).length > 0) { // Check if data is not empty
+                setShowPreview(true);
+            }
+        } catch (parseError) {
+           console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
+           // Optionally set to a safe default or the raw (potentially invalid) data
+           // setGeneratedBrochureData(getDefaultBrochureData()); 
+           setGeneratedBrochureData(currentLiveFormData); 
         }
       }, 2500);
     }
@@ -268,7 +269,7 @@ export default function Home() {
             <>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
               <div className="flex gap-2 w-full sm:w-auto">
-                 <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm">
+                 <Button onClick={() => handleGenerateOrUpdateBrochure(!showPreview || brochureThemes.length > 1)} size="sm" disabled={globalDisable} className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm">
                   <Palette className="mr-2 h-4 w-4" />
                   {showPreview ? 'New Theme' : 'Generate Brochure'}
                 </Button>
@@ -325,7 +326,6 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        // Switch to the tab when its icon is clicked in collapsed mode
                         const tabsInstance = document.querySelector('[data-orientation="vertical"]');
                         if (tabsInstance) {
                             const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
@@ -360,11 +360,12 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Print-Only Section */}
       {isClient && (
-          <div id="print-only-section-wrapper" className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none">
+          <div id="print-only-section-wrapper" className="hidden print:block">
             {generatedBrochureData && (
               <PrintableBrochureLoader 
-                key={`print-${printKey}-${activeTheme}`} 
+                key={`print-${printKey}-${activeTheme}`}
                 data={generatedBrochureData} 
                 themeClass={activeTheme} 
               />
@@ -381,8 +382,9 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
     return <BrochurePreview data={validatedData} themeClass={themeClass} />;
   } catch (error) {
     console.error("Data validation failed for print render:", error);
+    // This fallback will be part of the printed output if data is bad *at print time*
     return (
-      <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={{ pageBreakBefore: 'always', boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
+      <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={{ boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
         <h1>Brochure Generation Error (for Print)</h1>
         <p className="mt-4">The brochure data is incomplete or invalid and cannot be printed.</p>
         <p className="mt-2">Please correct the errors in the editor before downloading the PDF.</p>
