@@ -11,11 +11,16 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'genkit'; // Use genkit's Zod for consistency if it re-exports it, otherwise stick to 'zod'
 import {
     BrochureDataSchema,
     type BrochureData,
     SpecificFieldGeneratingSectionsEnum,
+    // Removed optionalUrlSchema and optionalEmailSchema as they are not directly used for AI input/output schemas here
+    // and were causing issues with Genkit's schema interpretation for AI.
+    // The base Zod types (z.string().url(), z.string().email()) are sufficient for schema definition.
+    // Validation for "empty or valid URL/email" should be handled by .optional().default('') or client-side logic if needed,
+    // or by prompt engineering if specific AI behavior for empty strings is required.
 } from '@/components/brochure/data-schema';
 
 
@@ -34,7 +39,7 @@ export type GenerateBrochureOutput = BrochureData; // Output is the complete, up
 // Internal input schema for the prompt, uses direct objects for data
 const PromptInternalInputSchema = z.object({
     promptHint: z.string().optional(),
-    existingData: BrochureDataSchema.describe("The current brochure data entered by the user."),
+    existingData: BrochureDataSchema, // Pass the direct object schema
     sectionToGenerate: SpecificFieldGeneratingSectionsEnum.optional(),
     fieldsToGenerate: z.array(z.string()).optional().describe("Specific fields within the section to generate. Undefined if no specific fields are targeted."),
 });
@@ -44,10 +49,11 @@ const PromptInternalInputSchema = z.object({
 export async function generateBrochureContent(input: GenerateBrochureInput): Promise<GenerateBrochureOutput> {
     console.log("Calling generateBrochureFlow with input. Section:", input.sectionToGenerate, "Fields:", input.fieldsToGenerate);
     try {
-        ExternalGenerateBrochureInputSchema.parse(input); // Validate external input
+        // Validate external input before processing
+        ExternalGenerateBrochureInputSchema.parse(input);
     } catch (error) {
         console.error("Invalid input to generateBrochureContent:", error);
-        if (error instanceof z.ZodError) {
+        if (error instanceof z.ZodError) { // Ensure z is the Zod instance, not genkit's z if they differ.
             throw new Error(`Invalid input data: ${JSON.stringify(error.flatten().fieldErrors)}`);
         }
         throw new Error("Invalid input data for AI generation.");
@@ -59,9 +65,9 @@ export async function generateBrochureContent(input: GenerateBrochureInput): Pro
 // Define the prompt for content generation
 const generateContentPrompt = ai.definePrompt({
     name: 'generateBrochureContentPrompt',
-    input: { schema: PromptInternalInputSchema },
-    output: { schema: BrochureDataSchema }, 
-    model: 'googleai/gemini-2.0-flash', 
+    input: { schema: PromptInternalInputSchema }, // Define input schema for typing and validation
+    output: { schema: BrochureDataSchema },      // Define output schema for AI response structure
+    model: 'googleai/gemini-2.0-flash',          // Specify the model
     prompt: `
     You are a sophisticated AI assistant specialized in creating compelling real estate brochure content.
     Your task is to enhance or generate content for a property brochure based on the provided data and user instructions.
@@ -80,7 +86,7 @@ const generateContentPrompt = ai.definePrompt({
     6.  **Return Full Structure:** ALWAYS return the *complete* BrochureData structure, merging your generated/enhanced content with the original 'existingData'. Untouched fields must be returned exactly as they were provided.
     7.  **Image URLs and Array Data:**
         *   NEVER generate new image URLs. Return existing image URLs as they are. If an image field is empty in 'existingData', keep it empty in the output. These fields include: coverImage, projectLogo, introWatermark, developerImage, developerLogo, locationMapImage, locationWatermark, connectivityImage, connectivityWatermark, amenitiesIntroWatermark, amenitiesListImage, amenitiesGridImage1, amenitiesGridImage2, amenitiesGridImage3, amenitiesGridImage4, specsImage, specsWatermark, masterPlanImage, floorPlans.*.image, backCoverImage, backCoverLogo.
-        *   For fields that are arrays of strings (like keyDistances, amenitiesWellness, amenitiesRecreation, specsInterior, specsBuilding, floorPlans.*.features, connectivityPoints*):
+        *   For fields that are arrays of strings (like keyDistances, amenitiesWellness, amenitiesRecreation, specsInterior, specsBuilding, floorPlans.*.features, connectivityPointsBusiness, connectivityPointsHealthcare, connectivityPointsEducation, connectivityPointsLeisure):
             *   Do NOT add or remove items from these lists.
             *   You MAY refine the wording *within* existing string items if the section/field is targeted for generation.
             *   Otherwise, return these lists exactly as provided in 'existingData'.
@@ -106,7 +112,7 @@ const generateContentPrompt = ai.definePrompt({
     **Instructions for Generation:**
     {{#if sectionToGenerate}}
     Generate or enhance content ONLY for the '{{sectionToGenerate}}' section.
-        {{#if fieldsToGenerate}}
+        {{#if fieldsToGenerate.length}}
     Specifically for the fields: {{{jsonStringify fieldsToGenerate}}}.
         {{else}}
     For all relevant text fields within '{{sectionToGenerate}}' (or just the title field if '{{sectionToGenerate}}' refers to a title like 'amenitiesListTitle', 'floorPlansTitle', etc.).
@@ -118,20 +124,20 @@ const generateContentPrompt = ai.definePrompt({
 
     Output the result as a valid JSON object matching the BrochureData schema.
 `,
-    template: { // Moved helpers into template object
-        helpers: {
-            jsonStringify: (value: any) => JSON.stringify(value, null, 0), 
+    template: {                                  // Template configuration
+        helpers: {                               // Define helpers here
+            jsonStringify: (value: any) => JSON.stringify(value === undefined ? null : value, null, 0), // Robust helper
         },
     },
-    config: {
-        responseSchema: BrochureDataSchema, 
+    config: { // Model configuration
+        responseSchema: BrochureDataSchema, // Ensure AI returns data matching this schema
         safetySettings: [
             { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }, // Adjusted for real estate
             { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
             { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
         ],
-         temperature: 0.4, 
+         temperature: 0.4, // Lower temperature for more factual, less "creative" output.
     },
 });
 
@@ -140,16 +146,18 @@ const generateContentPrompt = ai.definePrompt({
 const generateBrochureFlow = ai.defineFlow(
     {
         name: 'generateBrochureFlow',
-        inputSchema: ExternalGenerateBrochureInputSchema,
-        outputSchema: BrochureDataSchema,
+        inputSchema: ExternalGenerateBrochureInputSchema, // Use the externally defined schema
+        outputSchema: BrochureDataSchema, // Output is the full schema
     },
     async (input) => {
         console.log("Executing generateBrochureFlow prompt with sectionToGenerate:", input.sectionToGenerate);
 
+        // Prepare payload for the prompt, ensuring data structure matches PromptInternalInputSchema
         const promptInputPayload: z.infer<typeof PromptInternalInputSchema> = {
             promptHint: input.promptHint,
             existingData: input.existingData, // Pass direct object
             sectionToGenerate: input.sectionToGenerate,
+            // Ensure fieldsToGenerate is undefined if empty array, as per schema's .optional()
             fieldsToGenerate: (input.fieldsToGenerate && input.fieldsToGenerate.length > 0)
                                       ? input.fieldsToGenerate
                                       : undefined, 
@@ -162,24 +170,33 @@ const generateBrochureFlow = ai.defineFlow(
           throw new Error("AI failed to generate brochure content. No output received.");
         }
 
+        // The AI output should ideally be the full BrochureData.
+        // We will merge it with existing data to ensure all fields are preserved,
+        // especially non-textual ones or those outside AI's generation scope.
+        // The AI's primary role is to fill/enhance text; other data (like image URLs) should persist.
+
+        // Create a deep copy to avoid mutating the raw AI output if needed later for debugging
         const processedAiOutput = JSON.parse(JSON.stringify(rawAiOutput)); 
 
+        // Post-process to ensure no nulls for non-nullable string fields (convert to empty string)
+        // This is a safeguard. The prompt instructs AI to return "" for empty strings.
         for (const key of Object.keys(BrochureDataSchema.shape) as Array<keyof BrochureData>) {
             if (processedAiOutput.hasOwnProperty(key) && processedAiOutput[key] === null) {
                 const fieldSchema = BrochureDataSchema.shape[key];
+                // Check if the field is a string and has a default of empty string (common for our optional text fields)
                 if (
                     fieldSchema instanceof z.ZodOptional &&
                     fieldSchema._def.innerType instanceof z.ZodDefault &&
-                    fieldSchema._def.innerType._def.innerType instanceof z.ZodEffects && 
-                    fieldSchema._def.innerType._def.innerType._def.schema instanceof z.ZodString &&
-                    fieldSchema._def.innerType._def.defaultValue === '' 
+                    fieldSchema._def.innerType._def.innerType instanceof z.ZodString && // Check the innermost type
+                    fieldSchema._def.innerType._def.defaultValue === '' // Ensure default is empty string
                 ) {
-                    (processedAiOutput as any)[key] = ''; 
+                    (processedAiOutput as any)[key] = ''; // Coerce null to empty string
                 }
             }
         }
     
         try {
+            // Merge AI's output over the existing data. This preserves fields AI didn't touch.
             const mergedOutput = { ...input.existingData, ...processedAiOutput };
             const validatedOutput = BrochureDataSchema.parse(mergedOutput);
             console.log("AI Generation Successful for:", input.sectionToGenerate || "Full Brochure");
@@ -190,17 +207,19 @@ const generateBrochureFlow = ai.defineFlow(
             console.error("Raw AI output (before sanitization):", JSON.stringify(rawAiOutput, null, 2));
             console.error("Processed AI output (after sanitization):", JSON.stringify(processedAiOutput, null, 2));
             
-            if (validationError instanceof z.ZodError) {
+            if (validationError instanceof z.ZodError) { // Ensure z is the Zod instance
                  const fieldErrors = validationError.flatten().fieldErrors;
                  console.error("Validation Errors from mergedOutput:", JSON.stringify(fieldErrors, null, 2));
+                 // Fallback: if AI output is corrupt, try returning original data if it's valid
                  console.warn("AI output was problematic. Attempting to return original data if it's valid.");
                  try {
+                    // Ensure original data itself is valid before returning as fallback
                     const validatedOriginalData = BrochureDataSchema.parse(input.existingData);
                     console.log("Successfully validated original data. Returning original data as fallback.");
                     return validatedOriginalData;
                  } catch (originalDataValidationError) {
                     console.error("CRITICAL: Original input.existingData also failed validation. This indicates an issue with data integrity before AI call or a schema mismatch during fallback.", originalDataValidationError);
-                    if (originalDataValidationError instanceof z.ZodError) {
+                    if (originalDataValidationError instanceof z.ZodError) { // Ensure z is Zod
                         console.error("Original Data Validation Errors (during fallback parse):", JSON.stringify(originalDataValidationError.flatten().fieldErrors, null, 2));
                     }
                      throw new Error(`AI output validation failed. Errors: ${JSON.stringify(fieldErrors)}. Original data also invalid.`);
@@ -212,4 +231,6 @@ const generateBrochureFlow = ai.defineFlow(
         }
     }
 );
+    
+
     
