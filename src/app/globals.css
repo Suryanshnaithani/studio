@@ -39,6 +39,9 @@ body {
     --secondary-foreground: 0 0% 10%; /* Very Dark Grey */
 
     --muted: 0 0% 96.1%; /* Light Grey for muted backgrounds */
+    --muted-h: 0;
+    --muted-s: 0%;
+    --muted-l: 96.1%;
     --muted-foreground: 0 0% 45.1%; /* Mid Grey for muted text */
 
     --accent: 51 100% 50%; /* Gold */
@@ -62,15 +65,15 @@ body {
     --chart-5: 0 0% 50%; /* Neutral Grey */
     --radius: 0.3rem;
 
-    /* Sidebar vars to match main B&W theme but with brochure primary */
-    --sidebar-background: 0 0% 98%; /* White for sidebar */
-    --sidebar-foreground: 0 0% 10%; /* Very Dark Grey for text */
-    --sidebar-primary: 216 80% 20%; /* Dark Blue for active/primary elements in sidebar */
-    --sidebar-primary-foreground: 0 0% 98%; /* Almost White on primary */
-    --sidebar-accent: 216 30% 90%; /* Light blue-grey for hover/accent */
-    --sidebar-accent-foreground: 216 80% 20%; /* Dark Blue on accent */
-    --sidebar-border: 0 0% 89.8%;
-    --sidebar-ring: 216 80% 30%;
+    /* Sidebar vars based on primary/secondary/accent but can be themed */
+    --sidebar-background: 0 0% 98%; /* Default: Very Light Grey / White */
+    --sidebar-foreground: 0 0% 10%; /* Default: Dark Grey */
+    --sidebar-primary: 216 80% 25%; /* Default: Brochure Primary (Dark Blue) */
+    --sidebar-primary-foreground: 0 0% 98%; /* Default: Almost White */
+    --sidebar-accent: 216 30% 90%; /* Default: Light blue-grey for hover */
+    --sidebar-accent-foreground: 216 80% 20%; /* Default: Dark Blue on accent */
+    --sidebar-border: 0 0% 89.8%; /* Default: Light Grey */
+    --sidebar-ring: 216 80% 30%; /* Default: Brochure Primary for rings */
   }
 
   .dark {
@@ -101,7 +104,11 @@ body {
 
     --secondary: 216 25% 20%; /* Darker Grey-Blue */
     --secondary-foreground: 0 0% 95%;
+    
     --muted: 216 20% 15%;
+    --muted-h: 216;
+    --muted-s: 20%;
+    --muted-l: 15%;
     --muted-foreground: 0 0% 65%;
 
     --accent: 210 70% 55%; /* A lighter, desaturated blue for accent */
@@ -120,6 +127,7 @@ body {
     --chart-4: 210 60% 45%;
     --chart-5: 0 0% 70%;
 
+    /* Dark mode sidebar */
     --sidebar-background: 216 30% 8%;
     --sidebar-foreground: 0 0% 92%;
     --sidebar-primary: 51 100% 60%; /* Gold for active sidebar in dark */
@@ -160,7 +168,10 @@ body {
     --accent-foreground: 214 40% 15%; /* Dark Blue, slightly darker for contrast */
 
     --border: 214 20% 85%;
-    --muted: 220 10% 92%;
+    --muted: 220 10% 92%; /* Slightly darker grey for muted backgrounds */
+    --muted-h: 220;
+    --muted-s: 10%;
+    --muted-l: 92%;
     --muted-foreground: 214 30% 35%;
 
     --brochure-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -178,20 +189,21 @@ body {
   }
 
    .theme-elegant-serif {
-    --background: 45 50% 98%;
+    --background: 45 50% 98%; /* Creamy White */
     --background-h: 45; --background-s: 50%; --background-l: 98%;
-    --foreground: 45 15% 20%;
+    --foreground: 45 15% 20%; /* Dark Brown-Grey */
     --foreground-h: 45; --foreground-s: 15%; --foreground-l: 20%;
-    --primary: 180 30% 35%;
+    --primary: 180 30% 35%; /* Deep Teal */
     --primary-h: 180; --primary-s: 30%; --primary-l: 35%;
-    --primary-foreground: 45 50% 98%;
+    --primary-foreground: 45 50% 98%; /* Creamy White */
     --primary-foreground-h: 45; --primary-foreground-s: 50%; --primary-foreground-l: 98%;
-    --accent: 30 80% 60%;
+    --accent: 30 80% 60%; /* Warm Terracotta/Orange */
     --accent-h: 30; --accent-s: 80%; --accent-l: 60%;
-    --accent-foreground: 45 15% 20%;
-    --border: 45 30% 85%;
-    --muted: 45 50% 95%;
-    --muted-foreground: 45 15% 45%;
+    --accent-foreground: 45 15% 20%; /* Dark Brown-Grey for text on accent */
+    --border: 45 30% 85%; /* Light Cream border */
+    --muted: 45 50% 95%; /* Lighter Cream for muted backgrounds */
+    --muted-h: 45; --muted-s: 50%; --muted-l: 95%;
+    --muted-foreground: 45 15% 45%; /* Mid Brown-Grey for muted text */
     --brochure-font-family: 'Playfair Display', serif;
 
     /* Opacity variables for theme-elegant-serif */
@@ -207,20 +219,21 @@ body {
   }
 
    .theme-cool-modern {
-    --background: 210 30% 98%;
+    --background: 210 30% 98%; /* Very Light Cool Grey */
     --background-h: 210; --background-s: 30%; --background-l: 98%;
-    --foreground: 210 20% 25%;
+    --foreground: 210 20% 25%; /* Cool Dark Grey */
     --foreground-h: 210; --foreground-s: 20%; --foreground-l: 25%;
-    --primary: 205 65% 45%;
+    --primary: 205 65% 45%; /* Strong Steel Blue */
     --primary-h: 205; --primary-s: 65%; --primary-l: 45%;
-    --primary-foreground: 210 30% 98%;
+    --primary-foreground: 210 30% 98%; /* Very Light Cool Grey */
     --primary-foreground-h: 210; --primary-foreground-s: 30%; --primary-foreground-l: 98%;
-    --accent: 330 70% 60%;
+    --accent: 330 70% 60%; /* Bright Magenta/Pink */
     --accent-h: 330; --accent-s: 70%; --accent-l: 60%;
-    --accent-foreground: 210 30% 98%;
-    --border: 210 20% 88%;
-    --muted: 210 30% 95%;
-    --muted-foreground: 210 15% 50%;
+    --accent-foreground: 210 30% 98%; /* Very Light Cool Grey for text on accent */
+    --border: 210 20% 88%; /* Light Cool Grey border */
+    --muted: 210 30% 95%; /* Lighter Cool Grey for muted backgrounds */
+    --muted-h: 210; --muted-s: 30%; --muted-l: 95%;
+    --muted-foreground: 210 15% 50%; /* Mid Cool Grey for muted text */
     --brochure-font-family: 'Open Sans', sans-serif;
 
     /* Opacity variables for theme-cool-modern */
@@ -252,7 +265,6 @@ body {
   }
 
   html, body {
-      /* width: 210mm !important; REMOVED: Let content flow within @page box */
       height: auto !important;
       background-color: transparent !important;
       color: hsl(var(--foreground)) !important;
@@ -271,12 +283,23 @@ body {
      display: none !important;
   }
   #sidebar-container { display: none !important; }
-  .brochure-preview-container {
+  .brochure-preview-container { /* This is the live preview area */
     display: none !important;
   }
 
-
   /* Styles for the actual print output generated by PrintableBrochureLoader */
+  /* This container is critical for preventing the blank first page */
+  #print-only-section-wrapper {
+    display: block !important; /* Ensure it's a block container */
+    height: auto !important;
+    overflow: visible !important;
+    page-break-before: avoid !important; /* Critical for preventing blank first page */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
   .printable-brochure {
     margin: 0 !important;
     padding: 0 !important;
@@ -285,6 +308,8 @@ body {
     width: 210mm !important; /* A4 width */
     height: auto !important; /* Auto height to contain all pages */
     overflow: visible !important; /* Allow pages to flow */
+    page-break-before: avoid !important; /* Reinforce no break before brochure content starts */
+    display: block !important; /* Ensure it's a block formatting context */
   }
 
   /* Ensure the very first *rendered* page in the brochure doesn't break before it */
@@ -297,7 +322,7 @@ body {
   h1, h2, h3, h4, h5, h6, .section-title {
     page-break-after: avoid !important;
   }
-  p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div), img, figure, table {
+  p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div):not(#print-only-section-wrapper):not(.printable-brochure), img, figure, table {
       page-break-inside: avoid !important;
   }
   p, li { orphans: 3; widows: 3; }

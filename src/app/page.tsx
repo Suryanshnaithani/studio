@@ -54,11 +54,11 @@ export default function Home() {
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
-  const [printKey, setPrintKey] = useState(0); // Key to force re-render of printable component
+  const [printKey, setPrintKey] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
 
-  const printableRef = useRef<HTMLDivElement>(null);
+  const livePreviewRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
@@ -68,7 +68,6 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    // Apply theme to HTML element for global styles
     if (typeof window !== 'undefined') {
       document.documentElement.className = activeTheme;
     }
@@ -87,13 +86,11 @@ export default function Home() {
         let randomTheme = activeTheme;
         if (brochureThemes.length > 1) {
           const availableThemes = brochureThemes.filter(t => t !== activeTheme);
-          if (availableThemes.length > 0) {
-            randomTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
-          } else {
-            randomTheme = brochureThemes[0]; // Fallback if only one theme or currently active is the only one
-          }
+          randomTheme = availableThemes.length > 0 
+            ? availableThemes[Math.floor(Math.random() * availableThemes.length)] 
+            : brochureThemes[0];
         } else {
-          randomTheme = brochureThemes[0]; // Fallback if only one theme
+          randomTheme = brochureThemes[0];
         }
         setActiveTheme(randomTheme);
       }
@@ -102,7 +99,7 @@ export default function Home() {
         setShowPreview(true);
       }
 
-      if (!isPrintingRef.current) { // Avoid toasting during print preparation
+      if (!isPrintingRef.current) {
         toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
     } catch (error: any) {
@@ -130,7 +127,7 @@ export default function Home() {
           duration: 7000
         });
       }
-       if (isPrintingRef.current) throw error; // Rethrow if printing so handlePrint can catch
+       if (isPrintingRef.current && error instanceof z.ZodError) throw error; 
     }
   };
 
@@ -168,24 +165,23 @@ export default function Home() {
   const handlePrint = async () => {
     if (isPrintingRef.current) return;
     isPrintingRef.current = true;
-    setPrintKey(prev => prev + 1); // Force re-render of PrintableBrochureLoader
-
-    await form.trigger(); // Ensure form is validated before getting values
-    const currentFormData = form.getValues();
+    
+    toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
 
     try {
+        await form.trigger(); 
+        const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
-        // This state update is crucial for PrintableBrochureLoader
-        // It will use this specific data for the print job
+        
+        // Update data and key for the print-only component
         setGeneratedBrochureData(validatedDataForPrint);
-
-        toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
+        setPrintKey(prev => prev + 1); 
 
         // Wait for React to render the PrintableBrochureLoader with the new data.
-        // Double requestAnimationFrame to wait for paint.
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        // Small additional delay for browser to fully process rendering tasks.
-        await new Promise(resolve => setTimeout(resolve, 150));
+        // A slightly longer delay can be more robust for complex rendering.
+        await new Promise(resolve => setTimeout(resolve, 50)); // Initial delay for state updates
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); // Wait for paint
+        await new Promise(resolve => setTimeout(resolve, 250)); // Additional delay for rendering completion
 
         window.print();
 
@@ -206,25 +202,22 @@ export default function Home() {
         duration: 7000
       });
     } finally {
-      // Delay cleanup to allow print dialog to fully process
-      // and to avoid rapid state changes affecting print.
       setTimeout(() => {
         isPrintingRef.current = false;
-        // After printing, ensure the live preview reflects the current form data,
-        // not necessarily the data that was just printed.
+        // Re-sync live preview with current form data
+        // This ensures the live preview doesn't get stuck on the print data if form changes occurred
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
             setGeneratedBrochureData(validatedLive);
         } catch {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.");
-           // Fallback to raw form data for live preview if validation fails
-           setGeneratedBrochureData(currentLiveFormData);
+           setGeneratedBrochureData(currentLiveFormData); // Show raw data if validation fails
         }
-        if (!showPreview && currentLiveFormData) { // If preview was off, turn it on
+        if (!showPreview && currentLiveFormData) {
             setShowPreview(true);
         }
-      }, 2500); // Increased delay
+      }, 2500);
     }
   };
 
@@ -258,13 +251,13 @@ export default function Home() {
     <FormProvider {...form}>
       <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-background text-foreground">
         <Card id="sidebar-container" className={cn(
-          "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar text-sidebar-foreground transition-all duration-300 ease-in-out",
+          "h-full flex flex-col rounded-none border-0 md:border-r border-sidebar-border shadow-lg no-print bg-sidebar-background text-sidebar-foreground transition-all duration-300 ease-in-out",
           sidebarOpen ? "w-full md:w-[420px] lg:w-[480px]" : "w-0 md:w-16 overflow-hidden"
         )}>
-          <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar z-20">
+          <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar-background z-20">
              <div className="flex justify-between items-center mb-2">
                {sidebarOpen && <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>}
-                <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-primary-foreground hover:bg-sidebar-accent">
+                <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent">
                     {sidebarOpen ? <SidebarClose /> : <SidebarOpen />}
                 </Button>
                  <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="hidden md:flex text-sidebar-primary hover:bg-sidebar-accent">
@@ -332,9 +325,10 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        const tabsInstance = document.querySelector('[data-radix-orientation="vertical"]');
+                        // Switch to the tab when its icon is clicked in collapsed mode
+                        const tabsInstance = document.querySelector('[data-orientation="vertical"]');
                         if (tabsInstance) {
-                            const trigger = tabsInstance.querySelector(`button[value="${section.value}"]`) as HTMLButtonElement | null;
+                            const trigger = tabsInstance.querySelector(`button[data-state][value="${section.value}"]`) as HTMLButtonElement | null;
                             trigger?.click();
                         }
                      }}>
@@ -345,10 +339,10 @@ export default function Home() {
            )}
         </Card>
 
-        <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/30 dark:bg-gray-900/50">
+        <div className="flex-grow h-full overflow-hidden brochure-preview-container bg-muted/40 dark:bg-background/30">
           {!showPreview || !generatedBrochureData ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-6 md:p-8">
-                <Palette className="w-20 h-20 text-muted-foreground/20 mb-6" />
+                <Palette className="w-20 h-20 text-muted-foreground/30 mb-6" />
                 <h3 className="text-2xl font-semibold text-foreground mb-3">Your Brochure Awaits Creation</h3>
                 <p className="text-muted-foreground max-w-md text-sm">
                   Fill in the details for your property in the editor on the left.
@@ -358,7 +352,7 @@ export default function Home() {
               </div>
           ) : (
             <div id="live-preview-content-wrapper" className="flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full">
-               <div ref={printableRef} id="printable-brochure-wrapper-live" className={cn(activeTheme, "transition-all duration-300")}>
+               <div ref={livePreviewRef} id="printable-brochure-wrapper-live" className={cn(activeTheme, "transition-all duration-300")}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
               </div>
             </div>
@@ -367,25 +361,26 @@ export default function Home() {
       </div>
 
       {isClient && (
-          <div className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none print:overflow-visible">
-            {/* This instance is ONLY for printing. Key ensures it re-renders fresh when printKey changes. */}
-            {generatedBrochureData && <PrintableBrochureLoader key={`print-${printKey}`} data={generatedBrochureData} themeClass={activeTheme} />}
+          <div id="print-only-section-wrapper" className="hidden print:block print:m-0 print:p-0 print:border-0 print:shadow-none">
+            {generatedBrochureData && (
+              <PrintableBrochureLoader 
+                key={`print-${printKey}-${activeTheme}`} 
+                data={generatedBrochureData} 
+                themeClass={activeTheme} 
+              />
+            )}
           </div>
       )}
     </FormProvider>
   );
 }
 
-// PrintableBrochureLoader component remains React.memo'd
-// It receives data that was specifically prepared for printing by handlePrint.
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string }> = React.memo(({ data, themeClass }) => {
   try {
-    // Ensure data is validated before rendering. This is critical for print.
     const validatedData = BrochureDataSchema.parse(data);
     return <BrochurePreview data={validatedData} themeClass={themeClass} />;
   } catch (error) {
     console.error("Data validation failed for print render:", error);
-    // Fallback UI if data for printing is invalid. This should ideally not happen if handlePrint validates.
     return (
       <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={{ pageBreakBefore: 'always', boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
         <h1>Brochure Generation Error (for Print)</h1>
