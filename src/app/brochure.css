@@ -10,6 +10,7 @@
   width: 210mm; 
   padding: 0 !important;
   margin: 0 auto !important; 
+  font-family: var(--brochure-font-family-override, var(--brochure-font-family, "Georgia, serif")); /* Corrected fallback to be a single string */
 }
 
 .page {
@@ -19,7 +20,7 @@
   width: 210mm;
   min-height: 297mm; 
   height: 297mm; 
-  font-family: var(--brochure-font-family, 'Georgia', serif); 
+  /* font-family is now on .printable-brochure */
   line-height: 1.4;
   box-shadow: 0 0 10px hsla(var(--foreground-h, 0), var(--foreground-s, 0%), var(--foreground-l, 10%), 0.1); 
   margin-bottom: 20px; 
@@ -531,7 +532,7 @@ img[data-ai-hint] { }
       margin: 0 !important; 
     }
     html, body {
-        font-family: var(--brochure-font-family, 'Georgia', serif) !important;
+        /* font-family var is applied globally from globals.css for print */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }

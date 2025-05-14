@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrochureDataSchema, type BrochureData, getDefaultBrochureData, BrochureAIDataSectionsEnum, type BrochureAIDataSection } from '@/components/brochure/data-schema';
+import { BrochureDataSchema, type BrochureData, getDefaultBrochureData } from '@/components/brochure/data-schema';
 import { BrochurePreview } from '@/components/brochure/brochure-preview';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,17 +40,31 @@ interface FormSection {
   value: string;
   label: string;
   Component: React.FC<any>;
-  fieldsToGenerate?: (keyof BrochureData)[]; 
-  generationPromptHint?: string; 
 }
 
+export type BrochureStructure = 'standard' | 'compact' | 'visual';
 
-const brochureThemes = [
-  "theme-brochure-builder",
-  "theme-elegant-serif",
-  "theme-cool-modern",
-  "theme-classic-blue",
-  "theme-modern-green",
+export interface BrochureTheme {
+  id: string;
+  name: string; // For display purposes
+  cssClass: string;
+  structure: BrochureStructure;
+  fontFamily: string; // CSS font-family string
+}
+
+const brochureThemes: BrochureTheme[] = [
+  { id: "bb-std", name: "Builder Standard", cssClass: "theme-brochure-builder", structure: "standard", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { id: "es-std", name: "Elegant Serif", cssClass: "theme-elegant-serif", structure: "standard", fontFamily: "'Playfair Display', serif" },
+  { id: "cm-std", name: "Cool Modern", cssClass: "theme-cool-modern", structure: "standard", fontFamily: "'Open Sans', sans-serif" },
+  { id: "cb-std", name: "Classic Blue", cssClass: "theme-classic-blue", structure: "standard", fontFamily: "'Roboto', sans-serif" },
+  { id: "mg-std", name: "Modern Green", cssClass: "theme-modern-green", structure: "standard", fontFamily: "'Montserrat', sans-serif" },
+  
+  { id: "bb-cpt", name: "Builder Compact", cssClass: "theme-brochure-builder", structure: "compact", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { id: "es-cpt", name: "Elegant Compact", cssClass: "theme-elegant-serif", structure: "compact", fontFamily: "'Playfair Display', serif" },
+  { id: "cm-cpt", name: "Cool Modern Compact", cssClass: "theme-cool-modern", structure: "compact", fontFamily: "'Open Sans', sans-serif" },
+
+  { id: "bb-vis", name: "Builder Visual", cssClass: "theme-brochure-builder", structure: "visual", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { id: "es-vis", name: "Elegant Visual", cssClass: "theme-elegant-serif", structure: "visual", fontFamily: "'Playfair Display', serif" },
 ];
 
 
@@ -60,21 +74,18 @@ export default function Home() {
   const isPrintingRef = useRef(false); 
   const dataLoadedRef = useRef<string | null>(null);
 
-
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false); 
-  const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
+  const [activeTheme, setActiveTheme] = useState<BrochureTheme>(brochureThemes[0]);
   const [printKey, setPrintKey] = useState(0); 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('cover');
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
-
+  
   const [previewVisible, setPreviewVisible] = useState(false);
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
 
   const searchParams = useSearchParams();
   const router = useRouter();
-
 
   const printableRef = useRef<HTMLDivElement>(null);
 
@@ -87,7 +98,8 @@ export default function Home() {
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== 'undefined') {
-      document.documentElement.className = activeTheme;
+      document.documentElement.className = activeTheme.cssClass;
+      document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
     }
   }, [activeTheme]);
 
@@ -98,7 +110,6 @@ export default function Home() {
       return () => clearTimeout(timer);
     } else {
       setPreviewVisible(false);
-      
       const timer = setTimeout(() => setPlaceholderVisible(true), showPreview ? 50 : 550);
       return () => clearTimeout(timer);
     }
@@ -114,7 +125,7 @@ export default function Home() {
       if (newThemeChange) {
         let randomTheme = activeTheme;
         if (brochureThemes.length > 1) {
-          const availableThemes = brochureThemes.filter(t => t !== activeTheme);
+          const availableThemes = brochureThemes.filter(t => t.id !== activeTheme.id);
           randomTheme = availableThemes.length > 0 
             ? availableThemes[Math.floor(Math.random() * availableThemes.length)] 
             : brochureThemes[0];
@@ -122,7 +133,7 @@ export default function Home() {
           randomTheme = brochureThemes[0];
         }
         setActiveTheme(randomTheme);
-         toast({ title: "Theme Changed", description: "New theme applied to the brochure." });
+         toast({ title: "Theme & Structure Changed", description: `Applied: ${randomTheme.name}` });
       } else if (showPreview && !firstTimeGeneration) { 
          toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
@@ -163,7 +174,7 @@ export default function Home() {
 
   const debouncedUpdatePreview = useRef(
     debounce(() => {
-      if (showPreview && !isPrintingRef.current && !isGeneratingAI) { 
+      if (showPreview && !isPrintingRef.current) { 
         handleGenerateOrUpdateBrochure(false);
       }
     }, 750)
@@ -171,12 +182,12 @@ export default function Home() {
 
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change' && showPreview && !isPrintingRef.current && !isGeneratingAI) {
+      if (type === 'change' && showPreview && !isPrintingRef.current) {
         debouncedUpdatePreview();
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, debouncedUpdatePreview, showPreview, isGeneratingAI]);
+  }, [form, debouncedUpdatePreview, showPreview]);
 
 
   function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
@@ -202,10 +213,11 @@ export default function Home() {
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
         setGeneratedBrochureData(validatedDataForPrint);
-        document.documentElement.className = activeTheme; 
+        document.documentElement.className = activeTheme.cssClass; 
+        document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
         setPrintKey(prev => prev + 1); 
 
-        await new Promise(resolve => setTimeout(resolve, 300)); 
+        await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay slightly for render
         
         window.print();
 
@@ -235,7 +247,7 @@ export default function Home() {
             setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           setGeneratedBrochureData(currentLiveFormData as BrochureData);
+           setGeneratedBrochureData(currentLiveFormData as BrochureData); // Show potentially invalid for debug
         }
       }, 2500); 
     }
@@ -260,13 +272,17 @@ export default function Home() {
                     const validatedData = BrochureDataSchema.parse(result.data);
                     form.reset(validatedData);
                     setGeneratedBrochureData(validatedData);
+                    
+                    // Attempt to find a theme that matches the structure, default to first if not found or if no theme info saved with data
+                    const themeFromData = (result.data as any).themeId ? brochureThemes.find(t => t.id === (result.data as any).themeId) : null;
+                    setActiveTheme(themeFromData || brochureThemes[0]);
+
                     setShowPreview(true); 
                     setPreviewVisible(true); 
                     setPlaceholderVisible(false);
                     toast({ title: "Data Loaded", description: "Brochure data has been populated." });
                     dataLoadedRef.current = dataKey;
 
-                    
                     const currentPath = window.location.pathname;
                     const newSearchParams = new URLSearchParams(window.location.search);
                     newSearchParams.delete('dataKey');
@@ -294,7 +310,7 @@ export default function Home() {
         };
         loadRemoteData();
     }
-  }, [isClient, searchParams, form, setGeneratedBrochureData, setShowPreview, toast, router]);
+  }, [isClient, searchParams, form, setGeneratedBrochureData, setShowPreview, toast, router, setActiveTheme]);
 
 
   if (!isClient) {
@@ -321,8 +337,7 @@ export default function Home() {
     { value: 'backcover', label: 'Back Cover', Component: BackCoverForm },
   ];
 
-  const globalDisable = isPrintingRef.current || isGeneratingAI;
-
+  const globalDisable = isPrintingRef.current;
 
   return (
     <FormProvider {...form}>
@@ -350,10 +365,10 @@ export default function Home() {
                     size="sm" 
                     disabled={globalDisable} 
                     className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm"
-                    title={showPreview ? "Apply a new random theme" : "Generate the brochure preview"}
+                    title={showPreview ? "Apply a new random theme & structure" : "Generate the brochure preview"}
                 >
                     <Palette className="mr-2 h-4 w-4" />
-                    {showPreview ? 'New Theme' : 'Generate Brochure'}
+                    {showPreview ? 'New Look' : 'Generate Brochure'}
                 </Button>
                 <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="flex-grow sm:flex-grow-0 bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 shadow-sm">
                   {isPrintingRef.current ? (
@@ -366,7 +381,7 @@ export default function Home() {
               </div>
             </div>
             <CardDescription className="text-xs text-sidebar-foreground/80 mt-2">
-               Fill details &amp; click {showPreview ? '"New Theme" or "Update Preview"' : '"Generate Brochure"'}.
+               Fill details &amp; click {showPreview ? '"New Look" or "Update Preview"' : '"Generate Brochure"'}.
             </CardDescription>
             {showPreview && ( 
                 <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-3 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
@@ -408,10 +423,8 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        
                         setTimeout(() => {
                             setActiveTab(section.value);
-                            
                             const contentEl = document.querySelector(`div[role="tabpanel"][data-state="active"][data-orientation="vertical"]`);
                             contentEl?.scrollIntoView({ behavior: 'smooth', block: 'start'});
                         }, 100); 
@@ -442,8 +455,8 @@ export default function Home() {
                 "flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full transition-opacity duration-700 ease-in-out",
                 previewVisible ? "opacity-100" : "opacity-0 pointer-events-none"
               )}>
-               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme, "transition-all duration-300")}>
-                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme} />
+               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme.cssClass, "transition-all duration-300")} style={{'--brochure-font-family': activeTheme.fontFamily} as React.CSSProperties}>
+                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure={activeTheme.structure} />
               </div>
             </div>
           )}
@@ -455,8 +468,10 @@ export default function Home() {
             {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
-                themeClass={activeTheme}
-                printKeyProp={`print-${printKey}-${activeTheme}`} 
+                themeClass={activeTheme.cssClass}
+                structure={activeTheme.structure}
+                fontFamily={activeTheme.fontFamily}
+                printKeyProp={`print-${printKey}-${activeTheme.id}`} 
               />
             )}
           </div>
@@ -466,14 +481,26 @@ export default function Home() {
 }
 
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, printKeyProp: string }> = React.memo(({ data, themeClass, printKeyProp }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, structure: BrochureStructure, fontFamily: string, printKeyProp: string }> = React.memo(({ data, themeClass, structure, fontFamily, printKeyProp }) => {
   try {
     const validatedData = BrochureDataSchema.parse(data);
-    return <BrochurePreview data={validatedData} themeClass={themeClass} />;
+    // Apply font family directly for print context
+    const printStyle = { '--brochure-font-family': fontFamily } as React.CSSProperties;
+    return (
+      <div style={printStyle}>
+        <BrochurePreview data={validatedData} themeClass={themeClass} structure={structure} />
+      </div>
+    );
   } catch (error) {
     console.error("Data validation failed for print render:", error);
+    const printErrorStyle = { 
+      '--brochure-font-family': fontFamily,
+      boxSizing: 'border-box', 
+      border: '2px dashed red', 
+      backgroundColor: 'white' 
+    } as React.CSSProperties;
     return (
-      <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={{ boxSizing: 'border-box', border: '2px dashed red', backgroundColor: 'white' }}>
+      <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={printErrorStyle}>
         <h1>Brochure Generation Error (for Print)</h1>
         <p className="mt-4">The brochure data is incomplete or invalid and cannot be printed.</p>
         <p className="mt-2">Please correct the errors in the editor before downloading the PDF.</p>
