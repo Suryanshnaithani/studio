@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -27,7 +28,7 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
         {data.projectLogo && data.projectLogo.trim() !== '' && (
           <Image
             src={data.projectLogo}
-            alt={`${data.projectName} Logo`}
+            alt={`${data.projectName || 'Project'} Logo`}
             width={227} // approx 60mm at 96dpi
             height={114} // maintain aspect ratio
             className="project-logo"
@@ -48,4 +49,3 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
     </PageWrapper>
   );
 };
-```

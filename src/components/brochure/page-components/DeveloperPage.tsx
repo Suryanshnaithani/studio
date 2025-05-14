@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -57,4 +58,3 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
     </PageWrapper>
   );
 };
-```
