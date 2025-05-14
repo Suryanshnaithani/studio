@@ -48,3 +48,4 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
     </PageWrapper>
   );
 };
+```

@@ -5,16 +5,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BrochureDataSchema, type BrochureData, getDefaultBrochureData } from '@/components/brochure/data-schema';
+import { BrochureDataSchema, type BrochureData, getDefaultBrochureData, BrochureAIDataSectionsEnum, type BrochureAIDataSection } from '@/components/brochure/data-schema';
 import { BrochurePreview } from '@/components/brochure/brochure-preview';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit, Wand2 } from 'lucide-react';
+import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useSearchParams, useRouter } from 'next/navigation'; // Import useSearchParams and useRouter
+import { useSearchParams, useRouter } from 'next/navigation'; 
 import { z } from 'zod';
 
 
@@ -40,8 +40,8 @@ interface FormSection {
   value: string;
   label: string;
   Component: React.FC<any>;
-  fieldsToGenerate?: (keyof BrochureData)[]; // For AI generation
-  generationPromptHint?: string; // For AI generation
+  fieldsToGenerate?: (keyof BrochureData)[]; 
+  generationPromptHint?: string; 
 }
 
 
@@ -49,6 +49,8 @@ const brochureThemes = [
   "theme-brochure-builder",
   "theme-elegant-serif",
   "theme-cool-modern",
+  "theme-classic-blue",
+  "theme-modern-green",
 ];
 
 
@@ -60,7 +62,7 @@ export default function Home() {
 
 
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
-  const [showPreview, setShowPreview] = useState(false); // Initially hide preview
+  const [showPreview, setShowPreview] = useState(false); 
   const [activeTheme, setActiveTheme] = useState<string>(brochureThemes[0]);
   const [printKey, setPrintKey] = useState(0); 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -96,7 +98,7 @@ export default function Home() {
       return () => clearTimeout(timer);
     } else {
       setPreviewVisible(false);
-      // Delay hiding the placeholder if we are transitioning from preview to placeholder
+      
       const timer = setTimeout(() => setPlaceholderVisible(true), showPreview ? 50 : 550);
       return () => clearTimeout(timer);
     }
@@ -121,13 +123,13 @@ export default function Home() {
         }
         setActiveTheme(randomTheme);
          toast({ title: "Theme Changed", description: "New theme applied to the brochure." });
-      } else if (showPreview && !firstTimeGeneration) { // Only toast "Brochure Updated" if it's not a theme change AND not first reveal
+      } else if (showPreview && !firstTimeGeneration) { 
          toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
 
       if (!showPreview || firstTimeGeneration) {
         setShowPreview(true);
-        if (firstTimeGeneration && !newThemeChange) { // Toast for first generation if it wasn't a theme change that also revealed it
+        if (firstTimeGeneration && !newThemeChange) { 
            toast({ title: "Brochure Generated", description: "Preview is now visible." });
         }
       }
@@ -161,7 +163,7 @@ export default function Home() {
 
   const debouncedUpdatePreview = useRef(
     debounce(() => {
-      if (showPreview && !isPrintingRef.current && !isGeneratingAI) { // Also check isGeneratingAI
+      if (showPreview && !isPrintingRef.current && !isGeneratingAI) { 
         handleGenerateOrUpdateBrochure(false);
       }
     }, 750)
@@ -224,11 +226,9 @@ export default function Home() {
         duration: 7000
       });
     } finally {
-      setTimeout(() => { // Delay resetting print ref to allow print dialog to fully process/close
+      setTimeout(() => { 
         isPrintingRef.current = false;
-        // After printing, re-sync the live preview with current form data
-        // This is important if any state changed during print prep (though ideally it shouldn't)
-        // or if user cancels print and live preview needs to be accurate.
+        
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
@@ -241,7 +241,6 @@ export default function Home() {
     }
   };
 
-  // Effect for loading data from API via dataKey
   useEffect(() => {
     if (!isClient) return;
 
@@ -261,18 +260,18 @@ export default function Home() {
                     const validatedData = BrochureDataSchema.parse(result.data);
                     form.reset(validatedData);
                     setGeneratedBrochureData(validatedData);
-                    setShowPreview(true); // Auto-show preview
-                    setPreviewVisible(true); // Make it visible immediately after data load
+                    setShowPreview(true); 
+                    setPreviewVisible(true); 
                     setPlaceholderVisible(false);
                     toast({ title: "Data Loaded", description: "Brochure data has been populated." });
                     dataLoadedRef.current = dataKey;
 
-                    // Clean up URL by removing dataKey
+                    
                     const currentPath = window.location.pathname;
                     const newSearchParams = new URLSearchParams(window.location.search);
                     newSearchParams.delete('dataKey');
                     const newUrl = `${currentPath}${newSearchParams.toString() ? `?${newSearchParams.toString()}` : ''}`;
-                    router.replace(newUrl, { scroll: false }); // Use router.replace for Next.js friendly URL update
+                    router.replace(newUrl, { scroll: false }); 
 
                 } else {
                     throw new Error(result.error || "Failed to load data from API.");
@@ -308,18 +307,18 @@ export default function Home() {
   }
 
   const formSections: FormSection[] = [
-    { value: 'cover', label: 'Cover', Component: CoverForm, fieldsToGenerate: ['projectTagline', 'reraInfo'], generationPromptHint: "Generate a compelling tagline and standard RERA information for a real estate project cover page." },
-    { value: 'intro', label: 'Introduction', Component: IntroductionForm, fieldsToGenerate: ['introTitle', 'introParagraph1', 'introParagraph2', 'introParagraph3'], generationPromptHint: "Write an engaging three-paragraph introduction for a luxury real estate project, highlighting its unique selling points and lifestyle appeal." },
-    { value: 'developer', label: 'Developer', Component: DeveloperForm, fieldsToGenerate: ['developerDesc1', 'developerDesc2', 'developerDisclaimer'], generationPromptHint: "Craft a two-paragraph developer profile focusing on experience and quality, and a standard disclaimer." },
-    { value: 'location', label: 'Location', Component: LocationForm, fieldsToGenerate: ['locationDesc1', 'locationDesc2', 'mapDisclaimer', 'locationNote'], generationPromptHint: "Describe the project's prime location, connectivity, nearby amenities, and add a map disclaimer and general location note." },
-    { value: 'connectivity', label: 'Connectivity', Component: ConnectivityForm, fieldsToGenerate: ['connectivityNote'], generationPromptHint: "Add a brief note about potential future infrastructure developments enhancing connectivity." },
-    { value: 'amenities-intro', label: 'Amenities Intro', Component: AmenitiesIntroForm, fieldsToGenerate: ['amenitiesIntroP1', 'amenitiesIntroP2', 'amenitiesIntroP3'], generationPromptHint: "Write a three-paragraph introduction to the project's amenities, emphasizing lifestyle enhancement and quality." },
-    { value: 'amenities-list', label: 'Amenities List', Component: AmenitiesListForm, fieldsToGenerate: ['amenitiesListImageDisclaimer'], generationPromptHint: "Provide a standard disclaimer for an amenities image." },
-    { value: 'amenities-grid', label: 'Amenities Grid', Component: AmenitiesGridForm, fieldsToGenerate: ['amenitiesGridDisclaimer'], generationPromptHint: "Create a disclaimer for a grid of amenity images." },
-    { value: 'specs', label: 'Specifications', Component: SpecificationsForm, fieldsToGenerate: ['specsImageDisclaimer'], generationPromptHint: "Write a disclaimer for an image depicting interior specifications." },
-    { value: 'masterplan', label: 'Master Plan', Component: MasterPlanForm, fieldsToGenerate: ['masterPlanDesc1', 'masterPlanDesc2', 'masterPlanImageDisclaimer'], generationPromptHint: "Describe a thoughtfully designed master plan in two paragraphs, highlighting layout and key features, and add an image disclaimer." },
-    { value: 'floorplans', label: 'Floor Plans', Component: FloorPlansForm, fieldsToGenerate: ['floorPlansDisclaimer'], generationPromptHint: "Provide a standard disclaimer for floor plan layouts and area details." },
-    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm, fieldsToGenerate: ['callToAction', 'fullDisclaimer', 'reraDisclaimer'], generationPromptHint: "Create a compelling call to action, a comprehensive general disclaimer, and a RERA registration disclaimer for the back cover." },
+    { value: 'cover', label: 'Cover', Component: CoverForm },
+    { value: 'intro', label: 'Introduction', Component: IntroductionForm },
+    { value: 'developer', label: 'Developer', Component: DeveloperForm },
+    { value: 'location', label: 'Location', Component: LocationForm },
+    { value: 'connectivity', label: 'Connectivity', Component: ConnectivityForm },
+    { value: 'amenities-intro', label: 'Amenities Intro', Component: AmenitiesIntroForm },
+    { value: 'amenities-list', label: 'Amenities List', Component: AmenitiesListForm },
+    { value: 'amenities-grid', label: 'Amenities Grid', Component: AmenitiesGridForm },
+    { value: 'specs', label: 'Specifications', Component: SpecificationsForm },
+    { value: 'masterplan', label: 'Master Plan', Component: MasterPlanForm },
+    { value: 'floorplans', label: 'Floor Plans', Component: FloorPlansForm },
+    { value: 'backcover', label: 'Back Cover', Component: BackCoverForm },
   ];
 
   const globalDisable = isPrintingRef.current || isGeneratingAI;
@@ -393,11 +392,6 @@ export default function Home() {
                     const commonProps = {
                         form: form,
                         disabled: globalDisable,
-                        sectionName: section.value as keyof BrochureData, 
-                        fieldsToGenerate: section.fieldsToGenerate,
-                        generationPromptHint: section.generationPromptHint,
-                        isGeneratingAI: isGeneratingAI,
-                        setIsGeneratingAI: setIsGeneratingAI,
                     };
                     return (
                         <TabsContent key={section.value} value={section.value} className="p-3 md:p-4 focus-visible:outline-none focus-visible:ring-0 mt-0">
@@ -414,10 +408,10 @@ export default function Home() {
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
-                        // Wait for sidebar to open then activate tab
+                        
                         setTimeout(() => {
                             setActiveTab(section.value);
-                            // Optional: scroll to the tab content after it becomes visible
+                            
                             const contentEl = document.querySelector(`div[role="tabpanel"][data-state="active"][data-orientation="vertical"]`);
                             contentEl?.scrollIntoView({ behavior: 'smooth', block: 'start'});
                         }, 100); 
@@ -462,7 +456,7 @@ export default function Home() {
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme}
-                printKeyProp={`print-${printKey}-${activeTheme}`} // Changed prop name
+                printKeyProp={`print-${printKey}-${activeTheme}`} 
               />
             )}
           </div>

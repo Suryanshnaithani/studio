@@ -248,6 +248,66 @@ body {
     --watermark-opacity-muted-print: 0.04;
   }
 
+  .theme-classic-blue {
+    --background: 220 15% 96%; /* Very Light Grey-Blue */
+    --background-h: 220; --background-s: 15%; --background-l: 96%;
+    --foreground: 210 50% 15%; /* Deep Navy */
+    --foreground-h: 210; --foreground-s: 50%; --foreground-l: 15%;
+    --primary: 210 70% 45%; /* Rich Classic Blue */
+    --primary-h: 210; --primary-s: 70%; --primary-l: 45%;
+    --primary-foreground: 0 0% 98%; /* Almost White */
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 98%;
+    --accent: 40 80% 75%; /* Pale Gold / Silver-Gold */
+    --accent-h: 40; --accent-s: 80%; --accent-l: 75%;
+    --accent-foreground: 210 50% 20%; /* Darker Navy for text on accent */
+    --border: 210 30% 80%; /* Soft Blue-Grey Border */
+    --muted: 220 15% 92%; /* Lighter Grey-Blue for muted */
+    --muted-h: 220; --muted-s: 15%; --muted-l: 92%;
+    --muted-foreground: 210 30% 40%; /* Mid Blue-Grey for muted text */
+    --brochure-font-family: 'Roboto', sans-serif;
+
+    /* Opacity variables for theme-classic-blue */
+    --cover-image-opacity: 0.45;
+    --developer-image-opacity: 0.6;
+    --back-cover-image-opacity: 0.38;
+    --watermark-opacity-light: 0.06;
+    --watermark-opacity-accent: 0.09;
+    --watermark-opacity-muted: 0.05;
+    --watermark-opacity-light-print: 0.035;
+    --watermark-opacity-accent-print: 0.06;
+    --watermark-opacity-muted-print: 0.03;
+  }
+
+  .theme-modern-green {
+    --background: 40 20% 97%; /* Off-white / Very Light Beige */
+    --background-h: 40; --background-s: 20%; --background-l: 97%;
+    --foreground: 120 25% 20%; /* Dark Forest Green */
+    --foreground-h: 120; --foreground-s: 25%; --foreground-l: 20%;
+    --primary: 120 35% 35%; /* Deep Forest Green */
+    --primary-h: 120; --primary-s: 35%; --primary-l: 35%;
+    --primary-foreground: 40 20% 97%; /* Off-white for text on green */
+    --primary-foreground-h: 40; --primary-foreground-s: 20%; --primary-foreground-l: 97%;
+    --accent: 30 90% 60%; /* Earthy Orange */
+    --accent-h: 30; --accent-s: 90%; --accent-l: 60%;
+    --accent-foreground: 120 25% 15%; /* Darker green for text on accent */
+    --border: 100 15% 85%; /* Light Greenish Grey Border */
+    --muted: 80 20% 94%; /* Very Light Sage Green for muted */
+    --muted-h: 80; --muted-s: 20%; --muted-l: 94%;
+    --muted-foreground: 120 20% 40%; /* Mid Green-Grey for muted text */
+    --brochure-font-family: 'Montserrat', sans-serif;
+
+    /* Opacity variables for theme-modern-green */
+    --cover-image-opacity: 0.55;
+    --developer-image-opacity: 0.7;
+    --back-cover-image-opacity: 0.42;
+    --watermark-opacity-light: 0.07;
+    --watermark-opacity-accent: 0.11;
+    --watermark-opacity-muted: 0.065;
+    --watermark-opacity-light-print: 0.04;
+    --watermark-opacity-accent-print: 0.075;
+    --watermark-opacity-muted-print: 0.038;
+  }
+
 
   * {
     @apply border-border;

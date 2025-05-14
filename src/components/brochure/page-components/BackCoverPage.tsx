@@ -54,3 +54,4 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
     </PageWrapper>
   );
 };
+```

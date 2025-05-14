@@ -381,6 +381,73 @@ img[data-ai-hint] { }
     --dev-disclaimer-text-color-accent: var(--primary-foreground);
   }
 
+  .theme-classic-blue {
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l); 
+    --cover-text-color: var(--primary-foreground);
+    --logo-filter-on-dark-bg: initial; /* Or brightness(0) invert(1) if needed */
+    
+    --dev-content-bg-h: var(--background-h); --dev-content-bg-s: var(--background-s); --dev-content-bg-l: var(--background-l); 
+    --dev-content-text-color: var(--foreground); 
+    --dev-disclaimer-bg-h: var(--background-h); --dev-disclaimer-bg-s: var(--background-s); --dev-disclaimer-bg-l: var(--background-l);
+    --dev-disclaimer-text-color: var(--muted-foreground); 
+
+    --map-disclaimer-bg-h: var(--background-h); --map-disclaimer-bg-s: var(--background-s); --map-disclaimer-bg-l: var(--background-l);
+    --map-disclaimer-text-color: var(--foreground);
+    --conn-label-bg: var(--background); --conn-label-text: var(--primary);
+    --am-list-disclaimer-bg-h: var(--background-h); --am-list-disclaimer-bg-s: var(--background-s); --am-list-disclaimer-bg-l: var(--background-l);
+    --am-list-disclaimer-text-color: var(--foreground);
+    --am-grid-label-bg-h: var(--background-h); --am-grid-label-bg-s: var(--background-s); --am-grid-label-bg-l: var(--background-l);
+    --am-grid-label-text-color: var(--primary);
+    --specs-disclaimer-bg-h: var(--background-h); --specs-disclaimer-bg-s: var(--background-s); --specs-disclaimer-bg-l: var(--background-l);
+    --specs-disclaimer-text-color: var(--foreground);
+    --mp-disclaimer-bg-h: var(--background-h); --mp-disclaimer-bg-s: var(--background-s); --mp-disclaimer-bg-l: var(--background-l);
+    --mp-disclaimer-text-color: var(--foreground);
+
+    --bc-contact-line-h: var(--primary-foreground-h); --bc-contact-line-s: var(--primary-foreground-s); --bc-contact-line-l: var(--primary-foreground-l);
+    --bc-disclaimer-bg-h: var(--primary-h); --bc-disclaimer-bg-s: var(--primary-s); --bc-disclaimer-bg-l: var(--primary-l); 
+    --bc-disclaimer-text-color: var(--primary-foreground);
+
+    /* Accent page overrides */
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
+    --dev-content-text-color-accent: var(--primary-foreground);
+    --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
+    --dev-disclaimer-text-color-accent: var(--primary-foreground);
+  }
+
+  .theme-modern-green {
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l); 
+    --cover-text-color: var(--primary-foreground);
+    --logo-filter-on-dark-bg: brightness(0) invert(1); /* Assuming dark primary */
+    
+    --dev-content-bg-h: var(--background-h); --dev-content-bg-s: var(--background-s); --dev-content-bg-l: var(--background-l); 
+    --dev-content-text-color: var(--foreground); 
+    --dev-disclaimer-bg-h: var(--background-h); --dev-disclaimer-bg-s: var(--background-s); --dev-disclaimer-bg-l: var(--background-l);
+    --dev-disclaimer-text-color: var(--muted-foreground); 
+
+    --map-disclaimer-bg-h: var(--background-h); --map-disclaimer-bg-s: var(--background-s); --map-disclaimer-bg-l: var(--background-l);
+    --map-disclaimer-text-color: var(--foreground);
+    --conn-label-bg: var(--background); --conn-label-text: var(--primary);
+    --am-list-disclaimer-bg-h: var(--background-h); --am-list-disclaimer-bg-s: var(--background-s); --am-list-disclaimer-bg-l: var(--background-l);
+    --am-list-disclaimer-text-color: var(--foreground);
+    --am-grid-label-bg-h: var(--background-h); --am-grid-label-bg-s: var(--background-s); --am-grid-label-bg-l: var(--background-l);
+    --am-grid-label-text-color: var(--primary);
+    --specs-disclaimer-bg-h: var(--background-h); --specs-disclaimer-bg-s: var(--background-s); --specs-disclaimer-bg-l: var(--background-l);
+    --specs-disclaimer-text-color: var(--foreground);
+    --mp-disclaimer-bg-h: var(--background-h); --mp-disclaimer-bg-s: var(--background-s); --mp-disclaimer-bg-l: var(--background-l);
+    --mp-disclaimer-text-color: var(--foreground);
+
+    --bc-contact-line-h: var(--primary-foreground-h); --bc-contact-line-s: var(--primary-foreground-s); --bc-contact-line-l: var(--primary-foreground-l);
+    --bc-disclaimer-bg-h: var(--primary-h); --bc-disclaimer-bg-s: var(--primary-s); --bc-disclaimer-bg-l: var(--primary-l); 
+    --bc-disclaimer-text-color: var(--primary-foreground);
+
+    /* Accent page overrides */
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
+    --dev-content-text-color-accent: var(--primary-foreground);
+    --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
+    --dev-disclaimer-text-color-accent: var(--primary-foreground);
+  }
+
+
   .page-accent-bg, .cover-page, .back-cover { 
     background-color: hsl(var(--primary)) !important;
     color: hsl(var(--primary-foreground)) !important;

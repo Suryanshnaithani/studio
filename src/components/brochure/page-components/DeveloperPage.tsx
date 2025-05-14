@@ -16,17 +16,16 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
   }
 
   return (
-    <PageWrapper className="developer-page" id="developer-page">
+    <PageWrapper className="developer-page page-muted-bg" id="developer-page">
        {data.developerImage && data.developerImage.trim() !== '' && (
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+        <div className="developer-image-container">
           <Image
             src={data.developerImage}
             alt="Developer Background"
             layout="fill"
             objectFit="cover"
-            className="developer-image"
             data-ai-hint="construction site progress"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            onError={(e) => { e.currentTarget.parentElement!.style.display = 'none'; }}
           />
         </div>
        )}
@@ -58,3 +57,4 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
     </PageWrapper>
   );
 };
+```
