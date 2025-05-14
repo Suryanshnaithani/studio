@@ -1,4 +1,4 @@
-# Firebase Studio
+# Brochure Studio
 
 This is a NextJS starter in Firebase Studio.
 
