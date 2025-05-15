@@ -273,12 +273,10 @@ export default function Home() {
                 const result = await response.json();
                 if (result.success && result.data) {
                     const validatedData = BrochureDataSchema.parse(result.data);
-                    form.reset(validatedData);
-                    setGeneratedBrochureData(validatedData);
-                    
-                    // Attempt to find a theme that matches the structure, default to first if not found or if no theme info saved with data
-                    const themeFromData = (result.data as any).themeId ? brochureThemes.find(t => t.id === (result.data as any).themeId) : null;
-                    setActiveTheme(themeFromData || brochureThemes[0]);
+
+                    const dataToLoad = { ...validatedData }; // Start with only loaded data
+                    form.reset(dataToLoad); // Reset form with only the loaded data
+                    setGeneratedBrochureData(dataToLoad); // Also update generated data
 
                     setShowPreview(true); 
                     setPreviewVisible(true); 
