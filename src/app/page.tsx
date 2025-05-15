@@ -277,8 +277,12 @@ export default function Home() {
                     // Explicitly reset form to a minimal state first
                     form.reset({}); // Or a minimal object like { projectName: '' }
 
-                    // Now reset with the validated data
-                    form.reset(validatedData);
+                    // Iterate over validated data and set form values
+                    Object.keys(validatedData).forEach(key => {
+                        const value = (validatedData as any)[key]; // Access value using index signature
+                        form.setValue(key, value);
+                    });
+
                     setGeneratedBrochureData(validatedData);
 
                     setShowPreview(true); 
