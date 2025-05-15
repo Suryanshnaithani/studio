@@ -258,6 +258,9 @@ export default function Home() {
 
     const dataKey = searchParams.get('dataKey');
 
+    // Clear dataLoadedRef to force reload if dataKey is present
+ dataLoadedRef.current = null; 
+
     if (dataKey && dataLoadedRef.current !== dataKey) {
         const loadRemoteData = async () => {
             try {
@@ -308,7 +311,7 @@ export default function Home() {
                 });
             }
         };
-        loadRemoteData();
+ loadRemoteData();
     }
   }, [isClient, searchParams, form, setGeneratedBrochureData, setShowPreview, toast, router, setActiveTheme]);
 
