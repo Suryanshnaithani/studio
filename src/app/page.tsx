@@ -273,10 +273,13 @@ export default function Home() {
                 const result = await response.json();
                 if (result.success && result.data) {
                     const validatedData = BrochureDataSchema.parse(result.data);
+                    
+                    // Explicitly reset form to a minimal state first
+                    form.reset({}); // Or a minimal object like { projectName: '' }
 
-                    const dataToLoad = { ...validatedData }; // Start with only loaded data
-                    form.reset(dataToLoad); // Reset form with only the loaded data
-                    setGeneratedBrochureData(dataToLoad); // Also update generated data
+                    // Now reset with the validated data
+                    form.reset(validatedData);
+                    setGeneratedBrochureData(validatedData);
 
                     setShowPreview(true); 
                     setPreviewVisible(true); 
