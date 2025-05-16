@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
@@ -6,6 +7,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Brochure Builder',
   description: 'Create stunning real estate brochures.',
+  icons: {
+    icon: '/app-logo.png', // Points to public/app-logo.png
+  },
 };
 
 export default function RootLayout({

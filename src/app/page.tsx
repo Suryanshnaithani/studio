@@ -3,6 +3,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image'; // Import Next Image
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { BrochureDataSchema, type BrochureData, getDefaultBrochureData } from '@/components/brochure/data-schema';
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit, Image as ImageIcon } from 'lucide-react'; // Added ImageIcon
+import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit, Image as ImageIconLucide } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useSearchParams, useRouter } from 'next/navigation'; 
@@ -43,7 +44,6 @@ export interface BrochureTheme {
   id: string;
   name: string; 
   cssClass: string;
-  // structure: BrochureStructure; // Keeping for potential future use, but will be 'standard' for now
   fontFamily: string; 
 }
 
@@ -81,7 +81,7 @@ export default function Home() {
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
     defaultValues: getDefaultBrochureData(),
-    mode: 'onChange', // Keep onChange for live updates when preview is active
+    mode: 'onChange',
   });
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function Home() {
           const availableThemes = brochureThemes.filter(t => t.id !== activeTheme.id);
           randomTheme = availableThemes.length > 0 
             ? availableThemes[Math.floor(Math.random() * availableThemes.length)] 
-            : brochureThemes[0]; // Fallback to the first theme if only one or no other options
+            : brochureThemes[0]; 
         } else {
           randomTheme = brochureThemes[0];
         }
@@ -128,7 +128,7 @@ export default function Home() {
       }
 
       if (!showPreview || firstTimeGeneration) {
-        setShowPreview(true); // This will trigger the useEffect for previewVisible
+        setShowPreview(true); 
         if (firstTimeGeneration && !newThemeChange) { 
            toast({ title: "Brochure Generated", description: "Preview is now visible." });
         }
@@ -163,13 +163,12 @@ export default function Home() {
 
   const debouncedUpdatePreview = useRef(
     debounce(() => {
-      if (showPreview && !isPrintingRef.current) { // Only update if preview is shown and not printing
+      if (showPreview && !isPrintingRef.current) { 
         handleGenerateOrUpdateBrochure(false);
       }
-    }, 750) // Debounce time
+    }, 750) 
   ).current;
 
-  // Watch for form changes and update preview (debounced)
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       if (type === 'change' && showPreview && !isPrintingRef.current) {
@@ -180,7 +179,6 @@ export default function Home() {
   }, [form, debouncedUpdatePreview, showPreview]);
 
 
-  // Debounce utility
   function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
     let timeout: ReturnType<typeof setTimeout> | null = null;
     return (...args: Parameters<F>): Promise<ReturnType<F>> =>
@@ -199,14 +197,14 @@ export default function Home() {
     toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
 
     try {
-        await form.trigger(); // Ensure all fields are validated
+        await form.trigger(); 
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
-        setGeneratedBrochureData(validatedDataForPrint); // Set data for print-only section
+        setGeneratedBrochureData(validatedDataForPrint); 
         document.documentElement.className = activeTheme.cssClass; 
         document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
-        setPrintKey(prev => prev + 1); // Trigger re-render of PrintableBrochureLoader
+        setPrintKey(prev => prev + 1); 
 
         await new Promise(resolve => setTimeout(resolve, 600)); 
         
@@ -237,9 +235,7 @@ export default function Home() {
             setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           // If data is invalid, it's better to show the last valid generatedBrochureData or current form data
-           // to avoid a completely blank preview if possible. Or even null to force placeholder.
-           setGeneratedBrochureData(currentLiveFormData as BrochureData); // Might be invalid but better than nothing
+           setGeneratedBrochureData(currentLiveFormData as BrochureData); 
         }
       }, 2500); 
     }
@@ -265,8 +261,8 @@ export default function Home() {
                     form.reset(validatedData);
                     setGeneratedBrochureData(validatedData);
                     
-                    // Load theme if present in data
-                    const themeFromData = (result.data as any).themeId ? brochureThemes.find(t => t.id === (result.data as any).themeId) : null;
+                    const themeIdFromData = (result.data as any).themeId;
+                    const themeFromData = themeIdFromData ? brochureThemes.find(t => t.id === themeIdFromData) : null;
                     setActiveTheme(themeFromData || brochureThemes[0]);
 
                     setShowPreview(true); 
@@ -275,7 +271,6 @@ export default function Home() {
                     toast({ title: "Data Loaded", description: "Brochure data has been populated." });
                     dataLoadedRef.current = dataKey;
 
-                    // Clean up URL by removing dataKey
                     const currentPath = window.location.pathname;
                     const newSearchParams = new URLSearchParams(window.location.search);
                     newSearchParams.delete('dataKey');
@@ -341,7 +336,18 @@ export default function Home() {
         )}>
            <CardHeader className="p-4 border-b border-sidebar-border sticky top-0 bg-sidebar z-20">
              <div className="flex justify-between items-center mb-2">
-               {sidebarOpen && <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>}
+                {sidebarOpen && (
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src="/app-logo.png" 
+                      alt="Brochure Builder Logo"
+                      width={32} 
+                      height={32}
+                      className="rounded-full"
+                    />
+                    <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>
+                  </div>
+                )}
                 <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent">
                     {sidebarOpen ? <SidebarClose /> : <SidebarOpen />}
                 </Button>
@@ -360,7 +366,7 @@ export default function Home() {
                     className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm"
                     title={showPreview ? "Update the brochure preview" : "Generate the brochure preview"}
                 >
-                    {showPreview ? <RefreshCcw className="mr-2 h-4 w-4" /> : <ImageIcon className="mr-2 h-4 w-4" />}
+                    {showPreview ? <RefreshCcw className="mr-2 h-4 w-4" /> : <ImageIconLucide className="mr-2 h-4 w-4" />}
                     {showPreview ? 'Update Preview' : 'Generate Brochure'}
                 </Button>
                  <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" variant="outline" disabled={globalDisable || !showPreview} className="flex-grow sm:flex-grow-0 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
@@ -411,15 +417,21 @@ export default function Home() {
            )}
            {!sidebarOpen && (
              <div className="hidden md:flex flex-col items-center mt-4 space-y-2 p-2">
+                 <Image
+                    src="/app-logo.png" 
+                    alt="Brochure Builder Logo Small"
+                    width={28} 
+                    height={28}
+                    className="rounded-full mb-2"
+                />
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
                         setTimeout(() => {
                             setActiveTab(section.value);
-                            // Ensure content is scrolled into view after sidebar opens and tab is active
                             const contentEl = document.querySelector(`div[role="tabpanel"][data-state="active"][data-orientation="vertical"]`);
                             contentEl?.scrollIntoView({ behavior: 'smooth', block: 'start'});
-                        }, 100); // Short delay for UI transition
+                        }, 100); 
                      }}>
                         <Edit className="h-5 w-5" />
                      </Button>
@@ -428,14 +440,13 @@ export default function Home() {
            )}
         </Card>
 
-        {/* Main Content Area for Preview */}
         <div className="flex-grow h-full overflow-y-auto brochure-preview-container bg-muted/40 dark:bg-background/30 print:bg-transparent print:p-0">
           {!showPreview || !generatedBrochureData ? (
               <div className={cn(
                 "flex flex-col items-center justify-center h-full text-center p-6 md:p-8 transition-opacity duration-500 ease-in-out",
                  placeholderVisible ? "opacity-100" : "opacity-0 pointer-events-none"
               )}>
-                <ImageIcon className="w-20 h-20 text-muted-foreground/30 mb-6" /> {/* Changed Icon */}
+                <ImageIconLucide className="w-20 h-20 text-muted-foreground/30 mb-6" /> 
                 <h3 className="text-2xl font-semibold text-foreground mb-3">Your Brochure Awaits Creation</h3>
                 <p className="text-muted-foreground max-w-md text-sm">
                   Fill in the details for your property in the editor on the left.
@@ -444,10 +455,9 @@ export default function Home() {
                 </p>
               </div>
           ) : (
-            // This div is for the live preview and should be hidden during actual print operation by CSS
             <div id="live-preview-content-wrapper" className={cn(
                 "flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full transition-opacity duration-700 ease-in-out",
-                previewVisible ? "opacity-100" : "opacity-0 pointer-events-none" // Controls visibility based on state
+                previewVisible ? "opacity-100" : "opacity-0 pointer-events-none" 
               )}>
                <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme.cssClass, "transition-all duration-300")} style={{'--brochure-font-family-override': activeTheme.fontFamily} as React.CSSProperties}>
                 <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure="standard" />
@@ -457,17 +467,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* This section is ONLY for printing. It is hidden by default and only shown by print CSS. */}
       {isClient && (
           <div id="print-only-section-wrapper" className="hidden print:block">
-            {/* Load brochure data again here for print context to ensure it's clean */}
             {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme.cssClass}
-                structure="standard" // Fixed structure
+                structure="standard" 
                 fontFamily={activeTheme.fontFamily}
-                printKeyProp={`print-${printKey}-${activeTheme.id}`} // Unique key for re-render
+                printKeyProp={`print-${printKey}-${activeTheme.id}`} 
               />
             )}
           </div>
@@ -477,34 +485,28 @@ export default function Home() {
 }
 
 
-// This component is crucial for ensuring the print version is correctly rendered.
-// It re-validates data and applies the theme class and font family directly.
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, structure: BrochureStructure, fontFamily: string, printKeyProp: string }> = React.memo(({ data, themeClass, structure, fontFamily, printKeyProp }) => {
   try {
-    // Ensure data is validated before rendering. This is critical for print.
     const validatedData = BrochureDataSchema.parse(data);
-    // The style here directly influences the print output.
     const printStyle = { '--brochure-font-family-override': fontFamily } as React.CSSProperties;
     
     return (
-      // Key prop helps React differentiate if data/theme changes significantly for print re-render
-      <div key={printKeyProp} style={printStyle} className={themeClass}> {/* Ensure themeClass is applied here too */}
+      <div key={printKeyProp} style={printStyle} className={themeClass}> 
         <BrochurePreview data={validatedData} themeClass={themeClass} structure={structure} />
       </div>
     );
   } catch (error) {
     console.error("Data validation failed for print render:", error);
-    // Fallback UI for print if data is bad
     const printErrorStyle = { 
-      '--brochure-font-family-override': fontFamily, // Use requested font even for error
+      '--brochure-font-family-override': fontFamily, 
       boxSizing: 'border-box', 
       border: '2px dashed red', 
-      backgroundColor: 'white', // Ensure visibility on paper
+      backgroundColor: 'white', 
       padding: '20mm',
-      color: 'red', // Error text in red
-      fontFamily: 'monospace', // Monospace for error details
-      width: '210mm', /* A4 width */
-      height: '297mm', /* A4 height */
+      color: 'red', 
+      fontFamily: 'monospace', 
+      width: '210mm', 
+      height: '297mm', 
     } as React.CSSProperties;
 
     let errorMessage = "The brochure data is incomplete or invalid and cannot be printed. Please correct errors in the editor.";
@@ -516,7 +518,7 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
     }
 
     return (
-      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}> {/* Apply theme for consistency */}
+      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}> 
         <h1>Brochure Generation Error (Print)</h1>
         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '8pt', maxHeight: '200mm', overflowY: 'auto' }}>
           {errorMessage}
