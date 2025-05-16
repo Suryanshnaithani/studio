@@ -12,13 +12,15 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react'; // Wand2 removed
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports: Loader2
 
 export interface FloorPlansFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }) => {
@@ -43,6 +45,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
             </FormItem>
             )}
         />
+        {/* Removed AI Generation Button */}
       </div>
 
 

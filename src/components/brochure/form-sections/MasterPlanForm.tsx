@@ -12,10 +12,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports: Button, Loader2, Wand2
 
 export interface MasterPlanFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled }) => {
@@ -23,6 +25,7 @@ export const MasterPlanForm: React.FC<MasterPlanFormProps> = ({ form, disabled }
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Master Plan Details</h3>
+            {/* Removed AI Generation Button */}
        </div>
        <FormField
         control={form.control}

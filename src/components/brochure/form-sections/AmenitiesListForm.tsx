@@ -14,22 +14,23 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports
 
 export interface AmenitiesListFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 const AmenityArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData;
+    name: keyof BrochureData; // Type safety for name
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        // @ts-ignore
-        name: name as any,
+        name: name as any, // Cast for complex array names if TS struggles
     });
 
     return (
@@ -40,8 +41,7 @@ const AmenityArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                             // @ts-ignore
-                            name={`${name}.${index}`}
+                            name={`${name}.${index}` as any} // Cast for nested array field
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     <FormControl>
@@ -89,6 +89,7 @@ export const AmenitiesListForm: React.FC<AmenitiesListFormProps> = ({ form, disa
             </FormItem>
             )}
          />
+         {/* Removed AI Generation Button */}
       </div>
        <ImageUploadInput
             form={form}

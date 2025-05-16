@@ -1,20 +1,39 @@
+
 import { z } from 'zod';
 
 // Reusable schema for optional URLs that can be empty strings
-const optionalUrlSchema = (message: string = "Invalid URL format. Must be a valid URL or empty.") =>
-  z.string()
-    .transform(val => val === null || val === undefined ? "" : val) 
-    .refine((val) => val === '' || z.string().url({message: "Please enter a valid URL (e.g., http://example.com) or leave empty."}).safeParse(val).success, { message })
-    .optional()
-    .default('');
+const optionalUrlSchema = (message: string = "Invalid URL. Must be a valid URL (e.g., http://example.com) or empty.") =>
+  z.preprocess(
+    (val) => (val === null || val === undefined || String(val).trim() === "" ? "" : String(val).trim()),
+    z.string().refine((val) => {
+        if (val === "") return true;
+        // Basic URL check, Zod's built-in .url() can be very strict.
+        // This allows more flexible (though less strict) relative/absolute paths if needed,
+        // but for external images, a full URL is better.
+        // For robustness, consider a more comprehensive URL validation library if needed.
+        try {
+            new URL(val); // Check if it can be parsed as a URL
+            return z.string().url({ message: "Please enter a valid full URL (e.g., http://example.com) or leave empty." }).safeParse(val).success;
+        } catch (_) {
+            // Allow data URIs explicitly
+            if (val.startsWith('data:image/')) return true;
+            // Allow placeholder URLs like picsum.photos
+            if (val.startsWith('https://placehold.co/') || val.startsWith('https://picsum.photos/')) return true;
+            return false; // If not a valid URL, data URI, or known placeholder pattern
+        }
+    }, { message })
+  ).default('');
+
 
 // Reusable schema for optional emails that can be empty strings
-const optionalEmailSchema = (message: string = "Invalid email format. Must be a valid email or empty.") =>
-  z.string()
-    .transform(val => val === null || val === undefined ? "" : val)
-    .refine((val) => val === '' || z.string().email({message: "Please enter a valid email address (e.g., user@example.com) or leave empty."}).safeParse(val).success, { message })
-    .optional()
-    .default('');
+const optionalEmailSchema = (message: string = "Invalid email. Must be a valid email (e.g., user@example.com) or empty.") =>
+  z.preprocess(
+    (val) => (val === null || val === undefined || String(val).trim() === "" ? "" : String(val).trim()),
+    z.string().refine((val) => {
+        if (val === "") return true;
+        return z.string().email({ message: "Please enter a valid email address (e.g., user@example.com) or leave empty." }).safeParse(val).success;
+    }, { message })
+  ).default('');
 
 
 const FloorPlanSchema = z.object({
@@ -136,32 +155,25 @@ export const getDefaultBrochureData = (): BrochureData => {
     try {
         return BrochureDataSchema.parse({});
     } catch (e) {
-        console.error("Error parsing default BrochureDataSchema:", e);
-        // This fallback is a last resort and should ideally not be hit.
-        // It manually constructs a basic object if Zod parsing fails.
+        console.error("Error parsing default BrochureDataSchema. THIS SHOULD NOT HAPPEN with preprocess and default.", e);
+        // This fallback is an absolute last resort and indicates a deeper issue with the schema definition or Zod itself.
+        // Manually constructing a basic object if Zod parsing fails even with refined schemas.
         const fallbackData: Record<string, any> = {};
-        Object.keys(BrochureDataSchema.shape).forEach(key => {
-            const fieldSchema = (BrochureDataSchema.shape as any)[key];
-            if (fieldSchema._def.typeName === 'ZodDefault') {
-                fallbackData[key] = fieldSchema._def.defaultValue();
-            } else if (fieldSchema._def.typeName === 'ZodOptional') {
-                 // For optional fields, especially those that might not have a .default() directly
-                 // but are wrapped in optionalUrlSchema (which has .default(''))
-                 // we ensure they get a sensible default if parse({}) fails.
-                if (fieldSchema._def.innerType?._def?.typeName === 'ZodDefault') {
-                     fallbackData[key] = fieldSchema._def.innerType._def.defaultValue();
-                } else {
-                    fallbackData[key] = ''; // Default to empty string for other optional strings
-                }
-            } else if (fieldSchema._def.typeName === 'ZodArray') {
-                 fallbackData[key] = []; // Default to empty array for arrays
+        for (const key in BrochureDataSchema.shape) {
+            const fieldShape = (BrochureDataSchema.shape as any)[key];
+            if (fieldShape._def.typeName === 'ZodDefault') {
+                 fallbackData[key] = fieldShape._def.defaultValue();
+            } else if (fieldShape._def.typeName === 'ZodOptional') {
+                fallbackData[key] = undefined; // Or fieldShape._def.innerType?._def?.defaultValue() if nested default
+            } else if (fieldShape._def.typeName === 'ZodArray') {
+                fallbackData[key] = [];
+            } else {
+                // For other types, or if unsure, an empty string or appropriate empty value.
+                // This part is tricky without knowing all possible schema types.
+                // Zod Preprocess should handle most cases for strings to become ''.
+                fallbackData[key] = ''; 
             }
-             else {
-                // This case should be rare if all fields are optional or have defaults.
-                // For strictly required fields without defaults, this would be an issue.
-                fallbackData[key] = ''; // Or some other sensible default.
-            }
-        });
+        }
         // Ensure specific complex array types are empty arrays
         fallbackData.floorPlans = fallbackData.floorPlans || [];
         fallbackData.amenitiesGridItems = fallbackData.amenitiesGridItems || [];

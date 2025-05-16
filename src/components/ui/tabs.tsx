@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -14,7 +15,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-auto items-center justify-center rounded-none bg-muted p-0.5 text-muted-foreground gap-0.5", // Added gap for slight separation
+      "inline-flex h-auto items-center justify-center rounded-none p-0.5 text-muted-foreground gap-0.5", // bg-muted removed to inherit from parent
       className
     )}
     {...props}

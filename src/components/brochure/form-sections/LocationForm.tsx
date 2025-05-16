@@ -15,10 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports
 
 export interface LocationFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) => {
@@ -31,6 +33,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({ form, disabled }) =>
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Location Details</h3>
+        {/* Removed AI Generation Button */}
       </div>
       <FormField
         control={form.control}

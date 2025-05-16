@@ -15,22 +15,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports
 
 export interface ConnectivityFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 const PointOfInterestArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData;
+    name: keyof BrochureData; // Make this more type-safe if possible
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        // @ts-ignore 
-        name: name as any,
+        name: name as any, // Cast to any if type inference struggles with complex names
     });
 
     return (
@@ -41,8 +42,7 @@ const PointOfInterestArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                            // @ts-ignore
-                            name={`${name}.${index}`}
+                            name={`${name}.${index}` as any} // Cast for nested array field
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     {index === 0 ? (
@@ -85,6 +85,7 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form, disabl
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Connectivity Details</h3>
+        {/* Removed AI Generation Button */}
       </div>
       <FormField
         control={form.control}

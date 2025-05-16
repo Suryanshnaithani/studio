@@ -1,4 +1,4 @@
 
 // Flows will be imported for their side effects in this file.
-// import './flows/generate-brochure-flow'; // AI features disabled
+// import './flows/generate-brochure-flow'; // AI features currently disabled
     

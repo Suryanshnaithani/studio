@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
@@ -14,10 +15,12 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// Removed AI-related imports
 
 export interface AmenitiesGridFormProps {
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disabled }) => {
@@ -27,9 +30,6 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
   });
 
   const addNewGridItem = () => {
-    // Provide a default new item structure. 
-    // Ensure the 'id' is unique if you rely on it before saving/submitting.
-    // The schema's default for 'id' will handle this if it's not provided here.
     append({ image: '', label: 'New Amenity Feature', id: `temp-grid-${Date.now()}` } as AmenityGridItemData);
   };
 
@@ -49,6 +49,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
             </FormItem>
           )}
         />
+        {/* Removed AI Generation Button */}
       </div>
 
       <div className="space-y-3">
@@ -63,7 +64,7 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(index)}
-                  disabled={disabled || fields.length <= 0} // Allow removing if there's at least one. Can be 0.
+                  disabled={disabled || fields.length <= 0}
                   className="h-7 w-7 text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />

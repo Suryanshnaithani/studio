@@ -212,12 +212,13 @@ export default function Home() {
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
-        setGeneratedBrochureData(validatedDataForPrint);
-        document.documentElement.className = activeTheme.cssClass; 
+        setGeneratedBrochureData(validatedDataForPrint); // Set data for print-only section
+        document.documentElement.className = activeTheme.cssClass; // Ensure theme is applied for print
         document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
-        setPrintKey(prev => prev + 1); 
+        setPrintKey(prev => prev + 1); // Trigger re-render of PrintableBrochureLoader
 
-        await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay slightly for render
+        // Wait for the print-only section to re-render with new data/theme
+        await new Promise(resolve => setTimeout(resolve, 600)); // Increased delay for render
         
         window.print();
 
@@ -238,16 +239,18 @@ export default function Home() {
         duration: 7000
       });
     } finally {
+      // Delay resetting isPrintingRef to allow print dialog to close and browser to recover
       setTimeout(() => { 
         isPrintingRef.current = false;
         
+        // Restore live preview to current form state *after* print operations are done
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
             setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           setGeneratedBrochureData(currentLiveFormData as BrochureData); // Show potentially invalid for debug
+           setGeneratedBrochureData(currentLiveFormData as BrochureData); 
         }
       }, 2500); 
     }
@@ -273,7 +276,6 @@ export default function Home() {
                     form.reset(validatedData);
                     setGeneratedBrochureData(validatedData);
                     
-                    // Attempt to find a theme that matches the structure, default to first if not found or if no theme info saved with data
                     const themeFromData = (result.data as any).themeId ? brochureThemes.find(t => t.id === (result.data as any).themeId) : null;
                     setActiveTheme(themeFromData || brochureThemes[0]);
 
@@ -484,10 +486,9 @@ export default function Home() {
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, structure: BrochureStructure, fontFamily: string, printKeyProp: string }> = React.memo(({ data, themeClass, structure, fontFamily, printKeyProp }) => {
   try {
     const validatedData = BrochureDataSchema.parse(data);
-    // Apply font family directly for print context
     const printStyle = { '--brochure-font-family': fontFamily } as React.CSSProperties;
     return (
-      <div style={printStyle}>
+      <div style={printStyle} className={themeClass}> {/* Ensure themeClass is applied here too */}
         <BrochurePreview data={validatedData} themeClass={themeClass} structure={structure} />
       </div>
     );
@@ -497,18 +498,28 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
       '--brochure-font-family': fontFamily,
       boxSizing: 'border-box', 
       border: '2px dashed red', 
-      backgroundColor: 'white' 
+      backgroundColor: 'white',
+      padding: '20mm',
+      color: 'red',
+      fontFamily: 'monospace',
+      width: '210mm', /* A4 width */
+      height: '297mm', /* A4 height */
     } as React.CSSProperties;
+
+    let errorMessage = "The brochure data is incomplete or invalid and cannot be printed. Please correct errors in the editor.";
+    if (error instanceof z.ZodError) {
+        const zodErrorSummary = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('\n');
+        errorMessage += `\n\nValidation Errors:\n${zodErrorSummary}`;
+    } else if (error instanceof Error) {
+        errorMessage += `\n\nError: ${error.message}`;
+    }
+
     return (
-      <div className={cn('p-10 text-red-600 font-bold text-center page page-light-bg', themeClass)} style={printErrorStyle}>
-        <h1>Brochure Generation Error (for Print)</h1>
-        <p className="mt-4">The brochure data is incomplete or invalid and cannot be printed.</p>
-        <p className="mt-2">Please correct the errors in the editor before downloading the PDF.</p>
-        {error instanceof z.ZodError && (
-          <pre className="mt-4 text-left text-xs bg-red-100 p-2 overflow-auto max-h-[150mm] text-red-800">
-            {JSON.stringify(error.flatten().fieldErrors, null, 2)}
-          </pre>
-        )}
+      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}>
+        <h1>Brochure Generation Error (Print)</h1>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '8pt', maxHeight: '200mm', overflowY: 'auto' }}>
+          {errorMessage}
+        </pre>
       </div>
     );
   }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData, AmenityGridItemData } from '@/components/brochure/data-schema';
@@ -29,33 +30,31 @@ const GridItem: React.FC<{ item: AmenityGridItemData; hint: string }> = ({ item,
 );
 
 export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) => {
-  const hasContent = data.amenitiesGridTitle || (data.amenitiesGridItems && data.amenitiesGridItems.length > 0);
-  const hasDisclaimer = !!data.amenitiesGridDisclaimer;
+  const hasValidGridItems = data.amenitiesGridItems && data.amenitiesGridItems.some(item => item.label?.trim() || item.image?.trim());
+  const hasTitle = !!data.amenitiesGridTitle?.trim();
+  const hasDisclaimer = !!data.amenitiesGridDisclaimer?.trim();
 
-  if (!hasContent && !hasDisclaimer) {
-    // If no title, no grid items, and no disclaimer, consider the page empty.
-    // Individual items being empty is handled by GridItem's placeholder.
-    const isEmptyActually = !data.amenitiesGridTitle && 
-                           (!data.amenitiesGridItems || data.amenitiesGridItems.every(item => !item.label && !item.image)) &&
-                           !data.amenitiesGridDisclaimer;
-    if(isEmptyActually) return null;
+  // If no title, no valid grid items, and no disclaimer, consider the page empty.
+  if (!hasTitle && !hasValidGridItems && !hasDisclaimer) {
+    return null;
   }
-
 
   return (
     <PageWrapper className="page-light-bg" id="amenities-grid-page">
       <div className="page-content flex flex-col">
-        {(data.amenitiesGridTitle || (data.amenitiesGridItems && data.amenitiesGridItems.length > 0)) && (
+        {(hasTitle || hasValidGridItems) && (
             <>
-                <div className="section-title">{data.amenitiesGridTitle}</div>
-                <div className="amenities-grid flex-grow">
-                {data.amenitiesGridItems?.map((item, index) => (
-                    <GridItem key={item.id || `grid-${index}`} item={item} hint={`amenity ${index + 1} lifestyle`} />
-                ))}
-                </div>
+                {hasTitle && <div className="section-title">{data.amenitiesGridTitle}</div>}
+                {hasValidGridItems && (
+                    <div className="amenities-grid flex-grow">
+                    {data.amenitiesGridItems?.filter(item => item.label?.trim() || item.image?.trim()).map((item, index) => (
+                        <GridItem key={item.id || `grid-${index}`} item={item} hint={`amenity ${index + 1} lifestyle`} />
+                    ))}
+                    </div>
+                )}
             </>
         )}
-        {data.amenitiesGridDisclaimer && (
+        {hasDisclaimer && (
           <div className="mt-auto pt-[3mm] text-center grid-disclaimer">
             <p>{data.amenitiesGridDisclaimer}</p>
           </div>

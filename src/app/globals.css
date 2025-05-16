@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -395,10 +396,18 @@ body {
   h1, h2, h3, h4, h5, h6, .section-title {
     page-break-after: avoid !important;
   }
-  /* Refined to avoid affecting critical print layout containers */
-  p, ul, ol, div:not(.page):not(.page-content):not(.page-content > div):not(#print-only-section-wrapper):not(.printable-brochure), img, figure, table {
+  
+  /* Refined page-break-inside: avoid */
+  p, ul, ol, table, figure,
+  .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info {
       page-break-inside: avoid !important;
   }
+  /* Avoid breaking specific container divs if they are direct children of page-content and not too large */
+  .page-content > div:not(.section-title):not(.amenities-grid):not(.floor-plans-container) {
+      page-break-inside: avoid !important;
+  }
+
+
   p, li { orphans: 3; widows: 3; }
   ul, ol { page-break-before: auto; page-break-after: auto; }
 

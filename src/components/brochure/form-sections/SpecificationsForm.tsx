@@ -12,24 +12,25 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react'; // Wand2 removed
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
+// Removed AI-related imports: Loader2
 
 export interface SpecificationsFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
+  // Removed onGenerate, isGenerating
 }
 
 const SpecArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData;
+    name: keyof BrochureData; // Type safety
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        // @ts-ignore
-        name: name as any,
+        name: name as any, // Cast if TS struggles
     });
 
     return (
@@ -40,8 +41,7 @@ const SpecArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                             // @ts-ignore
-                            name={`${name}.${index}`}
+                            name={`${name}.${index}` as any} // Cast for nested array field
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     <FormControl>
@@ -89,12 +89,12 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, di
             </FormItem>
             )}
          />
+         {/* Removed AI Generation Button */}
       </div>
        <ImageUploadInput
             form={form}
             name="specsImage"
             label="Specifications Image (URL or Upload)"
-            // disabled={disabled} // This was removed in previous step, re-adding if needed for consistency.
        />
       <FormField
         control={form.control}
@@ -117,7 +117,6 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, di
             form={form}
             name="specsWatermark"
             label="Specs Watermark (URL or Upload)"
-            // disabled={disabled}
        />
 
     </div>
