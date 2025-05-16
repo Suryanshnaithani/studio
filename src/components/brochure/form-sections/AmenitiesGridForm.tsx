@@ -15,12 +15,10 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-// Removed AI-related imports
 
 export interface AmenitiesGridFormProps {
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disabled }) => {
@@ -49,7 +47,6 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
             </FormItem>
           )}
         />
-        {/* Removed AI Generation Button */}
       </div>
 
       <div className="space-y-3">
@@ -76,14 +73,14 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
               <ImageUploadInput
                 form={form}
                 name={`amenitiesGridItems.${index}.image`}
-                label="Image (URL or Upload)"
+                label="Item Image"
               />
               <FormField
                 control={form.control}
                 name={`amenitiesGridItems.${index}.label`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Label</FormLabel>
+                    <FormLabel>Item Label</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Gymnasium" {...field} value={field.value ?? ''} disabled={disabled} />
                     </FormControl>
@@ -123,3 +120,5 @@ export const AmenitiesGridForm: React.FC<AmenitiesGridFormProps> = ({ form, disa
     </div>
   );
 };
+
+    

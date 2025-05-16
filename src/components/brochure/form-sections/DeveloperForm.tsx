@@ -12,12 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports: Button, Loader2, Wand2
 
 export interface DeveloperFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 export const DeveloperForm: React.FC<DeveloperFormProps> = ({ form, disabled }) => {
@@ -25,7 +23,6 @@ export const DeveloperForm: React.FC<DeveloperFormProps> = ({ form, disabled }) 
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Developer Details</h3>
-        {/* Removed AI Generation Button */}
       </div>
 
       <FormField
@@ -70,12 +67,12 @@ export const DeveloperForm: React.FC<DeveloperFormProps> = ({ form, disabled }) 
        <ImageUploadInput
             form={form}
             name="developerImage"
-            label="Developer Background Image (URL or Upload)"
+            label="Developer Background Image"
        />
        <ImageUploadInput
             form={form}
             name="developerLogo"
-            label="Developer Logo (URL or Upload)"
+            label="Developer Logo"
        />
       <FormField
         control={form.control}
@@ -93,3 +90,5 @@ export const DeveloperForm: React.FC<DeveloperFormProps> = ({ form, disabled }) 
     </div>
   );
 };
+
+    

@@ -12,25 +12,23 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react'; // Wand2 removed
+import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports: Loader2
 
 export interface SpecificationsFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 const SpecArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData; // Type safety
+    name: keyof BrochureData; 
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: name as any, // Cast if TS struggles
+        name: name as any, 
     });
 
     return (
@@ -41,7 +39,7 @@ const SpecArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                            name={`${name}.${index}` as any} // Cast for nested array field
+                            name={`${name}.${index}` as any} 
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     <FormControl>
@@ -51,7 +49,7 @@ const SpecArrayInput: React.FC<{
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled || fields.length <=0 }>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -89,12 +87,11 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, di
             </FormItem>
             )}
          />
-         {/* Removed AI Generation Button */}
       </div>
        <ImageUploadInput
             form={form}
             name="specsImage"
-            label="Specifications Image (URL or Upload)"
+            label="Specifications Image"
        />
       <FormField
         control={form.control}
@@ -116,9 +113,11 @@ export const SpecificationsForm: React.FC<SpecificationsFormProps> = ({ form, di
        <ImageUploadInput
             form={form}
             name="specsWatermark"
-            label="Specs Watermark (URL or Upload)"
+            label="Specs Watermark Image"
        />
 
     </div>
   );
 };
+
+    

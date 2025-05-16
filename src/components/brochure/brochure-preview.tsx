@@ -21,11 +21,13 @@ import { cn } from '@/lib/utils';
 interface BrochurePreviewProps {
   data: BrochureData;
   themeClass: string;
-  structure: BrochureStructure;
+  structure: BrochureStructure; // Keep for potential future flexibility, but will default to 'standard'
 }
 
 export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeClass, structure }) => {
   
+  // For now, we'll only use the standard structure.
+  // The switch can be expanded later if more structures are added.
   const renderStandardStructure = () => (
     <>
       <CoverPage data={data} />
@@ -43,37 +45,16 @@ export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeCla
     </>
   );
 
-  const renderCompactStructure = () => (
-    <>
-      <CoverPage data={data} />
-      <IntroPage data={data} />
-      <LocationPage data={data} /> 
-      <AmenitiesListPage data={data} /> 
-      {data.masterPlanImage || (data.masterPlanDesc1 && data.masterPlanDesc2) ? <MasterPlanPage data={data} /> : <FloorPlansPage data={data} />}
-      <DeveloperPage data={data} />
-      <BackCoverPage data={data} />
-    </>
-  );
-
-  const renderVisualStructure = () => (
-    <>
-      <CoverPage data={data} />
-      { (data.masterPlanImage ) && <MasterPlanPage data={data} /> }
-      <FloorPlansPage data={data} /> 
-      <AmenitiesGridPage data={data} />
-      { (data.locationMapImage ) && <LocationPage data={data} /> }
-      <BackCoverPage data={data} />
-    </>
-  );
-
   let content;
+  // Currently, only 'standard' structure is effectively used.
+  // This switch is kept for potential future expansion.
   switch (structure) {
-    case 'compact':
-      content = renderCompactStructure();
-      break;
-    case 'visual':
-      content = renderVisualStructure();
-      break;
+    // case 'compact':
+    //   content = renderCompactStructure(); // Example for future
+    //   break;
+    // case 'visual':
+    //   content = renderVisualStructure(); // Example for future
+    //   break;
     case 'standard':
     default:
       content = renderStandardStructure();
@@ -86,3 +67,5 @@ export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeCla
     </div>
   );
 };
+
+    

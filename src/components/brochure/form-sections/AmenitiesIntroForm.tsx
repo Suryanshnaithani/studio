@@ -12,12 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports
 
 export interface AmenitiesIntroFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, disabled }) => {
@@ -25,7 +23,6 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, di
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Amenities Introduction</h3>
-        {/* Removed AI Generation Button */}
       </div>
       <FormField
         control={form.control}
@@ -82,8 +79,10 @@ export const AmenitiesIntroForm: React.FC<AmenitiesIntroFormProps> = ({ form, di
        <ImageUploadInput
             form={form}
             name="amenitiesIntroWatermark"
-            label="Amenities Intro Watermark (URL or Upload)"
+            label="Amenities Intro Watermark Image"
        />
     </div>
   );
 };
+
+    

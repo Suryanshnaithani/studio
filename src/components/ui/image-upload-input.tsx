@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef } from 'react';
 import type { UseFormReturn, FieldValues, Path } from 'react-hook-form';
 import {
@@ -7,9 +8,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Upload, Link, Trash2, Loader2 } from 'lucide-react';
+import { Upload, ImagePlus, Trash2, Loader2, FileSymlink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -30,10 +30,15 @@ export function ImageUploadInput<T extends FieldValues>({
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(form.getValues(name) || null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  // Initialize previewUrl from form state, ensuring it's a string or null
+  const initialValue = form.getValues(name);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    typeof initialValue === 'string' ? initialValue : null
+  );
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+
+  const processFile = useCallback((file: File) => {
     if (!file) return;
 
     if (file.size > maxFileSize) {
@@ -42,10 +47,7 @@ export function ImageUploadInput<T extends FieldValues>({
             title: "File Too Large",
             description: `Please select a file smaller than ${maxFileSize / 1024 / 1024}MB.`,
         });
-        // Clear the file input
-        if (fileInputRef.current) {
-             fileInputRef.current.value = '';
-        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
         return;
     }
 
@@ -55,12 +57,9 @@ export function ImageUploadInput<T extends FieldValues>({
             title: "Invalid File Type",
             description: "Please select an image file (e.g., JPG, PNG, GIF, WebP).",
         });
-         if (fileInputRef.current) {
-             fileInputRef.current.value = '';
-         }
+         if (fileInputRef.current) fileInputRef.current.value = '';
         return;
     }
-
 
     const reader = new FileReader();
     setUploading(true);
@@ -72,12 +71,9 @@ export function ImageUploadInput<T extends FieldValues>({
       setUploading(false);
       toast({
         title: "Image Uploaded",
-        description: "Image successfully loaded from file.",
+        description: "Image successfully loaded.",
       });
-        // Clear the file input after successful upload
-        if (fileInputRef.current) {
-             fileInputRef.current.value = '';
-        }
+      if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     reader.onerror = () => {
@@ -87,119 +83,159 @@ export function ImageUploadInput<T extends FieldValues>({
         title: "File Read Error",
         description: "Could not read the selected file.",
       });
-        if (fileInputRef.current) {
-             fileInputRef.current.value = '';
-        }
+      if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     reader.readAsDataURL(file);
   }, [form, name, toast, maxFileSize]);
 
-   // Update preview if URL changes directly
-   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-       const url = event.target.value;
-       // Basic URL validation (more robust validation might be needed)
-       if (url === '' || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image/')) {
-          setPreviewUrl(url || null);
-       } else {
-           setPreviewUrl(null); // Clear preview if invalid format
-       }
-       // Let RHF handle the field value update
-        form.setValue(name, url as any, { shouldValidate: true, shouldDirty: true });
-   }
+
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        processFile(file);
+    }
+  }, [processFile]);
+
 
   const handleClearImage = () => {
     form.setValue(name, '' as any, { shouldValidate: true, shouldDirty: true });
     setPreviewUrl(null);
-     if (fileInputRef.current) {
-       fileInputRef.current.value = ''; // Clear file input as well
-     }
+    if (fileInputRef.current) {
+       fileInputRef.current.value = '';
+    }
   };
 
    // Effect to sync preview URL with form state initially and on external changes
    React.useEffect(() => {
-       const currentValue = form.getValues(name);
-       if (currentValue && typeof currentValue === 'string') {
-           setPreviewUrl(currentValue);
+       const formValue = form.getValues(name);
+       if (formValue && typeof formValue === 'string') {
+           setPreviewUrl(formValue);
        } else {
             setPreviewUrl(null);
        }
-   }, [form.watch(name)]); // Watch for changes to the specific field
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [form.watch(name)]); 
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDraggingOver(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) {
+        processFile(file);
+    }
+  };
 
 
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={({ field }) => ( // field is not directly used for value to allow local state for preview
         <FormItem>
           <FormLabel>{label}</FormLabel>
-           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-             <Input
-                placeholder="Enter image URL (http://... or data:...)"
-                {...field}
-                value={field.value ?? ''} // Ensure value is always a string
-                onChange={handleUrlChange} // Use custom handler
-                className="flex-grow"
-              />
-              <span className="text-sm text-muted-foreground hidden sm:block">OR</span>
-             <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="w-full sm:w-auto"
-            >
-                {uploading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Upload className="mr-2 h-4 w-4" />
+            <div 
+                className={cn(
+                    "mt-1 flex justify-center items-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors duration-150 ease-in-out",
+                    isDraggingOver ? "border-primary bg-primary/10" : "border-input hover:border-primary/70",
+                    previewUrl && !isDraggingOver ? "border-primary bg-primary/5" : ""
                 )}
-                {uploading ? 'Uploading...' : 'Upload File'}
-             </Button>
-           </div>
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+            >
+                <div className="space-y-1 text-center w-full">
+                 {!previewUrl ? (
+                    <>
+                        <ImagePlus className="mx-auto h-10 w-10 text-muted-foreground" />
+                        <div className="flex text-sm text-muted-foreground justify-center">
+                            <Button
+                                type="button"
+                                variant="link"
+                                size="sm"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={uploading}
+                                className="font-medium text-primary hover:text-primary/80 p-0 h-auto"
+                            >
+                                {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-1.5 h-4 w-4" /> }
+                                {uploading ? 'Processing...' : 'Click to upload'}
+                            </Button>
+                            <p className="pl-1 hidden sm:inline">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-muted-foreground/80">PNG, JPG, GIF, WebP up to {maxFileSize / 1024 / 1024}MB</p>
+                    </>
+                 ) : (
+                    <div className="relative group w-full max-w-xs mx-auto">
+                        <Image
+                            key={previewUrl} 
+                            src={previewUrl}
+                            alt="Image Preview"
+                            width={150}
+                            height={100}
+                            className="rounded border object-contain bg-muted mx-auto"
+                            onError={() => {
+                                console.warn(`Failed to load image preview for: ${previewUrl}`);
+                                setPreviewUrl(null); // Clear if broken
+                                form.setValue(name, '' as any, { shouldValidate: true });
+                            }}
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded">
+                             <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="text-white hover:bg-white/20 mb-1"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={uploading}
+                                title="Change image"
+                             >
+                                {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSymlink className="mr-2 h-4 w-4" />}
+                                {uploading ? '...' : 'Change'}
+                             </Button>
+                             <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-400 hover:bg-red-400/20 hover:text-red-300"
+                                onClick={handleClearImage}
+                                title="Remove image"
+                             >
+                                <Trash2 className="mr-2 h-4 w-4" /> Remove
+                             </Button>
+                        </div>
+                    </div>
+                 )}
+                </div>
+            </div>
           <FormControl>
             {/* Hidden file input */}
             <input
               type="file"
               ref={fileInputRef}
               onChange={handleFileChange}
-              accept="image/*" // Accept standard image formats
+              accept="image/png, image/jpeg, image/gif, image/webp"
               className="hidden"
+              value="" // Control the value to allow re-upload of the same file
             />
           </FormControl>
-           {previewUrl && (
-              <div className="mt-2 relative group w-full max-w-xs">
-                 <Image
-                    key={previewUrl} // Force re-render on URL change
-                    src={previewUrl}
-                    alt="Image Preview"
-                    width={150}
-                    height={100}
-                    className="rounded border object-contain bg-muted" // Use contain to see whole image
-                    onError={() => {
-                      // Handle broken image links if needed
-                      console.warn(`Failed to load image preview for: ${previewUrl}`);
-                      // Optionally clear the preview or show a placeholder
-                      // setPreviewUrl(null);
-                    }}
-                 />
-                 <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={handleClearImage}
-                    title="Remove image"
-                 >
-                    <Trash2 className="h-4 w-4" />
-                 </Button>
-              </div>
-           )}
           <FormMessage />
         </FormItem>
       )}
     />
   );
 }
+
+    

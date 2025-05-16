@@ -50,12 +50,12 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
         <ImageUploadInput
             form={form}
             name="coverImage"
-            label="Cover Image (URL or Upload)"
+            label="Cover Image"
         />
        <ImageUploadInput
             form={form}
             name="projectLogo"
-            label="Project Logo (URL or Upload)"
+            label="Project Logo"
        />
        <FormField
         control={form.control}
@@ -73,3 +73,5 @@ export const CoverForm: React.FC<CoverFormProps> = ({ form, disabled }) => {
     </div>
   );
 };
+
+    

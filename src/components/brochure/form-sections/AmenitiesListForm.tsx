@@ -14,23 +14,21 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports
 
 export interface AmenitiesListFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 const AmenityArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData; // Type safety for name
+    name: keyof BrochureData; 
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: name as any, // Cast for complex array names if TS struggles
+        name: name as any, 
     });
 
     return (
@@ -41,7 +39,7 @@ const AmenityArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                            name={`${name}.${index}` as any} // Cast for nested array field
+                            name={`${name}.${index}` as any} 
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     <FormControl>
@@ -51,7 +49,7 @@ const AmenityArrayInput: React.FC<{
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled || fields.length <= 0}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -89,12 +87,11 @@ export const AmenitiesListForm: React.FC<AmenitiesListFormProps> = ({ form, disa
             </FormItem>
             )}
          />
-         {/* Removed AI Generation Button */}
       </div>
        <ImageUploadInput
             form={form}
             name="amenitiesListImage"
-            label="Amenities List Image (URL or Upload)"
+            label="Amenities List Image"
        />
        <FormField
         control={form.control}
@@ -116,3 +113,5 @@ export const AmenitiesListForm: React.FC<AmenitiesListFormProps> = ({ form, disa
     </div>
   );
 };
+
+    

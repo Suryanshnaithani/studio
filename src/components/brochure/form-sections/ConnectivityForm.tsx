@@ -15,23 +15,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports
 
 export interface ConnectivityFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 const PointOfInterestArrayInput: React.FC<{
     form: UseFormReturn<BrochureData>;
-    name: keyof BrochureData; // Make this more type-safe if possible
+    name: keyof BrochureData; 
     label: string;
     disabled?: boolean;
 }> = ({ form, name, label, disabled }) => {
     const { fields, append, remove } = useFieldArray({
         control: form.control,
-        name: name as any, // Cast to any if type inference struggles with complex names
+        name: name as any, 
     });
 
     return (
@@ -42,12 +40,12 @@ const PointOfInterestArrayInput: React.FC<{
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={form.control}
-                            name={`${name}.${index}` as any} // Cast for nested array field
+                            name={`${name}.${index}` as any} 
                             render={({ field: arrayField }) => (
                                 <FormItem className="flex-grow">
                                     {index === 0 ? (
                                         <FormControl>
-                                            <Input placeholder="Category (e.g., Business Hubs)" {...arrayField} value={arrayField.value ?? ''} className="font-semibold" disabled={disabled} />
+                                            <Input placeholder="Category Title (e.g., Business Hubs)" {...arrayField} value={arrayField.value ?? ''} className="font-semibold" disabled={disabled} />
                                         </FormControl>
                                     ) : (
                                          <FormControl>
@@ -58,11 +56,9 @@ const PointOfInterestArrayInput: React.FC<{
                                 </FormItem>
                             )}
                         />
-                        {index > 0 && ( 
-                            <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        )}
+                        <Button type="button" variant="outline" size="icon" onClick={() => remove(index)} disabled={disabled || fields.length <= 0}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                     </div>
                 ))}
             </div>
@@ -71,10 +67,10 @@ const PointOfInterestArrayInput: React.FC<{
                 variant="outline"
                 size="sm"
                 className="mt-2"
-                onClick={() => append("")}
+                onClick={() => append(fields.length === 0 ? "New Category" : "New Point")}
                 disabled={disabled}
             >
-                Add Point
+                {fields.length === 0 ? "Add Category & First Point" : "Add Point"}
             </Button>
         </div>
     );
@@ -85,7 +81,6 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form, disabl
     <div className="space-y-4">
        <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-medium">Connectivity Details</h3>
-        {/* Removed AI Generation Button */}
       </div>
       <FormField
         control={form.control}
@@ -122,7 +117,7 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form, disabl
        <ImageUploadInput
             form={form}
             name="connectivityImage"
-            label="Connectivity Image (URL or Upload)"
+            label="Connectivity Image"
        />
       <FormField
         control={form.control}
@@ -140,8 +135,10 @@ export const ConnectivityForm: React.FC<ConnectivityFormProps> = ({ form, disabl
        <ImageUploadInput
             form={form}
             name="connectivityWatermark"
-            label="Connectivity Watermark (URL or Upload)"
+            label="Connectivity Watermark Image"
        />
     </div>
   );
 };
+
+    

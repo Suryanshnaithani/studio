@@ -24,12 +24,12 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled }) 
        <ImageUploadInput
             form={form}
             name="backCoverImage"
-            label="Back Cover Image (URL or Upload)"
+            label="Back Cover Image"
        />
        <ImageUploadInput
             form={form}
             name="backCoverLogo"
-            label="Back Cover Logo (URL or Upload)"
+            label="Back Cover Logo"
        />
        <FormField
         control={form.control}
@@ -138,3 +138,5 @@ export const BackCoverForm: React.FC<BackCoverFormProps> = ({ form, disabled }) 
     </div>
   );
 };
+
+    

@@ -12,15 +12,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react'; // Wand2 removed
+import { Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ImageUploadInput } from '@/components/ui/image-upload-input';
-// Removed AI-related imports: Loader2
 
 export interface FloorPlansFormProps { 
   form: UseFormReturn<BrochureData>;
   disabled?: boolean;
-  // Removed onGenerate, isGenerating
 }
 
 export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }) => {
@@ -45,7 +43,6 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
             </FormItem>
             )}
         />
-        {/* Removed AI Generation Button */}
       </div>
 
 
@@ -59,7 +56,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                 size="icon"
                 className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
                 onClick={() => remove(index)}
-                disabled={disabled}
+                disabled={disabled || fields.length <=0}
              >
                 <Trash2 className="h-4 w-4" />
              </Button>
@@ -93,7 +90,7 @@ export const FloorPlansForm: React.FC<FloorPlansFormProps> = ({ form, disabled }
                 <ImageUploadInput
                     form={form}
                     name={`floorPlans.${index}.image`}
-                    label="Image (URL or Upload)"
+                    label="Plan Image"
                 />
                  <FeatureArrayInput form={form} planIndex={index} disabled={disabled} />
              </CardContent>
@@ -178,3 +175,5 @@ const FeatureArrayInput: React.FC<{ form: UseFormReturn<BrochureData>, planIndex
         </div>
     );
 }
+
+    

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit } from 'lucide-react';
+import { Download, Loader2, Palette, RefreshCcw, SidebarClose, SidebarOpen, Edit, Image as ImageIcon } from 'lucide-react'; // Added ImageIcon
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useSearchParams, useRouter } from 'next/navigation'; 
@@ -36,35 +36,24 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 import './brochure.css';
 
 
-interface FormSection {
-  value: string;
-  label: string;
-  Component: React.FC<any>;
-}
-
-export type BrochureStructure = 'standard' | 'compact' | 'visual';
+// For now, structure is fixed to "standard". Multiple themes provide style variations.
+export type BrochureStructure = 'standard'; // | 'compact' | 'visual';
 
 export interface BrochureTheme {
   id: string;
-  name: string; // For display purposes
+  name: string; 
   cssClass: string;
-  structure: BrochureStructure;
-  fontFamily: string; // CSS font-family string
+  // structure: BrochureStructure; // Keeping for potential future use, but will be 'standard' for now
+  fontFamily: string; 
 }
 
+// Simplified: All themes use 'standard' structure. Variations are in cssClass and fontFamily.
 const brochureThemes: BrochureTheme[] = [
-  { id: "bb-std", name: "Builder Standard", cssClass: "theme-brochure-builder", structure: "standard", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
-  { id: "es-std", name: "Elegant Serif", cssClass: "theme-elegant-serif", structure: "standard", fontFamily: "'Playfair Display', serif" },
-  { id: "cm-std", name: "Cool Modern", cssClass: "theme-cool-modern", structure: "standard", fontFamily: "'Open Sans', sans-serif" },
-  { id: "cb-std", name: "Classic Blue", cssClass: "theme-classic-blue", structure: "standard", fontFamily: "'Roboto', sans-serif" },
-  { id: "mg-std", name: "Modern Green", cssClass: "theme-modern-green", structure: "standard", fontFamily: "'Montserrat', sans-serif" },
-  
-  { id: "bb-cpt", name: "Builder Compact", cssClass: "theme-brochure-builder", structure: "compact", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
-  { id: "es-cpt", name: "Elegant Compact", cssClass: "theme-elegant-serif", structure: "compact", fontFamily: "'Playfair Display', serif" },
-  { id: "cm-cpt", name: "Cool Modern Compact", cssClass: "theme-cool-modern", structure: "compact", fontFamily: "'Open Sans', sans-serif" },
-
-  { id: "bb-vis", name: "Builder Visual", cssClass: "theme-brochure-builder", structure: "visual", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
-  { id: "es-vis", name: "Elegant Visual", cssClass: "theme-elegant-serif", structure: "visual", fontFamily: "'Playfair Display', serif" },
+  { id: "bb-std", name: "Builder Standard", cssClass: "theme-brochure-builder", fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { id: "es-std", name: "Elegant Serif", cssClass: "theme-elegant-serif", fontFamily: "'Playfair Display', serif" },
+  { id: "cm-std", name: "Cool Modern", cssClass: "theme-cool-modern", fontFamily: "'Open Sans', sans-serif" },
+  { id: "cb-std", name: "Classic Blue", cssClass: "theme-classic-blue", fontFamily: "'Roboto', sans-serif" },
+  { id: "mg-std", name: "Modern Green", cssClass: "theme-modern-green", fontFamily: "'Montserrat', sans-serif" },
 ];
 
 
@@ -92,7 +81,7 @@ export default function Home() {
   const form = useForm<BrochureData>({
     resolver: zodResolver(BrochureDataSchema),
     defaultValues: getDefaultBrochureData(),
-    mode: 'onChange',
+    mode: 'onChange', // Keep onChange for live updates when preview is active
   });
 
   useEffect(() => {
@@ -110,7 +99,7 @@ export default function Home() {
       return () => clearTimeout(timer);
     } else {
       setPreviewVisible(false);
-      const timer = setTimeout(() => setPlaceholderVisible(true), showPreview ? 50 : 550);
+      const timer = setTimeout(() => setPlaceholderVisible(true), showPreview ? 50 : 550); 
       return () => clearTimeout(timer);
     }
   }, [showPreview, generatedBrochureData]);
@@ -128,18 +117,18 @@ export default function Home() {
           const availableThemes = brochureThemes.filter(t => t.id !== activeTheme.id);
           randomTheme = availableThemes.length > 0 
             ? availableThemes[Math.floor(Math.random() * availableThemes.length)] 
-            : brochureThemes[0];
+            : brochureThemes[0]; // Fallback to the first theme if only one or no other options
         } else {
           randomTheme = brochureThemes[0];
         }
         setActiveTheme(randomTheme);
-         toast({ title: "Theme & Structure Changed", description: `Applied: ${randomTheme.name}` });
+         toast({ title: "Theme Changed", description: `Applied: ${randomTheme.name}` });
       } else if (showPreview && !firstTimeGeneration) { 
          toast({ title: "Brochure Updated", description: "Preview reflects the latest data." });
       }
 
       if (!showPreview || firstTimeGeneration) {
-        setShowPreview(true);
+        setShowPreview(true); // This will trigger the useEffect for previewVisible
         if (firstTimeGeneration && !newThemeChange) { 
            toast({ title: "Brochure Generated", description: "Preview is now visible." });
         }
@@ -174,12 +163,13 @@ export default function Home() {
 
   const debouncedUpdatePreview = useRef(
     debounce(() => {
-      if (showPreview && !isPrintingRef.current) { 
+      if (showPreview && !isPrintingRef.current) { // Only update if preview is shown and not printing
         handleGenerateOrUpdateBrochure(false);
       }
-    }, 750)
+    }, 750) // Debounce time
   ).current;
 
+  // Watch for form changes and update preview (debounced)
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       if (type === 'change' && showPreview && !isPrintingRef.current) {
@@ -190,6 +180,7 @@ export default function Home() {
   }, [form, debouncedUpdatePreview, showPreview]);
 
 
+  // Debounce utility
   function debounce<F extends (...args: any[]) => any>(func: F, waitFor: number) {
     let timeout: ReturnType<typeof setTimeout> | null = null;
     return (...args: Parameters<F>): Promise<ReturnType<F>> =>
@@ -208,17 +199,16 @@ export default function Home() {
     toast({ title: "Preparing PDF", description: "Generating printable brochure..." });
 
     try {
-        await form.trigger(); 
+        await form.trigger(); // Ensure all fields are validated
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
         setGeneratedBrochureData(validatedDataForPrint); // Set data for print-only section
-        document.documentElement.className = activeTheme.cssClass; // Ensure theme is applied for print
+        document.documentElement.className = activeTheme.cssClass; 
         document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
         setPrintKey(prev => prev + 1); // Trigger re-render of PrintableBrochureLoader
 
-        // Wait for the print-only section to re-render with new data/theme
-        await new Promise(resolve => setTimeout(resolve, 600)); // Increased delay for render
+        await new Promise(resolve => setTimeout(resolve, 600)); 
         
         window.print();
 
@@ -239,18 +229,17 @@ export default function Home() {
         duration: 7000
       });
     } finally {
-      // Delay resetting isPrintingRef to allow print dialog to close and browser to recover
       setTimeout(() => { 
         isPrintingRef.current = false;
-        
-        // Restore live preview to current form state *after* print operations are done
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
             setGeneratedBrochureData(validatedLive);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
-           setGeneratedBrochureData(currentLiveFormData as BrochureData); 
+           // If data is invalid, it's better to show the last valid generatedBrochureData or current form data
+           // to avoid a completely blank preview if possible. Or even null to force placeholder.
+           setGeneratedBrochureData(currentLiveFormData as BrochureData); // Might be invalid but better than nothing
         }
       }, 2500); 
     }
@@ -276,6 +265,7 @@ export default function Home() {
                     form.reset(validatedData);
                     setGeneratedBrochureData(validatedData);
                     
+                    // Load theme if present in data
                     const themeFromData = (result.data as any).themeId ? brochureThemes.find(t => t.id === (result.data as any).themeId) : null;
                     setActiveTheme(themeFromData || brochureThemes[0]);
 
@@ -285,6 +275,7 @@ export default function Home() {
                     toast({ title: "Data Loaded", description: "Brochure data has been populated." });
                     dataLoadedRef.current = dataKey;
 
+                    // Clean up URL by removing dataKey
                     const currentPath = window.location.pathname;
                     const newSearchParams = new URLSearchParams(window.location.search);
                     newSearchParams.delete('dataKey');
@@ -363,34 +354,32 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
               <div className="flex gap-2 w-full sm:w-auto">
                 <Button 
-                    onClick={() => handleGenerateOrUpdateBrochure(true, !showPreview)} 
+                    onClick={() => handleGenerateOrUpdateBrochure(false, !showPreview)} 
                     size="sm" 
                     disabled={globalDisable} 
                     className="flex-grow sm:flex-grow-0 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 shadow-sm"
-                    title={showPreview ? "Apply a new random theme & structure" : "Generate the brochure preview"}
+                    title={showPreview ? "Update the brochure preview" : "Generate the brochure preview"}
                 >
-                    <Palette className="mr-2 h-4 w-4" />
-                    {showPreview ? 'New Look' : 'Generate Brochure'}
+                    {showPreview ? <RefreshCcw className="mr-2 h-4 w-4" /> : <ImageIcon className="mr-2 h-4 w-4" />}
+                    {showPreview ? 'Update Preview' : 'Generate Brochure'}
                 </Button>
-                <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="flex-grow sm:flex-grow-0 bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 shadow-sm">
-                  {isPrintingRef.current ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="mr-2 h-4 w-4" />
-                  )}
-                  {isPrintingRef.current ? 'Preparing...' : 'Download PDF'}
+                 <Button onClick={() => handleGenerateOrUpdateBrochure(true)} size="sm" variant="outline" disabled={globalDisable || !showPreview} className="flex-grow sm:flex-grow-0 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                    <Palette className="mr-2 h-4 w-4" />
+                    New Look
                 </Button>
               </div>
             </div>
             <CardDescription className="text-xs text-sidebar-foreground/80 mt-2">
-               Fill details &amp; click {showPreview ? '"New Look" or "Update Preview"' : '"Generate Brochure"'}.
+               Fill details &amp; click {showPreview ? '"Update Preview" or "New Look"' : '"Generate Brochure"'}.
             </CardDescription>
-            {showPreview && ( 
-                <Button onClick={() => handleGenerateOrUpdateBrochure(false)} size="sm" variant="outline" disabled={globalDisable} className="w-full mt-3 border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                    <RefreshCcw className="mr-2 h-4 w-4" />
-                    Update Preview
-                </Button>
-            )}
+             <Button onClick={handlePrint} size="sm" disabled={globalDisable || !generatedBrochureData} title="Download Brochure as PDF" className="w-full mt-3 bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90 shadow-sm">
+                {isPrintingRef.current ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                )}
+                {isPrintingRef.current ? 'Preparing...' : 'Download PDF'}
+            </Button>
             </>
            )}
           </CardHeader>
@@ -427,9 +416,10 @@ export default function Home() {
                         setSidebarOpen(true);
                         setTimeout(() => {
                             setActiveTab(section.value);
+                            // Ensure content is scrolled into view after sidebar opens and tab is active
                             const contentEl = document.querySelector(`div[role="tabpanel"][data-state="active"][data-orientation="vertical"]`);
                             contentEl?.scrollIntoView({ behavior: 'smooth', block: 'start'});
-                        }, 100); 
+                        }, 100); // Short delay for UI transition
                      }}>
                         <Edit className="h-5 w-5" />
                      </Button>
@@ -438,13 +428,14 @@ export default function Home() {
            )}
         </Card>
 
+        {/* Main Content Area for Preview */}
         <div className="flex-grow h-full overflow-y-auto brochure-preview-container bg-muted/40 dark:bg-background/30 print:bg-transparent print:p-0">
           {!showPreview || !generatedBrochureData ? (
               <div className={cn(
                 "flex flex-col items-center justify-center h-full text-center p-6 md:p-8 transition-opacity duration-500 ease-in-out",
                  placeholderVisible ? "opacity-100" : "opacity-0 pointer-events-none"
               )}>
-                <Palette className="w-20 h-20 text-muted-foreground/30 mb-6" />
+                <ImageIcon className="w-20 h-20 text-muted-foreground/30 mb-6" /> {/* Changed Icon */}
                 <h3 className="text-2xl font-semibold text-foreground mb-3">Your Brochure Awaits Creation</h3>
                 <p className="text-muted-foreground max-w-md text-sm">
                   Fill in the details for your property in the editor on the left.
@@ -453,27 +444,30 @@ export default function Home() {
                 </p>
               </div>
           ) : (
+            // This div is for the live preview and should be hidden during actual print operation by CSS
             <div id="live-preview-content-wrapper" className={cn(
                 "flex justify-center py-6 px-2 md:py-8 md:px-4 overflow-y-auto h-full transition-opacity duration-700 ease-in-out",
-                previewVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+                previewVisible ? "opacity-100" : "opacity-0 pointer-events-none" // Controls visibility based on state
               )}>
-               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme.cssClass, "transition-all duration-300")} style={{'--brochure-font-family': activeTheme.fontFamily} as React.CSSProperties}>
-                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure={activeTheme.structure} />
+               <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme.cssClass, "transition-all duration-300")} style={{'--brochure-font-family-override': activeTheme.fontFamily} as React.CSSProperties}>
+                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure="standard" />
               </div>
             </div>
           )}
         </div>
       </div>
 
+      {/* This section is ONLY for printing. It is hidden by default and only shown by print CSS. */}
       {isClient && (
           <div id="print-only-section-wrapper" className="hidden print:block">
+            {/* Load brochure data again here for print context to ensure it's clean */}
             {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
                 themeClass={activeTheme.cssClass}
-                structure={activeTheme.structure}
+                structure="standard" // Fixed structure
                 fontFamily={activeTheme.fontFamily}
-                printKeyProp={`print-${printKey}-${activeTheme.id}`} 
+                printKeyProp={`print-${printKey}-${activeTheme.id}`} // Unique key for re-render
               />
             )}
           </div>
@@ -483,25 +477,32 @@ export default function Home() {
 }
 
 
+// This component is crucial for ensuring the print version is correctly rendered.
+// It re-validates data and applies the theme class and font family directly.
 const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, structure: BrochureStructure, fontFamily: string, printKeyProp: string }> = React.memo(({ data, themeClass, structure, fontFamily, printKeyProp }) => {
   try {
+    // Ensure data is validated before rendering. This is critical for print.
     const validatedData = BrochureDataSchema.parse(data);
-    const printStyle = { '--brochure-font-family': fontFamily } as React.CSSProperties;
+    // The style here directly influences the print output.
+    const printStyle = { '--brochure-font-family-override': fontFamily } as React.CSSProperties;
+    
     return (
-      <div style={printStyle} className={themeClass}> {/* Ensure themeClass is applied here too */}
+      // Key prop helps React differentiate if data/theme changes significantly for print re-render
+      <div key={printKeyProp} style={printStyle} className={themeClass}> {/* Ensure themeClass is applied here too */}
         <BrochurePreview data={validatedData} themeClass={themeClass} structure={structure} />
       </div>
     );
   } catch (error) {
     console.error("Data validation failed for print render:", error);
+    // Fallback UI for print if data is bad
     const printErrorStyle = { 
-      '--brochure-font-family': fontFamily,
+      '--brochure-font-family-override': fontFamily, // Use requested font even for error
       boxSizing: 'border-box', 
       border: '2px dashed red', 
-      backgroundColor: 'white',
+      backgroundColor: 'white', // Ensure visibility on paper
       padding: '20mm',
-      color: 'red',
-      fontFamily: 'monospace',
+      color: 'red', // Error text in red
+      fontFamily: 'monospace', // Monospace for error details
       width: '210mm', /* A4 width */
       height: '297mm', /* A4 height */
     } as React.CSSProperties;
@@ -515,7 +516,7 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
     }
 
     return (
-      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}>
+      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}> {/* Apply theme for consistency */}
         <h1>Brochure Generation Error (Print)</h1>
         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '8pt', maxHeight: '200mm', overflowY: 'auto' }}>
           {errorMessage}
@@ -525,3 +526,5 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
   }
 });
 PrintableBrochureLoader.displayName = 'PrintableBrochureLoader';
+
+    
