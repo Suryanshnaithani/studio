@@ -31,7 +31,7 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
         ) : (
-             <div className="w-full min-h-[60mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+             <div className="w-full min-h-[70mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
                 {name || "Floor Plan"}
             </div>
         )}
@@ -111,3 +111,4 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   
   return pages.length > 0 ? <>{pages}</> : null;
 };
+

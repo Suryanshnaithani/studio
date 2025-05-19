@@ -198,7 +198,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .amenities-list ul { column-count: 2; column-gap: 5mm; }
 
 /* Amenities Grid Page */
-.amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(75mm, 1fr)); gap: 5mm; margin-bottom: 5mm; margin-top: 5mm; }
+.amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(75mm, 1fr)); gap: 5mm; margin-bottom: 5mm; margin-top: 5mm; /* removed flex-grow */ }
 .grid-item { position: relative; border-radius: 1.5mm; overflow: hidden; aspect-ratio: 4 / 3; page-break-inside: avoid !important; }
 .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 .grid-label { position: absolute; bottom: 2.5mm; left: 50%; transform: translateX(-50%); background-color: hsla(var(--am-grid-label-bg-h, var(--background-h)), var(--am-grid-label-bg-s, var(--background-s)), var(--am-grid-label-bg-l, var(--background-l)), 0.9); color: hsl(var(--am-grid-label-text-color, var(--primary))); padding: 1mm 2.5mm; font-weight: bold; font-size: 10px; text-transform: uppercase; border-radius: 1mm; z-index: 3; white-space: nowrap; }
@@ -454,6 +454,73 @@ img[data-ai-hint] { }
     --dev-disclaimer-text-color-accent: var(--primary-foreground);
   }
 
+  /* New Themes Print Styles Start */
+  .theme-dark-sapphire, .theme-earthy-adobe, .theme-mint-charcoal, .theme-vintage-paper, .theme-monochrome-steel {
+    /* Default values, can be overridden per theme if specific HSL components need to differ */
+    --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l);
+    --cover-text-color: var(--primary-foreground);
+    /* --logo-filter-on-dark-bg is defined in globals.css for these themes */
+
+    --dev-content-bg-h: var(--background-h); --dev-content-bg-s: var(--background-s); --dev-content-bg-l: var(--background-l);
+    --dev-content-text-color: var(--foreground);
+    --dev-disclaimer-bg-h: var(--background-h); --dev-disclaimer-bg-s: var(--background-s); --dev-disclaimer-bg-l: var(--background-l);
+    --dev-disclaimer-text-color: var(--muted-foreground);
+    
+    --map-disclaimer-bg-h: var(--background-h); --map-disclaimer-bg-s: var(--background-s); --map-disclaimer-bg-l: var(--background-l);
+    --map-disclaimer-text-color: var(--foreground);
+    --conn-label-bg: var(--background); --conn-label-text: var(--primary);
+    --am-list-disclaimer-bg-h: var(--background-h); --am-list-disclaimer-bg-s: var(--background-s); --am-list-disclaimer-bg-l: var(--background-l);
+    --am-list-disclaimer-text-color: var(--foreground);
+    --am-grid-label-bg-h: var(--background-h); --am-grid-label-bg-s: var(--background-s); --am-grid-label-bg-l: var(--background-l);
+    --am-grid-label-text-color: var(--primary);
+    --specs-disclaimer-bg-h: var(--background-h); --specs-disclaimer-bg-s: var(--background-s); --specs-disclaimer-bg-l: var(--background-l);
+    --specs-disclaimer-text-color: var(--foreground);
+    --mp-disclaimer-bg-h: var(--background-h); --mp-disclaimer-bg-s: var(--background-s); --mp-disclaimer-bg-l: var(--background-l);
+    --mp-disclaimer-text-color: var(--foreground);
+
+    --bc-contact-line-h: var(--primary-foreground-h); --bc-contact-line-s: var(--primary-foreground-s); --bc-contact-line-l: var(--primary-foreground-l);
+    --bc-disclaimer-bg-h: var(--primary-h); --bc-disclaimer-bg-s: var(--primary-s); --bc-disclaimer-bg-l: var(--primary-l); 
+    --bc-disclaimer-text-color: var(--primary-foreground);
+
+    /* Accent page overrides for new themes - default to primary color scheme for simplicity */
+    --dev-content-bg-h-accent: var(--primary-h); --dev-content-bg-s-accent: var(--primary-s); --dev-content-bg-l-accent: var(--primary-l);
+    --dev-content-text-color-accent: var(--primary-foreground);
+    --dev-disclaimer-bg-h-accent: var(--primary-h); --dev-disclaimer-bg-s-accent: var(--primary-s); --dev-disclaimer-bg-l-accent: var(--primary-l);
+    --dev-disclaimer-text-color-accent: var(--primary-foreground);
+    --map-disclaimer-bg-h-accent: var(--primary-h); --map-disclaimer-bg-s-accent: var(--primary-s); --map-disclaimer-bg-l-accent: var(--primary-l);
+    --map-disclaimer-text-color-accent: var(--primary-foreground);
+    --am-list-disclaimer-bg-h-accent: var(--primary-h); --am-list-disclaimer-bg-s-accent: var(--primary-s); --am-list-disclaimer-bg-l-accent: var(--primary-l);
+    --am-list-disclaimer-text-color-accent: var(--primary-foreground);
+    --specs-disclaimer-bg-h-accent: var(--primary-h); --specs-disclaimer-bg-s-accent: var(--primary-s); --specs-disclaimer-bg-l-accent: var(--primary-l);
+    --specs-disclaimer-text-color-accent: var(--primary-foreground);
+    --mp-disclaimer-bg-h-accent: var(--primary-h); --mp-disclaimer-bg-s-accent: var(--primary-s); --mp-disclaimer-bg-l-accent: var(--primary-l);
+    --mp-disclaimer-text-color-accent: var(--primary-foreground);
+  }
+  /* Specific print overrides if a theme requires different logic (e.g. for very dark backgrounds affecting text on overlays) */
+  .theme-dark-sapphire { /* Example: Dark theme might need specific HSL components for overlays to ensure readability */
+    --dev-content-bg-h: 220; --dev-content-bg-s: 30%; --dev-content-bg-l: 15%; /* Dark Sapphire */
+    --dev-content-text-color: hsl(215, 20%, 88%); /* Light Grey */
+    --dev-disclaimer-bg-h: 220; --dev-disclaimer-bg-s: 30%; --dev-disclaimer-bg-l: 15%;
+    --dev-disclaimer-text-color: hsl(215, 15%, 70%);
+    --map-disclaimer-bg-h: 220; --map-disclaimer-bg-s: 30%; --map-disclaimer-bg-l: 15%;
+    --map-disclaimer-text-color: hsl(215, 20%, 88%);
+    --conn-label-bg: hsl(220, 30%, 15%); --conn-label-text: hsl(210, 100%, 65%);
+  }
+  .theme-mint-charcoal { /* Example: if primary is very dark, some label backgrounds might need adjustment */
+    --conn-label-bg: hsl(150, 40%, 97%); /* Light mint */
+    --conn-label-text: hsl(210, 15%, 30%); /* Dark charcoal */
+    --am-grid-label-bg-h: 150; --am-grid-label-bg-s: 40%; --am-grid-label-bg-l: 97%;
+    --am-grid-label-text-color: hsl(210, 15%, 30%);
+  }
+  .theme-vintage-paper {
+    --dev-content-bg-h: 35; --dev-content-bg-s: 30%; --dev-content-bg-l: 94%; /* Parchment */
+    --dev-content-text-color: hsl(10, 40%, 20%); /* Deep Sepia */
+    --dev-disclaimer-bg-h: 35; --dev-disclaimer-bg-s: 30%; --dev-disclaimer-bg-l: 94%;
+    --dev-disclaimer-text-color: hsl(10, 30%, 40%);
+    --map-disclaimer-bg-h: 35; --map-disclaimer-bg-s: 30%; --map-disclaimer-bg-l: 94%;
+    --map-disclaimer-text-color: hsl(10, 40%, 20%);
+  }
+  /* New Themes Print Styles End */
 
   .page-accent-bg, .cover-page, .back-cover { 
     background-color: hsl(var(--primary)) !important;

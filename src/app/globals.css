@@ -312,6 +312,120 @@ body {
     --watermark-opacity-muted-print: 0.038;
   }
 
+  .theme-dark-sapphire {
+    --background: 220 30% 15%; /* Dark Sapphire Blue/Charcoal */
+    --background-h: 220; --background-s: 30%; --background-l: 15%;
+    --foreground: 215 20% 88%; /* Light Grey/Cool White */
+    --foreground-h: 215; --foreground-s: 20%; --foreground-l: 88%;
+    --primary: 210 100% 65%; /* Bright Sapphire Blue */
+    --primary-h: 210; --primary-s: 100%; --primary-l: 65%;
+    --primary-foreground: 220 30% 10%; /* Very Dark Blue for text on primary */
+    --primary-foreground-h: 220; --primary-foreground-s: 30%; --primary-foreground-l: 10%;
+    --accent: 180 100% 55%; /* Vibrant Cyan */
+    --accent-h: 180; --accent-s: 100%; --accent-l: 55%;
+    --accent-foreground: 220 30% 10%; /* Very Dark Blue for text on accent */
+    --border: 220 25% 30%; /* Mid Dark Blue Border */
+    --muted: 220 30% 20%; /* Darker Sapphire for muted backgrounds */
+    --muted-h: 220; --muted-s: 30%; --muted-l: 20%;
+    --muted-foreground: 215 15% 70%; /* Muted Grey for text */
+    --brochure-font-family: 'Lato', sans-serif;
+    --logo-filter-on-dark-bg: brightness(0) invert(1); /* Invert logo on dark background */
+    --cover-image-opacity: 0.3; --developer-image-opacity: 0.4; --back-cover-image-opacity: 0.25;
+    --watermark-opacity-light: 0.04; --watermark-opacity-accent: 0.06; --watermark-opacity-muted: 0.03;
+    --watermark-opacity-light-print: 0.02; --watermark-opacity-accent-print: 0.04; --watermark-opacity-muted-print: 0.015;
+  }
+
+  .theme-earthy-adobe {
+    --background: 30 40% 95%; /* Warm Beige */
+    --background-h: 30; --background-s: 40%; --background-l: 95%;
+    --foreground: 25 30% 25%; /* Dark Brown */
+    --foreground-h: 25; --foreground-s: 30%; --foreground-l: 25%;
+    --primary: 20 70% 55%; /* Terracotta */
+    --primary-h: 20; --primary-s: 70%; --primary-l: 55%;
+    --primary-foreground: 30 40% 97%; /* Off-White */
+    --primary-foreground-h: 30; --primary-foreground-s: 40%; --primary-foreground-l: 97%;
+    --accent: 45 60% 50%; /* Muted Gold/Ochre */
+    --accent-h: 45; --accent-s: 60%; --accent-l: 50%;
+    --accent-foreground: 25 30% 15%; /* Darker Brown for text on accent */
+    --border: 30 30% 80%; /* Light Beige Border */
+    --muted: 30 40% 90%; /* Lighter Beige for muted backgrounds */
+    --muted-h: 30; --muted-s: 40%; --muted-l: 90%;
+    --muted-foreground: 25 25% 45%; /* Mid Brown for muted text */
+    --brochure-font-family: 'Merriweather', serif;
+    --cover-image-opacity: 0.7; --developer-image-opacity: 0.6; --back-cover-image-opacity: 0.5;
+    --watermark-opacity-light: 0.08; --watermark-opacity-accent: 0.12; --watermark-opacity-muted: 0.07;
+    --watermark-opacity-light-print: 0.05; --watermark-opacity-accent-print: 0.08; --watermark-opacity-muted-print: 0.04;
+  }
+
+  .theme-mint-charcoal {
+    --background: 150 40% 97%; /* Light Mint Green */
+    --background-h: 150; --background-s: 40%; --background-l: 97%;
+    --foreground: 210 10% 25%; /* Dark Charcoal Grey */
+    --foreground-h: 210; --foreground-s: 10%; --foreground-l: 25%;
+    --primary: 210 15% 30%; /* Dark Charcoal (almost black) */
+    --primary-h: 210; --primary-s: 15%; --primary-l: 30%;
+    --primary-foreground: 150 30% 95%; /* Very Light Mint/White */
+    --primary-foreground-h: 150; --primary-foreground-s: 30%; --primary-foreground-l: 95%;
+    --accent: 160 60% 65%; /* Brighter Mint/Aqua */
+    --accent-h: 160; --accent-s: 60%; --accent-l: 65%;
+    --accent-foreground: 210 15% 20%; /* Darkest Charcoal for text on accent */
+    --border: 150 25% 85%; /* Light Mint Border */
+    --muted: 150 40% 92%; /* Slightly darker/muted Mint */
+    --muted-h: 150; --muted-s: 40%; --muted-l: 92%;
+    --muted-foreground: 210 10% 45%; /* Mid Charcoal for muted text */
+    --brochure-font-family: 'Roboto Condensed', sans-serif;
+    --logo-filter-on-dark-bg: brightness(0) invert(1);
+    --cover-image-opacity: 0.45; --developer-image-opacity: 0.55; --back-cover-image-opacity: 0.35;
+    --watermark-opacity-light: 0.06; --watermark-opacity-accent: 0.09; --watermark-opacity-muted: 0.05;
+    --watermark-opacity-light-print: 0.03; --watermark-opacity-accent-print: 0.06; --watermark-opacity-muted-print: 0.025;
+  }
+
+  .theme-vintage-paper {
+    --background: 35 30% 94%; /* Parchment/Off-white */
+    --background-h: 35; --background-s: 30%; --background-l: 94%;
+    --foreground: 10 40% 20%; /* Deep Sepia/Dark Brown */
+    --foreground-h: 10; --foreground-s: 40%; --foreground-l: 20%;
+    --primary: 0 50% 35%; /* Deep Burgundy */
+    --primary-h: 0; --primary-s: 50%; --primary-l: 35%;
+    --primary-foreground: 35 30% 96%; /* Creamy Off-White */
+    --primary-foreground-h: 35; --primary-foreground-s: 30%; --primary-foreground-l: 96%;
+    --accent: 30 60% 45%; /* Antique Gold/Bronze */
+    --accent-h: 30; --accent-s: 60%; --accent-l: 45%;
+    --accent-foreground: 35 30% 96%; /* Creamy Off-White for text on accent */
+    --border: 35 20% 80%; /* Light Parchment Border */
+    --muted: 35 30% 90%; /* Slightly darker Parchment */
+    --muted-h: 35; --muted-s: 30%; --muted-l: 90%;
+    --muted-foreground: 10 30% 40%; /* Mid Sepia for muted text */
+    --brochure-font-family: 'Lora', serif;
+    --logo-filter-on-dark-bg: brightness(0) invert(1);
+    --cover-image-opacity: 0.65; --developer-image-opacity: 0.5; --back-cover-image-opacity: 0.55;
+    --watermark-opacity-light: 0.09; --watermark-opacity-accent: 0.13; --watermark-opacity-muted: 0.08;
+    --watermark-opacity-light-print: 0.06; --watermark-opacity-accent-print: 0.09; --watermark-opacity-muted-print: 0.05;
+  }
+  
+  .theme-monochrome-steel {
+    --background: 220 10% 96%; /* Very Light Steel Grey */
+    --background-h: 220; --background-s: 10%; --background-l: 96%;
+    --foreground: 220 15% 15%; /* Very Dark Steel Grey/Almost Black */
+    --foreground-h: 220; --foreground-s: 15%; --foreground-l: 15%;
+    --primary: 220 10% 45%; /* Mid Steel Grey */
+    --primary-h: 220; --primary-s: 10%; --primary-l: 45%;
+    --primary-foreground: 0 0% 100%; /* Pure White */
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
+    --accent: 220 10% 30%; /* Darker Steel Grey for accent */
+    --accent-h: 220; --accent-s: 10%; --accent-l: 30%;
+    --accent-foreground: 0 0% 98%; /* Almost White for text on accent */
+    --border: 220 10% 80%; /* Light Grey Border */
+    --muted: 220 10% 90%; /* Lighter Steel Grey for muted */
+    --muted-h: 220; --muted-s: 10%; --muted-l: 90%;
+    --muted-foreground: 220 10% 55%; /* Mid-Light Grey for muted text */
+    --brochure-font-family: 'Inter', sans-serif;
+    --logo-filter-on-dark-bg: brightness(0) invert(1);
+    --cover-image-opacity: 0.35; --developer-image-opacity: 0.45; --back-cover-image-opacity: 0.3;
+    --watermark-opacity-light: 0.05; --watermark-opacity-accent: 0.07; --watermark-opacity-muted: 0.04;
+    --watermark-opacity-light-print: 0.025; --watermark-opacity-accent-print: 0.045; --watermark-opacity-muted-print: 0.02;
+  }
+
 
   * {
     @apply border-border;
@@ -365,7 +479,6 @@ body {
     border: none !important;
     box-shadow: none !important;
     width: 210mm; /* Explicitly set width for print root */
-    /* position: absolute; left:0; top:0; removed as it might cause flow issues, rely on normal flow */
   }
 
   .printable-brochure {
@@ -393,11 +506,8 @@ body {
   
   /* Refined page-break-inside: avoid */
   p, ul, ol, table, figure,
-  .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info {
-      page-break-inside: avoid !important;
-  }
-  /* Avoid breaking specific container divs if they are direct children of page-content and not too large */
-  .page-content > div:not(.section-title):not(.amenities-grid):not(.floor-plans-container) {
+  .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info,
+  .location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item {
       page-break-inside: avoid !important;
   }
 

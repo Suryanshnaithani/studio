@@ -36,9 +36,6 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 // Import brochure specific CSS
 import './brochure.css';
 
-// AI features are currently disabled
-// import { generateBrochureContent, type GenerateBrochureInput, BrochureAIDataSectionsEnum } from '@/ai/flows/generate-brochure-flow';
-
 
 export type BrochureStructure = 'standard'; 
 
@@ -55,6 +52,11 @@ const brochureThemes: BrochureTheme[] = [
   { id: "cm-std", name: "Cool Modern", cssClass: "theme-cool-modern", fontFamily: "'Open Sans', sans-serif" },
   { id: "cb-std", name: "Classic Blue", cssClass: "theme-classic-blue", fontFamily: "'Roboto', sans-serif" },
   { id: "mg-std", name: "Modern Green", cssClass: "theme-modern-green", fontFamily: "'Montserrat', sans-serif" },
+  { id: "ds-sapphire", name: "Dark Sapphire", cssClass: "theme-dark-sapphire", fontFamily: "'Lato', sans-serif" },
+  { id: "ea-adobe", name: "Earthy Adobe", cssClass: "theme-earthy-adobe", fontFamily: "'Merriweather', serif" },
+  { id: "mc-charcoal", name: "Mint & Charcoal", cssClass: "theme-mint-charcoal", fontFamily: "'Roboto Condensed', sans-serif" },
+  { id: "vp-paper", name: "Vintage Paper", cssClass: "theme-vintage-paper", fontFamily: "'Lora', serif" },
+  { id: "ms-steel", name: "Monochrome Steel", cssClass: "theme-monochrome-steel", fontFamily: "'Inter', sans-serif" },
 ];
 
 
@@ -124,6 +126,7 @@ export default function Home() {
           themeToApply = brochureThemes[0];
         }
         setActiveTheme(themeToApply); 
+        form.setValue('themeId', themeToApply.id, {shouldDirty: true, shouldValidate: true });
          toast({ title: "Theme Changed", description: `Applied: ${themeToApply.name}` });
       }
       
@@ -209,11 +212,14 @@ export default function Home() {
         const currentFormData = form.getValues();
         const validatedDataForPrint = BrochureDataSchema.parse(currentFormData);
         
-        const dataForPrintWithTheme = { ...validatedDataForPrint, themeId: activeTheme.id };
-        setGeneratedBrochureData(dataForPrintWithTheme); 
+        const themeIdFromData = validatedDataForPrint.themeId || activeTheme.id;
+        const themeForPrint = brochureThemes.find(t => t.id === themeIdFromData) || activeTheme;
+        
+        setGeneratedBrochureData({ ...validatedDataForPrint, themeId: themeForPrint.id }); 
+        setActiveTheme(themeForPrint); // Ensure active theme is the one being printed
 
-        document.documentElement.className = activeTheme.cssClass; 
-        document.documentElement.style.setProperty('--brochure-font-family-override', activeTheme.fontFamily);
+        document.documentElement.className = themeForPrint.cssClass; 
+        document.documentElement.style.setProperty('--brochure-font-family-override', themeForPrint.fontFamily);
         setPrintKey(prev => prev + 1); 
 
         await new Promise(resolve => setTimeout(resolve, 600)); 
@@ -242,7 +248,12 @@ export default function Home() {
         const currentLiveFormData = form.getValues();
         try {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
-            setGeneratedBrochureData({ ...validatedLive, themeId: activeTheme.id });
+            const liveThemeId = validatedLive.themeId || activeTheme.id;
+            const liveTheme = brochureThemes.find(t => t.id === liveThemeId) || activeTheme;
+            setGeneratedBrochureData({ ...validatedLive, themeId: liveTheme.id });
+            setActiveTheme(liveTheme); // Reset to current form theme
+            document.documentElement.className = liveTheme.cssClass;
+            document.documentElement.style.setProperty('--brochure-font-family-override', liveTheme.fontFamily);
         } catch (parseError) {
            console.warn("Form data might be invalid post-print; live preview might reflect older state or be empty.", parseError);
            setGeneratedBrochureData({ ...(currentLiveFormData as BrochureData), themeId: activeTheme.id }); 
@@ -468,10 +479,7 @@ export default function Home() {
             {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
-                themeClass={activeTheme.cssClass} 
-                structure="standard" 
-                fontFamily={activeTheme.fontFamily} 
-                printKeyProp={`print-${printKey}-${activeTheme.id}`}
+                printKeyProp={`print-${printKey}-${activeTheme.id}`} // Pass theme ID in key
               />
             )}
           </div>
@@ -481,7 +489,7 @@ export default function Home() {
 }
 
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string, structure: BrochureStructure, fontFamily: string, printKeyProp: string }> = React.memo(({ data, themeClass, structure, fontFamily, printKeyProp }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, printKeyProp: string }> = React.memo(({ data, printKeyProp }) => {
   try {
     const validatedData = BrochureDataSchema.parse(data); 
     const themeToUse = brochureThemes.find(t => t.id === validatedData.themeId) || brochureThemes[0];
@@ -490,13 +498,14 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
     
     return (
       <div key={printKeyProp} style={printStyle} className={themeToUse.cssClass}> 
-        <BrochurePreview data={validatedData} themeClass={themeToUse.cssClass} structure={structure} />
+        <BrochurePreview data={validatedData} themeClass={themeToUse.cssClass} structure="standard" />
       </div>
     );
   } catch (error) {
     console.error("Data validation failed for print render:", error);
+    const themeToUseOnError = brochureThemes[0]; // Fallback theme for error display
     const printErrorStyle = { 
-      '--brochure-font-family-override': fontFamily, 
+      '--brochure-font-family-override': themeToUseOnError.fontFamily, 
       boxSizing: 'border-box', 
       border: '2px dashed red', 
       backgroundColor: 'white', 
@@ -516,7 +525,7 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, themeClass: string
     }
 
     return (
-      <div className={cn('page page-light-bg', themeClass)} style={printErrorStyle}> 
+      <div className={cn('page page-light-bg', themeToUseOnError.cssClass)} style={printErrorStyle}> 
         <h1>Brochure Generation Error (Print)</h1>
         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '8pt', maxHeight: '200mm', overflowY: 'auto' }}>
           {errorMessage}
