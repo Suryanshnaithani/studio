@@ -86,7 +86,7 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                         alt="Connectivity Highlight"
                         width={700}
                         height={500}
-                        className="w-full h-auto max-h-[100mm] object-cover rounded-[1.5mm]"
+                        className="w-full h-auto max-h-[85mm] object-cover rounded-[1.5mm] border border-border"
                         data-ai-hint="cityscape aerial view highway"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
@@ -95,11 +95,9 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                     )}
                 </figure>
                 ) : (
-                    connectivityDistrictLabel && (
-                        <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                           <span className="district-label !static !transform-none !bg-transparent !text-muted-foreground">{connectivityDistrictLabel}</span>
-                        </div>
-                    )
+                    <div className="w-full min-h-[65mm] max-h-[85mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+                        {connectivityDistrictLabel ? <span className="district-label !static !transform-none !bg-transparent !text-muted-foreground">{connectivityDistrictLabel}</span> : <p>Connectivity Image Placeholder</p>}
+                    </div>
                 )}
             </div>
           )}

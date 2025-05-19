@@ -39,7 +39,7 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
                         alt="Amenities Highlight"
                         width={700}
                         height={500}
-                        className="w-full h-auto max-h-[90mm] object-cover rounded-[1.5mm]"
+                        className="w-full h-auto max-h-[75mm] object-cover rounded-[1.5mm] border border-border"
                         data-ai-hint="luxury infinity pool sunset"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
@@ -50,11 +50,9 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
                     )}
                 </figure>
                 ) : (
-                    amenitiesListImageDisclaimer && (
-                        <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                           <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{amenitiesListImageDisclaimer}</p>
-                        </div>
-                    )
+                    <div className="w-full min-h-[65mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+                        {amenitiesListImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{amenitiesListImageDisclaimer}</p> : <p>Amenities Image Placeholder</p>}
+                    </div>
                 )}
             </div>
           )}

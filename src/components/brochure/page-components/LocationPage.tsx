@@ -82,7 +82,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                       alt="Location Map"
                       width={700}
                       height={550}
-                      className="w-full h-auto max-h-[100mm] object-contain rounded-[1.5mm] border border-gray-200"
+                      className="w-full h-auto max-h-[100mm] object-contain rounded-[1.5mm] border border-border"
                       data-ai-hint="stylized city map color"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
@@ -93,11 +93,9 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                    )}
                 </figure>
               ): (
-                   mapDisclaimer && (
-                    <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
-                       <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{mapDisclaimer}</p>
-                    </div>
-                   )
+                   <div className="w-full min-h-[85mm] max-h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+                       {mapDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{mapDisclaimer}</p> : <p>Location Map Placeholder</p>}
+                   </div>
               )}
             </div>
           )}

@@ -35,7 +35,7 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
                       alt="Master Plan Layout"
                       width={700}
                       height={500}
-                      className="w-full h-auto object-contain rounded-[1.5mm] border border-gray-200 max-h-[150mm]"
+                      className="w-full h-auto object-contain rounded-[1.5mm] border border-border max-h-[130mm]"
                       data-ai-hint="architectural site plan color legend"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
@@ -46,11 +46,9 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
                    )}
                </figure>
             ) : (
-                masterPlanImageDisclaimer && (
-                     <div className="w-full h-[150mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
-                        <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{masterPlanImageDisclaimer}</p>
-                     </div>
-                )
+                <div className="w-full min-h-[100mm] max-h-[130mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+                    {masterPlanImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{masterPlanImageDisclaimer}</p> : <p>Master Plan Image Placeholder</p>}
+                </div>
             )}
           </div>
         )}

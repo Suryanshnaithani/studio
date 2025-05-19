@@ -51,7 +51,7 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
                       alt="Interior Finish Example"
                       width={700}
                       height={500}
-                      className="w-full h-auto max-h-[90mm] object-cover rounded-[1.5mm]"
+                      className="w-full h-auto max-h-[75mm] object-cover rounded-[1.5mm] border border-border"
                       data-ai-hint="luxury apartment detail marble"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
@@ -62,11 +62,9 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
                     )}
                  </figure>
               ) : (
-                  specsImageDisclaimer && (
-                     <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                        <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{specsImageDisclaimer}</p>
-                     </div>
-                  )
+                  <div className="w-full min-h-[65mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
+                      {specsImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{specsImageDisclaimer}</p> : <p>Specifications Image Placeholder</p>}
+                  </div>
               )}
             </div>
           )}

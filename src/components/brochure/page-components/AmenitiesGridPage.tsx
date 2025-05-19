@@ -15,7 +15,7 @@ const GridItem: React.FC<{ item: AmenityGridItemData; hint: string }> = ({ item,
   if (!imageSrc && !labelText) return null;
 
   return (
-    <div className="grid-item">
+    <div className="grid-item border border-border">
       {imageSrc ? (
         <Image
           src={imageSrc}
@@ -36,7 +36,7 @@ const GridItem: React.FC<{ item: AmenityGridItemData; hint: string }> = ({ item,
   );
 };
 
-const ITEMS_PER_AMENITIES_GRID_PAGE = 6; // Adjust as needed (e.g., 2 columns x 3 rows)
+const ITEMS_PER_AMENITIES_GRID_PAGE = 6; 
 
 export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) => {
   const amenitiesGridTitle = data.amenitiesGridTitle?.trim();
@@ -65,7 +65,7 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
         <PageWrapper key={`ag-page-${i}`} className="page-light-bg" id={`amenities-grid-page-${i}`}>
           <div className="page-content flex flex-col">
             {i === 0 && hasTitle && <div className="section-title">{amenitiesGridTitle}</div>}
-            <div className="amenities-grid"> {/* Ensure this container allows items to wrap/flow */}
+            <div className="amenities-grid"> 
               {pageGridItems.map((item, index) => (
                   <GridItem key={item.id || `grid-item-${i}-${index}`} item={item} hint={`amenity lifestyle ${startIndex + index + 1}`} />
               ))}
@@ -80,7 +80,6 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
       );
     }
   } else if (hasTitle || hasDisclaimer) {
-     // Render a single page if only title/disclaimer is present, but no grid items
      pages.push(
       <PageWrapper key="ag-page-static" className="page-light-bg" id="amenities-grid-page-static">
         <div className="page-content flex flex-col">

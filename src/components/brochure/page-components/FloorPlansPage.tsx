@@ -26,12 +26,12 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
             alt={`${name || 'Floor Plan'} Image`}
             width={300}
             height={250}
-            className="w-full h-auto max-h-[90mm] object-contain border border-gray-300 rounded-[1.5mm]"
+            className="w-full h-auto max-h-[75mm] object-contain border border-border rounded-[1.5mm]"
             data-ai-hint="architectural floor plan detailed"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
         ) : (
-             <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-300 text-xs p-2 text-center">
+             <div className="w-full min-h-[60mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
                 {name || "Floor Plan"}
             </div>
         )}
@@ -52,7 +52,7 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    );
 };
 
-const ITEMS_PER_FLOOR_PLAN_PAGE = 3; // Adjusted to 3 floor plans per page
+const ITEMS_PER_FLOOR_PLAN_PAGE = 3; 
 
 export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   const floorPlansTitle = data.floorPlansTitle?.trim();
@@ -87,7 +87,7 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
         <PageWrapper key={`fp-page-${i}`} className="page-light-bg" id={`floor-plans-page-${i}`}>
           <div className="page-content">
             {i === 0 && hasTitle && <div className="section-title">{floorPlansTitle}</div>}
-            <div className="floor-plans-container"> {/* Container for current page's plans */}
+            <div className="floor-plans-container"> 
               {pagePlans.map((plan) => <FloorPlanItem key={plan.id || plan.name} plan={plan} />)}
             </div>
             {i === numPlanPages - 1 && hasDisclaimer && (
@@ -98,7 +98,6 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
       );
     }
   } else if (hasTitle || hasDisclaimer) {
-    // Render a single page if only title/disclaimer is present, but no plans
     pages.push(
       <PageWrapper key="fp-page-static" className="page-light-bg" id="floor-plans-page-static">
         <div className="page-content">
