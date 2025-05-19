@@ -37,7 +37,7 @@ import { BackCoverForm } from '@/components/brochure/form-sections/BackCoverForm
 import './brochure.css';
 
 
-export type BrochureStructure = 'standard'; 
+export type BrochureStructure = 'standard' | 'compact-visual' | 'text-focused'; 
 
 export interface BrochureTheme {
   id: string;
@@ -52,7 +52,6 @@ const brochureThemes: BrochureTheme[] = [
   { id: "cm-std", name: "Cool Modern", cssClass: "theme-cool-modern", fontFamily: "'Open Sans', sans-serif" },
   { id: "cb-std", name: "Classic Blue", cssClass: "theme-classic-blue", fontFamily: "'Roboto', sans-serif" },
   { id: "mg-std", name: "Modern Green", cssClass: "theme-modern-green", fontFamily: "'Montserrat', sans-serif" },
-  { id: "ds-sapphire", name: "Dark Sapphire", cssClass: "theme-dark-sapphire", fontFamily: "'Lato', sans-serif" },
   { id: "ea-adobe", name: "Earthy Adobe", cssClass: "theme-earthy-adobe", fontFamily: "'Merriweather', serif" },
   { id: "mc-charcoal", name: "Mint & Charcoal", cssClass: "theme-mint-charcoal", fontFamily: "'Roboto Condensed', sans-serif" },
   { id: "vp-paper", name: "Vintage Paper", cssClass: "theme-vintage-paper", fontFamily: "'Lora', serif" },
@@ -69,6 +68,7 @@ export default function Home() {
   const [generatedBrochureData, setGeneratedBrochureData] = useState<BrochureData | null>(null);
   const [showPreview, setShowPreview] = useState(false); 
   const [activeTheme, setActiveTheme] = useState<BrochureTheme>(brochureThemes[0]);
+  const [activeStructure, setActiveStructure] = useState<BrochureStructure>('standard');
   const [printKey, setPrintKey] = useState(0); 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<string>('cover');
@@ -115,8 +115,16 @@ export default function Home() {
       const validatedData = BrochureDataSchema.parse(currentFormData);
       
       let themeToApply = activeTheme;
+      let structureToApply = activeStructure;
 
-      if (newThemeChange) {
+      if (newThemeChange) { // This logic is for "New Look" button
+        // Cycle structure
+        const structures: BrochureStructure[] = ['standard', 'compact-visual', 'text-focused'];
+        const currentStructureIndex = structures.indexOf(activeStructure);
+        structureToApply = structures[(currentStructureIndex + 1) % structures.length];
+        setActiveStructure(structureToApply);
+
+        // Cycle theme
         if (brochureThemes.length > 1) {
           const availableThemes = brochureThemes.filter(t => t.id !== activeTheme.id);
           themeToApply = availableThemes.length > 0 
@@ -127,7 +135,7 @@ export default function Home() {
         }
         setActiveTheme(themeToApply); 
         form.setValue('themeId', themeToApply.id, {shouldDirty: true, shouldValidate: true });
-         toast({ title: "Theme Changed", description: `Applied: ${themeToApply.name}` });
+        toast({ title: "Theme & Structure Changed", description: `Applied: ${themeToApply.name} with ${structureToApply} layout.` });
       }
       
       const dataWithCorrectTheme = { ...validatedData, themeId: themeToApply.id };
@@ -169,7 +177,7 @@ export default function Home() {
         });
       }
     }
-  }, [form, activeTheme, showPreview, toast, setGeneratedBrochureData, setActiveTheme, setShowPreview]);
+  }, [form, activeTheme, activeStructure, showPreview, toast, setGeneratedBrochureData, setActiveTheme, setActiveStructure, setShowPreview]);
 
 
   const debouncedUpdatePreview = useRef(
@@ -215,8 +223,9 @@ export default function Home() {
         const themeIdFromData = validatedDataForPrint.themeId || activeTheme.id;
         const themeForPrint = brochureThemes.find(t => t.id === themeIdFromData) || activeTheme;
         
+        // Use the activeStructure for printing
         setGeneratedBrochureData({ ...validatedDataForPrint, themeId: themeForPrint.id }); 
-        setActiveTheme(themeForPrint); // Ensure active theme is the one being printed
+        setActiveTheme(themeForPrint); 
 
         document.documentElement.className = themeForPrint.cssClass; 
         document.documentElement.style.setProperty('--brochure-font-family-override', themeForPrint.fontFamily);
@@ -250,8 +259,9 @@ export default function Home() {
             const validatedLive = BrochureDataSchema.parse(currentLiveFormData);
             const liveThemeId = validatedLive.themeId || activeTheme.id;
             const liveTheme = brochureThemes.find(t => t.id === liveThemeId) || activeTheme;
+            // Restore activeStructure as well if it was changed for print (though it's not in this block)
             setGeneratedBrochureData({ ...validatedLive, themeId: liveTheme.id });
-            setActiveTheme(liveTheme); // Reset to current form theme
+            setActiveTheme(liveTheme); 
             document.documentElement.className = liveTheme.cssClass;
             document.documentElement.style.setProperty('--brochure-font-family-override', liveTheme.fontFamily);
         } catch (parseError) {
@@ -284,6 +294,8 @@ export default function Home() {
                     const themeIdFromData = validatedData.themeId; 
                     const themeFromData = themeIdFromData ? brochureThemes.find(t => t.id === themeIdFromData) : brochureThemes[0];
                     setActiveTheme(themeFromData || brochureThemes[0]); 
+                    // Potentially load structure if it's saved in data, otherwise default
+                    // setActiveStructure(validatedData.structureId || 'standard'); 
 
                     setGeneratedBrochureData(validatedData); 
 
@@ -320,7 +332,7 @@ export default function Home() {
         };
         loadRemoteData();
     }
-  }, [isClient, searchParams, form, setGeneratedBrochureData, setShowPreview, toast, router, setActiveTheme]);
+  }, [isClient, searchParams, form, setGeneratedBrochureData, setShowPreview, toast, router, setActiveTheme, setActiveStructure]);
 
 
   if (!isClient) {
@@ -360,6 +372,11 @@ export default function Home() {
              <div className="flex justify-between items-center mb-2">
                 {sidebarOpen && (
                   <CardTitle className="text-xl font-semibold text-sidebar-primary">Brochure Editor</CardTitle>
+                )}
+                 {!sidebarOpen && (
+                  <div className="hidden md:flex flex-col items-center">
+                    <span className="text-xs font-medium text-sidebar-primary/80 writing-mode-vertical-rl transform rotate-180">EDITOR</span>
+                  </div>
                 )}
                 <Button onClick={() => setSidebarOpen(!sidebarOpen)} size="icon" variant="ghost" className="md:hidden text-sidebar-foreground hover:bg-sidebar-accent">
                     {sidebarOpen ? <SidebarClose /> : <SidebarOpen />}
@@ -430,7 +447,6 @@ export default function Home() {
            )}
            {!sidebarOpen && (
              <div className="hidden md:flex flex-col items-center mt-4 space-y-2 p-2">
-                <CardTitle className="text-xs font-medium text-sidebar-primary/80 mb-2 writing-mode-vertical-rl transform rotate-180">EDITOR</CardTitle>
                 {formSections.map(section => (
                      <Button key={`${section.value}-icon`} variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:text-sidebar-primary hover:bg-sidebar-accent" title={section.label} onClick={() => {
                         setSidebarOpen(true);
@@ -467,7 +483,7 @@ export default function Home() {
                 previewVisible ? "opacity-100" : "opacity-0 pointer-events-none" 
               )}>
                <div ref={printableRef} id="printable-brochure-wrapper" className={cn(activeTheme.cssClass, "transition-all duration-300")} style={{'--brochure-font-family-override': activeTheme.fontFamily} as React.CSSProperties}>
-                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure="standard" />
+                <BrochurePreview data={generatedBrochureData} themeClass={activeTheme.cssClass} structure={activeStructure} />
               </div>
             </div>
           )}
@@ -479,7 +495,8 @@ export default function Home() {
             {generatedBrochureData && ( 
               <PrintableBrochureLoader 
                 data={generatedBrochureData} 
-                printKeyProp={`print-${printKey}-${activeTheme.id}`} // Pass theme ID in key
+                structure={activeStructure} // Pass structure for print
+                printKeyProp={`print-${printKey}-${activeTheme.id}-${activeStructure}`} 
               />
             )}
           </div>
@@ -489,7 +506,7 @@ export default function Home() {
 }
 
 
-const PrintableBrochureLoader: React.FC<{ data: BrochureData, printKeyProp: string }> = React.memo(({ data, printKeyProp }) => {
+const PrintableBrochureLoader: React.FC<{ data: BrochureData, structure: BrochureStructure, printKeyProp: string }> = React.memo(({ data, structure, printKeyProp }) => {
   try {
     const validatedData = BrochureDataSchema.parse(data); 
     const themeToUse = brochureThemes.find(t => t.id === validatedData.themeId) || brochureThemes[0];
@@ -498,12 +515,12 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, printKeyProp: stri
     
     return (
       <div key={printKeyProp} style={printStyle} className={themeToUse.cssClass}> 
-        <BrochurePreview data={validatedData} themeClass={themeToUse.cssClass} structure="standard" />
+        <BrochurePreview data={validatedData} themeClass={themeToUse.cssClass} structure={structure} />
       </div>
     );
   } catch (error) {
     console.error("Data validation failed for print render:", error);
-    const themeToUseOnError = brochureThemes[0]; // Fallback theme for error display
+    const themeToUseOnError = brochureThemes[0]; 
     const printErrorStyle = { 
       '--brochure-font-family-override': themeToUseOnError.fontFamily, 
       boxSizing: 'border-box', 
@@ -536,3 +553,4 @@ const PrintableBrochureLoader: React.FC<{ data: BrochureData, printKeyProp: stri
 });
 PrintableBrochureLoader.displayName = 'PrintableBrochureLoader';
 
+    

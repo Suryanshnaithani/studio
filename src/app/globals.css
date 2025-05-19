@@ -312,29 +312,6 @@ body {
     --watermark-opacity-muted-print: 0.038;
   }
 
-  .theme-dark-sapphire {
-    --background: 220 30% 15%; /* Dark Sapphire Blue/Charcoal */
-    --background-h: 220; --background-s: 30%; --background-l: 15%;
-    --foreground: 215 20% 88%; /* Light Grey/Cool White */
-    --foreground-h: 215; --foreground-s: 20%; --foreground-l: 88%;
-    --primary: 210 100% 65%; /* Bright Sapphire Blue */
-    --primary-h: 210; --primary-s: 100%; --primary-l: 65%;
-    --primary-foreground: 220 30% 10%; /* Very Dark Blue for text on primary */
-    --primary-foreground-h: 220; --primary-foreground-s: 30%; --primary-foreground-l: 10%;
-    --accent: 180 100% 55%; /* Vibrant Cyan */
-    --accent-h: 180; --accent-s: 100%; --accent-l: 55%;
-    --accent-foreground: 220 30% 10%; /* Very Dark Blue for text on accent */
-    --border: 220 25% 30%; /* Mid Dark Blue Border */
-    --muted: 220 30% 20%; /* Darker Sapphire for muted backgrounds */
-    --muted-h: 220; --muted-s: 30%; --muted-l: 20%;
-    --muted-foreground: 215 15% 70%; /* Muted Grey for text */
-    --brochure-font-family: 'Lato', sans-serif;
-    --logo-filter-on-dark-bg: brightness(0) invert(1); /* Invert logo on dark background */
-    --cover-image-opacity: 0.3; --developer-image-opacity: 0.4; --back-cover-image-opacity: 0.25;
-    --watermark-opacity-light: 0.04; --watermark-opacity-accent: 0.06; --watermark-opacity-muted: 0.03;
-    --watermark-opacity-light-print: 0.02; --watermark-opacity-accent-print: 0.04; --watermark-opacity-muted-print: 0.015;
-  }
-
   .theme-earthy-adobe {
     --background: 30 40% 95%; /* Warm Beige */
     --background-h: 30; --background-s: 40%; --background-l: 95%;

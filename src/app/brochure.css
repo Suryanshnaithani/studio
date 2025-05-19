@@ -74,11 +74,11 @@
 
 
 /* Typography */
-h1 { font-size: 28px; line-height: 1.1; margin-bottom: 6mm; font-weight: bold; letter-spacing: -0.25pt; } 
-h2 { font-size: 20px; line-height: 1.1; margin-bottom: 4mm; font-weight: bold; letter-spacing: -0.1pt; } 
-h3 { font-size: 16px; line-height: 1.1; margin-bottom: 3mm; font-weight: bold; } 
-h4 { font-size: 13px; line-height: 1.1; margin-bottom: 2mm; font-weight: bold; } 
-p { font-size: 10pt; line-height: 1.4; margin-bottom: 2mm; } /* Slightly increased line-height */
+h1 { font-size: 32px; line-height: 1.1; margin-bottom: 6mm; font-weight: bold; letter-spacing: -0.25pt; } 
+h2 { font-size: 26px; line-height: 1.1; margin-bottom: 4mm; font-weight: bold; letter-spacing: -0.1pt; } 
+h3 { font-size: 20px; line-height: 1.1; margin-bottom: 3mm; font-weight: bold; } 
+h4 { font-size: 16px; line-height: 1.1; margin-bottom: 2mm; font-weight: bold; } 
+p { font-size: 10pt; line-height: 1.4; margin-bottom: 2mm; }
 ul { list-style: none; padding-left: 0; margin-bottom: 3mm; }
 li { margin-bottom: 1.5mm; font-size: 10pt; position: relative; padding-left: 5mm; break-inside: avoid; } 
 li::before { content: '•'; color: hsl(var(--primary)); position: absolute; left: 0; top: 0.1em; font-size: 12pt; line-height: 1; } 
@@ -92,7 +92,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 
 /* Section Title using Theme Variables */
 .section-title {
-    font-size: 22px; 
+    font-size: 24px; 
     font-weight: bold;
     margin-bottom: 6mm;
     color: hsl(var(--primary));
@@ -251,7 +251,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 
 /* General Helpers */
 img { display: block; max-width: 100%; height: auto; page-break-inside: avoid !important; }
-figure { page-break-inside: avoid !important; } /* Added rule for figures */
+figure { page-break-inside: avoid !important; }
 .object-cover { object-fit: cover; }
 .object-contain { object-fit: contain; }
 
@@ -265,7 +265,7 @@ h1, h2, h3, h4, h5, h6, .section-title {
 /* More selective page-break-inside: avoid */
 p, ul, ol, table, figure,
 .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info,
-.location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item { /* Added image containers */
+.location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item {
     page-break-inside: avoid !important;
 }
 
@@ -455,7 +455,7 @@ img[data-ai-hint] { }
   }
 
   /* New Themes Print Styles Start */
-  .theme-dark-sapphire, .theme-earthy-adobe, .theme-mint-charcoal, .theme-vintage-paper, .theme-monochrome-steel {
+  .theme-earthy-adobe, .theme-mint-charcoal, .theme-vintage-paper, .theme-monochrome-steel {
     /* Default values, can be overridden per theme if specific HSL components need to differ */
     --cover-text-bg-h: var(--primary-h); --cover-text-bg-s: var(--primary-s); --cover-text-bg-l: var(--primary-l);
     --cover-text-color: var(--primary-foreground);
@@ -496,16 +496,7 @@ img[data-ai-hint] { }
     --mp-disclaimer-bg-h-accent: var(--primary-h); --mp-disclaimer-bg-s-accent: var(--primary-s); --mp-disclaimer-bg-l-accent: var(--primary-l);
     --mp-disclaimer-text-color-accent: var(--primary-foreground);
   }
-  /* Specific print overrides if a theme requires different logic (e.g. for very dark backgrounds affecting text on overlays) */
-  .theme-dark-sapphire { /* Example: Dark theme might need specific HSL components for overlays to ensure readability */
-    --dev-content-bg-h: 220; --dev-content-bg-s: 30%; --dev-content-bg-l: 15%; /* Dark Sapphire */
-    --dev-content-text-color: hsl(215, 20%, 88%); /* Light Grey */
-    --dev-disclaimer-bg-h: 220; --dev-disclaimer-bg-s: 30%; --dev-disclaimer-bg-l: 15%;
-    --dev-disclaimer-text-color: hsl(215, 15%, 70%);
-    --map-disclaimer-bg-h: 220; --map-disclaimer-bg-s: 30%; --map-disclaimer-bg-l: 15%;
-    --map-disclaimer-text-color: hsl(215, 20%, 88%);
-    --conn-label-bg: hsl(220, 30%, 15%); --conn-label-text: hsl(210, 100%, 65%);
-  }
+  
   .theme-mint-charcoal { /* Example: if primary is very dark, some label backgrounds might need adjustment */
     --conn-label-bg: hsl(150, 40%, 97%); /* Light mint */
     --conn-label-text: hsl(210, 15%, 30%); /* Dark charcoal */
