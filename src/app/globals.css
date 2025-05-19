@@ -455,29 +455,44 @@ body {
     display: block !important;
     height: auto !important;
     overflow: visible !important;
-    page-break-before: avoid !important;
+    page-break-before: avoid !important; /* Ensure the wrapper itself doesn't start a new page */
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    width: 210mm;
+    width: 210mm; /* A4 width */
+    box-sizing: border-box !important;
+  }
+  
+  div.printable-brochure-render-root {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important; /* Try to keep this whole block from breaking if very short */
+    page-break-after: avoid !important;  /* CRITICAL: No page break after the entire brochure content */
+    box-sizing: border-box !important;
   }
 
   .printable-brochure {
-    margin: 0 auto !important;
+    margin: 0 auto !important; /* Centering for safety, though should fill width */
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
     width: 210mm !important;
     height: auto !important;
-    overflow: visible !important;
-    page-break-before: avoid !important;
-    display: block !important;
+    overflow: visible !important; /* Changed from hidden to visible for print flow */
+    page-break-before: avoid !important; /* Ensure this container doesn't cause a break before its first page */
+    page-break-inside: avoid !important; /* If the whole brochure is one page, don't break it */
+    page-break-after: avoid !important; /* Redundant if parent has it, but safe */
+    display: block !important; /* Ensure it behaves as a block for flow */
+    box-sizing: border-box !important;
   }
 
   /* Ensure the very first *rendered* page in the brochure doesn't break before it */
   .printable-brochure > .page:first-child,
-  .printable-brochure > *:first-child:is(.page) {
+  .printable-brochure > *:first-child:is(.page) { /* More robust selector for first direct child page */
       page-break-before: avoid !important;
   }
 
