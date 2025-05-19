@@ -15,10 +15,10 @@ export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) 
   const amenitiesIntroP3 = data.amenitiesIntroP3?.trim();
   const amenitiesIntroWatermark = data.amenitiesIntroWatermark?.trim();
   
-  const hasTextContent = amenitiesIntroTitle || amenitiesIntroP1 || amenitiesIntroP2 || amenitiesIntroP3;
-  const hasVisualContent = !!amenitiesIntroWatermark;
+  const hasCoreText = amenitiesIntroTitle || amenitiesIntroP1 || amenitiesIntroP2 || amenitiesIntroP3;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Page should render if there's any core text. Watermark is decorative.
+  if (!hasCoreText) {
     return null;
   }
 
@@ -36,16 +36,13 @@ export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) 
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {hasTextContent && (
-            <>
-                {amenitiesIntroTitle && <div className="section-title">{amenitiesIntroTitle}</div>}
-                <div className="amenities-intro">
-                {amenitiesIntroP1 && <p>{amenitiesIntroP1}</p>}
-                {amenitiesIntroP2 && <p>{amenitiesIntroP2}</p>}
-                {amenitiesIntroP3 && <p>{amenitiesIntroP3}</p>}
-                </div>
-            </>
-        )}
+        {/* Render title and text container if any core text is present */}
+        {amenitiesIntroTitle && <div className="section-title">{amenitiesIntroTitle}</div>}
+        <div className="amenities-intro">
+        {amenitiesIntroP1 && <p>{amenitiesIntroP1}</p>}
+        {amenitiesIntroP2 && <p>{amenitiesIntroP2}</p>}
+        {amenitiesIntroP3 && <p>{amenitiesIntroP3}</p>}
+        </div>
       </div>
     </PageWrapper>
   );

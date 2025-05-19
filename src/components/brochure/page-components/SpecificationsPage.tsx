@@ -19,10 +19,12 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
   const hasInteriorItems = interiorItems && interiorItems.length > 0;
   const hasBuildingItems = buildingItems && buildingItems.length > 0;
 
-  const hasTextContent = specsTitle || hasInteriorItems || hasBuildingItems || specsImageDisclaimer;
-  const hasVisualContent = !!specsImage || !!specsWatermark;
+  const hasCoreText = specsTitle || hasInteriorItems || hasBuildingItems;
+  const hasCoreVisual = !!specsImage;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Core content: title OR interior/building specs OR main image.
+  // Watermark and image disclaimer are secondary.
+  if (!hasCoreText && !hasCoreVisual) {
     return null;
   }
 
@@ -42,7 +44,7 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
         )}
         {specsTitle && <div className="section-title">{specsTitle}</div>}
         <div className="specs-container">
-          {(specsImage || specsImageDisclaimer) && (
+          {(specsImage || specsImageDisclaimer) && ( // Render image container if image OR disclaimer (disclaimer needs image area context)
             <div className="specs-image">
               {specsImage ? (
                  <figure className="relative">
@@ -61,9 +63,10 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
                        </figcaption>
                     )}
                  </figure>
-              ) : (
+              ) : ( // Only render this placeholder if there's no image but there IS a disclaimer
+                  specsImageDisclaimer &&
                   <div className="w-full min-h-[65mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
-                      {specsImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{specsImageDisclaimer}</p> : <p>Specifications Image Placeholder</p>}
+                      <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{specsImageDisclaimer}</p>
                   </div>
               )}
             </div>

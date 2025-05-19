@@ -15,10 +15,12 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
   const masterPlanImage = data.masterPlanImage?.trim();
   const masterPlanImageDisclaimer = data.masterPlanImageDisclaimer?.trim();
 
-  const hasTextContent = masterPlanTitle || masterPlanDesc1 || masterPlanDesc2 || masterPlanImageDisclaimer;
-  const hasVisualContent = !!masterPlanImage;
+  const hasCoreText = masterPlanTitle || masterPlanDesc1 || masterPlanDesc2;
+  const hasCoreVisual = !!masterPlanImage;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Core content: title OR description paragraphs OR main master plan image.
+  // Disclaimer alone is not enough.
+  if (!hasCoreText && !hasCoreVisual) {
     return null;
   }
 
@@ -26,7 +28,7 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
     <PageWrapper className="page-light-bg" id="master-plan-page">
       <div className="page-content">
         {masterPlanTitle && <div className="section-title">{masterPlanTitle}</div>}
-        {(masterPlanImage || masterPlanImageDisclaimer) && (
+        {(masterPlanImage || masterPlanImageDisclaimer) && ( // Render image container if image OR disclaimer (disclaimer needs image area context)
           <div className="master-plan-image">
             {masterPlanImage ? (
                <figure className="relative">
@@ -45,9 +47,10 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
                        </figcaption>
                    )}
                </figure>
-            ) : (
+            ) : ( // Only render this placeholder if there's no image but there IS a disclaimer
+                masterPlanImageDisclaimer && 
                 <div className="w-full min-h-[100mm] max-h-[130mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
-                    {masterPlanImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{masterPlanImageDisclaimer}</p> : <p>Master Plan Image Placeholder</p>}
+                    <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{masterPlanImageDisclaimer}</p>
                 </div>
             )}
           </div>

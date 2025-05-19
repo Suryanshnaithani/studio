@@ -21,12 +21,12 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
   const reraDisclaimer = data.reraDisclaimer?.trim();
 
   const hasContactInfo = contactTitle || contactPhone || contactEmail || contactWebsite || contactAddress;
-  const hasDisclaimers = fullDisclaimer || reraDisclaimer;
-  const hasVisuals = backCoverImage || backCoverLogo;
+  
+  // Core content: CTA OR Project Name (implicitly part of logo alt text) OR Contact Info OR Back Cover Logo.
+  // Disclaimers or background image alone are not sufficient.
+  const hasPrimaryContent = callToAction || data.projectName?.trim() || hasContactInfo || backCoverLogo;
 
-  // If there's no significant content, don't render the page. 
-  // Call to action is important, so it's a primary check.
-  if (!callToAction && !hasContactInfo && !hasDisclaimers && !hasVisuals && !data.projectName?.trim()) {
+  if (!hasPrimaryContent) {
     return null; 
   }
 
@@ -68,7 +68,7 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
             </div>
         )}
       </div>
-      {hasDisclaimers && (
+      {(fullDisclaimer || reraDisclaimer) && ( // Only render disclaimers if there was primary content.
         <div className="full-disclaimer">
             {fullDisclaimer && <p>{fullDisclaimer}</p>}
             {reraDisclaimer && <p className="mt-2">{reraDisclaimer}</p>}

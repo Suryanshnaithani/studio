@@ -15,17 +15,17 @@ export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
   const introParagraph3 = data.introParagraph3?.trim();
   const introWatermark = data.introWatermark?.trim();
 
-  const hasTextContent = introTitle || introParagraph1 || introParagraph2 || introParagraph3;
-  const hasVisualContent = !!introWatermark;
+  const hasCoreText = introTitle || introParagraph1 || introParagraph2 || introParagraph3;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // The page should render if there's any core text content. Watermark is purely decorative.
+  if (!hasCoreText) {
     return null;
   }
 
   return (
     <PageWrapper className="page-light-bg" id="intro-page">
       <div className="page-content">
-        {hasVisualContent && introWatermark && (
+        {introWatermark && (
            <Image
             src={introWatermark}
             alt="Watermark"
@@ -36,16 +36,13 @@ export const IntroPage: React.FC<IntroPageProps> = ({ data }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {hasTextContent && (
-            <>
-                {introTitle && <div className="section-title">{introTitle.replace('[Project Name]', data.projectName?.trim() || 'This Project')}</div>}
-                <div className="intro-text">
-                {introParagraph1 && <p>{introParagraph1.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
-                {introParagraph2 && <p>{introParagraph2.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
-                {introParagraph3 && <p>{introParagraph3.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
-                </div>
-            </>
-        )}
+        {/* Render section title and intro text container even if some paragraphs are empty, as long as one is not */}
+        {introTitle && <div className="section-title">{introTitle.replace('[Project Name]', data.projectName?.trim() || 'This Project')}</div>}
+        <div className="intro-text">
+        {introParagraph1 && <p>{introParagraph1.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
+        {introParagraph2 && <p>{introParagraph2.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
+        {introParagraph3 && <p>{introParagraph3.replace('[Project Name]', data.projectName?.trim() || 'this project')}</p>}
+        </div>
       </div>
     </PageWrapper>
   );

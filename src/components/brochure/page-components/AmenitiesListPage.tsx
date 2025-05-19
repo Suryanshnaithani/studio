@@ -18,10 +18,12 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
   const hasWellnessItems = wellnessItems && wellnessItems.length > 0;
   const hasRecreationItems = recreationItems && recreationItems.length > 0;
 
-  const hasTextContent = amenitiesListTitle || hasWellnessItems || hasRecreationItems || amenitiesListImageDisclaimer;
-  const hasVisualContent = !!amenitiesListImage;
+  const hasCoreText = amenitiesListTitle || hasWellnessItems || hasRecreationItems;
+  const hasCoreVisual = !!amenitiesListImage;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Core content: title OR wellness/recreation items OR main image.
+  // Disclaimer alone is not enough.
+  if (!hasCoreText && !hasCoreVisual) {
     return null;
   }
 
@@ -30,7 +32,7 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
       <div className="page-content">
         {amenitiesListTitle && <div className="section-title">{amenitiesListTitle}</div>}
         <div className="amenities-container">
-          {(amenitiesListImage || amenitiesListImageDisclaimer) && (
+          {(amenitiesListImage || amenitiesListImageDisclaimer) && ( // Render image container if image OR disclaimer (disclaimer needs image area context)
              <div className="amenities-image">
                 {amenitiesListImage ? (
                 <figure className="relative">
@@ -49,9 +51,10 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
                         </figcaption>
                     )}
                 </figure>
-                ) : (
+                ) : ( // Only render this placeholder if there's no image but there IS a disclaimer
+                    amenitiesListImageDisclaimer && 
                     <div className="w-full min-h-[65mm] max-h-[75mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-border text-xs p-2 text-center">
-                        {amenitiesListImageDisclaimer ? <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{amenitiesListImageDisclaimer}</p> : <p>Amenities Image Placeholder</p>}
+                        <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{amenitiesListImageDisclaimer}</p>
                     </div>
                 )}
             </div>

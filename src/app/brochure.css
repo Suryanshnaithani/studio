@@ -116,26 +116,27 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .cover-page { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground));}
 .cover-image-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: var(--cover-image-opacity, 0.5); z-index: 1; overflow: hidden;}
 .cover-image-container img { width: 100%; height: 100%; object-fit: cover; }
-.cover-content { position: relative; z-index: 2; padding: 15mm; margin-top: -35mm; flex-grow:1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.project-logo { width: 55mm; max-height: 28mm; object-fit: contain; margin: 0 auto 8mm; display: block; filter: var(--logo-filter-on-dark-bg, initial); }
-.project-name { font-size: 32px; text-transform: uppercase; margin-bottom: 5mm; }
-.project-tagline { font-size: 16px; font-style: italic; margin-bottom: 8mm; }
+.cover-content { position: relative; z-index: 2; padding: 20mm 15mm; margin-top: 0; flex-grow:1; display: flex; flex-direction: column; justify-content: center; align-items: center; width:100%; }
+.project-logo { width: 60mm; max-height: 30mm; object-fit: contain; margin: 0 auto 10mm; display: block; filter: var(--logo-filter-on-dark-bg, initial); }
+.project-name { font-size: 38px; text-transform: uppercase; margin-bottom: 6mm; font-weight: bold; letter-spacing: 0.5pt; }
+.project-tagline { font-size: 18px; font-style: italic; margin-bottom: 10mm; max-width: 160mm; }
 .rera-text {
   position: absolute;
   top: 8mm;
   right: 8mm;
-  font-size: 7pt;
+  font-size: 6.5pt; /* Slightly smaller */
   text-align: right;
-  background-color: hsla(var(--cover-text-bg-h, var(--primary-h)), var(--cover-text-bg-s, var(--primary-s)), var(--cover-text-bg-l, var(--primary-l)), 0.35);
+  background-color: hsla(var(--cover-text-bg-h, var(--primary-h)), var(--cover-text-bg-s, var(--primary-s)), var(--cover-text-bg-l, var(--primary-l)), 0.45); /* More subtle background */
   color: hsl(var(--cover-text-color, var(--primary-foreground)));
-  padding: 1.5mm 2.5mm;
-  border-radius: 1.5mm;
+  padding: 1.2mm 2mm; /* Adjusted padding */
+  border-radius: 1mm; /* Softer radius */
   z-index: 3;
+  max-width: 65mm;
 }
-.rera-text p { margin-bottom: 0; line-height: 1.1; font-size: 7pt; }
+.rera-text p { margin-bottom: 0; line-height: 1.2; font-size: 6.5pt; }
 
 /* Intro Page */
-.intro-text { max-width: 150mm; margin: 0 auto; text-align: left; font-size: 11pt; line-height: 1.45; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+.intro-text { max-width: 160mm; margin: 0 auto; text-align: left; font-size: 11pt; line-height: 1.45; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
 .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50mm; opacity: var(--watermark-opacity-light, 0.07); z-index: 0; print-opacity: var(--watermark-opacity-light-print, 0.04); }
 .page-accent-bg .watermark { filter: brightness(0) invert(1); opacity: var(--watermark-opacity-accent, 0.1); print-opacity: var(--watermark-opacity-accent-print, 0.07); }
 .page-muted-bg .watermark { opacity: var(--watermark-opacity-muted, 0.06); print-opacity: var(--watermark-opacity-muted-print, 0.035); }
@@ -148,12 +149,12 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .developer-content { 
   position: relative; 
   z-index: 2; 
-  max-width: 110mm; 
+  max-width: 125mm; /* Increased max-width */
   background-color: hsla(var(--dev-content-bg-h, var(--background-h)), var(--dev-content-bg-s, var(--background-s)), var(--dev-content-bg-l, var(--background-l)), 0.88); 
-  padding: 6mm; 
+  padding: 8mm; /* Increased padding */
   color: hsl(var(--dev-content-text-color, var(--foreground))); 
   border-radius: 1.5mm; 
-  margin: auto; 
+  margin: auto; /* Ensures centering */
   border: 0.5mm solid hsla(var(--border-h, var(--foreground-h)), var(--border-s, var(--foreground-s)), var(--border-l, var(--foreground-l)), 0.15);
 }
 .page-accent-bg .developer-content { 

@@ -38,10 +38,13 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
   const leisurePoints = renderPointList(data.connectivityPointsLeisure, 'leisure');
 
   const hasPointLists = businessPoints || healthcarePoints || educationPoints || leisurePoints;
-  const hasTextContent = connectivityTitle || hasPointLists || connectivityNote;
-  const hasVisualContent = !!connectivityImage || !!connectivityDistrictLabel || !!connectivityWatermark;
+  
+  const hasPrimaryText = connectivityTitle || hasPointLists; // Note is secondary
+  const hasPrimaryVisual = !!connectivityImage; // District label tied to image, watermark is secondary
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Core content: title OR point lists OR main connectivity image.
+  // Note, district label (without image), and watermark are secondary.
+  if (!hasPrimaryText && !hasPrimaryVisual) {
     return null;
   }
 
@@ -61,7 +64,7 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
         )}
         {connectivityTitle && <div className="section-title">{connectivityTitle}</div>}
         <div className="connectivity-container">
-          {(hasPointLists || connectivityNote) && (
+          {(hasPointLists || connectivityNote) && ( // Render text container if points or note exist (if title exists, this will be true)
             <div className="connectivity-text">
                 {hasPointLists && (
                     <>
@@ -77,7 +80,7 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                 {connectivityNote && <p className="location-note">{connectivityNote}</p>}
             </div>
           )}
-          {(connectivityImage || connectivityDistrictLabel) && (
+          {(connectivityImage || connectivityDistrictLabel) && ( // Render image container if image OR label (label needs image context)
               <div className="connectivity-image">
                 {connectivityImage ? (
                 <figure className="relative">

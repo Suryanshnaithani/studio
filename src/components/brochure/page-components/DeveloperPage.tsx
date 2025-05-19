@@ -16,16 +16,17 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
   const developerLogo = data.developerLogo?.trim();
   const developerDisclaimer = data.developerDisclaimer?.trim();
 
-  const hasTextContent = developerName || developerDesc1 || developerDesc2 || developerDisclaimer;
-  const hasVisualContent = !!developerImage || !!developerLogo;
+  const hasCoreText = developerName || developerDesc1 || developerDesc2;
+  const hasCoreVisual = !!developerImage || !!developerLogo; // Main background image or developer logo
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Page should render if there's core text or a core visual. Disclaimer alone is not enough.
+  if (!hasCoreText && !hasCoreVisual) {
     return null;
   }
 
   return (
     <PageWrapper className="developer-page page-muted-bg" id="developer-page">
-       {hasVisualContent && developerImage && (
+       {developerImage && (
         <div className="developer-image-container">
           <Image
             src={developerImage}
@@ -38,17 +39,17 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
         </div>
        )}
       <div className="page-content">
-        {(developerName || developerDesc1 || developerDesc2 || developerLogo) && (
+        {(hasCoreText || developerLogo) && ( // Render content box if core text OR just a logo is present
           <div className="developer-content">
             {developerName && <h2>{developerName}</h2>}
             {developerDesc1 && <p>{developerDesc1}</p>}
             {developerDesc2 && <p>{developerDesc2}</p>}
-            {hasVisualContent && developerLogo && (
+            {developerLogo && (
               <Image
                 src={developerLogo}
                 alt={`${data.developerName || 'Developer'} Logo`}
-                width={170} // Adjusted size
-                height={85}  // Adjusted size
+                width={170} 
+                height={85}  
                 className="developer-logo"
                 data-ai-hint="corporate building logo"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -56,7 +57,7 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
              )}
           </div>
         )}
-        {developerDisclaimer && (
+        {developerDisclaimer && ( // Disclaimer can render if other content is present
           <div className="disclaimer">
             <p>{developerDisclaimer}</p>
           </div>

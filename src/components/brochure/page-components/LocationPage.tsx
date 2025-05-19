@@ -24,12 +24,14 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
   const mapDisclaimer = data.mapDisclaimer?.trim();
 
   const [col1, col2] = splitIntoColumns(data.keyDistances);
-  const hasKeyDistances = col1.length > 0 || col2.length > 0;
   
-  const hasTextContent = locationTitle || locationDesc1 || locationDesc2 || hasKeyDistances || locationNote || mapDisclaimer;
-  const hasVisualContent = !!locationMapImage || !!locationWatermark;
+  const hasPrimaryText = locationTitle || locationDesc1 || locationDesc2;
+  const hasDynamicListContent = col1.length > 0 || col2.length > 0;
+  const hasPrimaryImage = !!locationMapImage;
 
-  if (!hasTextContent && !hasVisualContent) {
+  // Core content: title OR description OR key distances OR main map image.
+  // Watermark, note, and map disclaimer are secondary.
+  if (!hasPrimaryText && !hasDynamicListContent && !hasPrimaryImage) {
     return null;
   }
 
@@ -49,11 +51,11 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
         )}
         {locationTitle && <div className="section-title">{locationTitle}</div>}
         <div className="location-container">
-          {(locationDesc1 || locationDesc2 || hasKeyDistances || locationNote) && (
+          {(locationDesc1 || locationDesc2 || hasDynamicListContent || locationNote) && (
             <div className="location-text">
               {locationDesc1 && <p>{locationDesc1}</p>}
               {locationDesc2 && <p>{locationDesc2}</p>}
-              {hasKeyDistances && (
+              {hasDynamicListContent && (
                 <>
                   <h3>Key Distances</h3>
                   <div className="list-columns">
@@ -73,7 +75,7 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                {locationNote && <p className="location-note">{locationNote}</p>}
             </div>
           )}
-          {(locationMapImage || mapDisclaimer) && (
+          {(locationMapImage || mapDisclaimer) && ( // Render map container if image OR disclaimer exists (disclaimer needs context of map area)
             <div className="location-map">
               {locationMapImage ? (
                 <figure className="relative">

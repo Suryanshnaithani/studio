@@ -9,23 +9,24 @@ interface CoverPageProps {
 }
 
 export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
-  const hasProjectName = data.projectName?.trim();
-  const hasProjectTagline = data.projectTagline?.trim();
-  const hasCoverImage = data.coverImage?.trim();
-  const hasProjectLogo = data.projectLogo?.trim();
-  const hasReraInfo = data.reraInfo?.trim();
+  const projectName = data.projectName?.trim();
+  const projectTagline = data.projectTagline?.trim();
+  const coverImage = data.coverImage?.trim();
+  const projectLogo = data.projectLogo?.trim();
+  const reraInfo = data.reraInfo?.trim();
 
-  // If no meaningful content, don't render the page
-  if (!hasProjectName && !hasProjectTagline && !hasCoverImage && !hasProjectLogo && !hasReraInfo) {
+  // A cover page needs at least a project name OR a cover image to be meaningful.
+  // Logo, tagline, RERA are secondary for this check.
+  if (!projectName && !coverImage) {
     return null;
   }
 
   return (
     <PageWrapper className="cover-page" id="cover-page">
-      {hasCoverImage && (
+      {coverImage && (
         <div className="cover-image-container">
           <Image
-            src={data.coverImage!}
+            src={coverImage}
             alt="Luxury Property Cover"
             layout="fill"
             objectFit="cover"
@@ -36,10 +37,10 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
         </div>
       )}
       <div className="cover-content">
-        {hasProjectLogo && (
+        {projectLogo && (
           <Image
-            src={data.projectLogo!}
-            alt={`${data.projectName || 'Project'} Logo`}
+            src={projectLogo}
+            alt={`${projectName || 'Project'} Logo`}
             width={227} // approx 60mm at 96dpi
             height={114} // maintain aspect ratio
             className="project-logo"
@@ -47,12 +48,12 @@ export const CoverPage: React.FC<CoverPageProps> = ({ data }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {hasProjectName && <h1 className="project-name">{data.projectName}</h1>}
-        {hasProjectTagline && <p className="project-tagline">{data.projectTagline}</p>}
+        {projectName && <h1 className="project-name">{projectName}</h1>}
+        {projectTagline && <p className="project-tagline">{projectTagline}</p>}
       </div>
-      {hasReraInfo && (
+      {reraInfo && (
         <div className="rera-text">
-          {data.reraInfo!.split('\n').map((line, index) => (
+          {reraInfo.split('\n').map((line, index) => (
             <p key={index}>{line}</p>
           ))}
         </div>

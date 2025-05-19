@@ -43,17 +43,16 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
   const amenitiesGridDisclaimer = data.amenitiesGridDisclaimer?.trim();
   
   const validGridItems = data.amenitiesGridItems?.filter(item => item.label?.trim() || item.image?.trim()) || [];
-  const hasValidGridItems = validGridItems.length > 0;
-  const hasTitle = !!amenitiesGridTitle;
-  const hasDisclaimer = !!amenitiesGridDisclaimer;
-
-  if (!hasTitle && !hasValidGridItems && !hasDisclaimer) {
+  
+  // Core content: title OR actual grid items. Disclaimer alone is not enough for the section.
+  const hasCoreContentForSection = !!amenitiesGridTitle || validGridItems.length > 0;
+  if (!hasCoreContentForSection) {
     return null;
   }
 
   const pages = [];
 
-  if (hasValidGridItems) {
+  if (validGridItems.length > 0) {
     const numGridPages = Math.ceil(validGridItems.length / ITEMS_PER_AMENITIES_GRID_PAGE);
 
     for (let i = 0; i < numGridPages; i++) {
@@ -64,13 +63,13 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
       pages.push(
         <PageWrapper key={`ag-page-${i}`} className="page-light-bg" id={`amenities-grid-page-${i}`}>
           <div className="page-content flex flex-col">
-            {i === 0 && hasTitle && <div className="section-title">{amenitiesGridTitle}</div>}
+            {i === 0 && amenitiesGridTitle && <div className="section-title">{amenitiesGridTitle}</div>}
             <div className="amenities-grid"> 
               {pageGridItems.map((item, index) => (
                   <GridItem key={item.id || `grid-item-${i}-${index}`} item={item} hint={`amenity lifestyle ${startIndex + index + 1}`} />
               ))}
             </div>
-            {i === numGridPages - 1 && hasDisclaimer && (
+            {i === numGridPages - 1 && amenitiesGridDisclaimer && (
               <div className="mt-auto pt-[3mm] text-center grid-disclaimer">
                 <p>{amenitiesGridDisclaimer}</p>
               </div>
@@ -79,13 +78,13 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
         </PageWrapper>
       );
     }
-  } else if (hasTitle || hasDisclaimer) {
+  } else if (amenitiesGridTitle) { // Only render this static page if there's a title (and no items)
      pages.push(
       <PageWrapper key="ag-page-static" className="page-light-bg" id="amenities-grid-page-static">
         <div className="page-content flex flex-col">
-          {hasTitle && <div className="section-title">{amenitiesGridTitle}</div>}
-          {!hasValidGridItems && hasTitle && <p className="text-center text-muted-foreground italic my-4">A wide array of amenities are available. Please inquire for details.</p>}
-          {hasDisclaimer && (
+          {amenitiesGridTitle && <div className="section-title">{amenitiesGridTitle}</div>}
+          <p className="text-center text-muted-foreground italic my-4">A wide array of amenities are available. Please inquire for details.</p>
+          {amenitiesGridDisclaimer && (
             <div className="mt-auto pt-[3mm] text-center grid-disclaimer">
               <p>{amenitiesGridDisclaimer}</p>
             </div>
