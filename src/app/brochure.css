@@ -223,7 +223,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .master-plan-text { margin-bottom: 4mm; font-size: 10pt; }
 
 /* Floor Plans Page */
-.floor-plans-container { display: flex; flex-direction: column; gap: 6mm; margin-top: 4mm; flex-grow: 1; }
+.floor-plans-container { display: flex; flex-direction: column; gap: 6mm; margin-top: 4mm; /* flex-grow: 1; removed */ }
 .floor-plan { display: flex; flex-direction: row; gap: 5mm; page-break-inside: avoid !important; align-items: flex-start; }
 .plan-image { flex: 0 0 65mm; position: relative; max-height: 75mm; overflow: hidden; page-break-inside: avoid !important; }
 .plan-image img { width: 100%; height: auto; object-fit: contain; border: 1px solid hsl(var(--border)); border-radius: 1.5mm; max-height: 75mm; }
@@ -263,7 +263,7 @@ h1, h2, h3, h4, h5, h6, .section-title {
   page-break-after: avoid !important;
 }
 /* More selective page-break-inside: avoid */
-p, ul, ol, table, 
+p, ul, ol, table, figure,
 .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info,
 .location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item { /* Added image containers */
     page-break-inside: avoid !important;

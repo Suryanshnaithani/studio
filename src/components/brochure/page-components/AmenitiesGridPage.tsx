@@ -43,6 +43,7 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
   const validGridItems = data.amenitiesGridItems?.filter(item => item.label?.trim() || item.image?.trim()) || [];
   const hasValidGridItems = validGridItems.length > 0;
 
+  // If there's no title, no valid grid items, and no disclaimer, don't render the page.
   if (!amenitiesGridTitle && !hasValidGridItems && !amenitiesGridDisclaimer) {
     return null;
   }
@@ -54,7 +55,7 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
             <>
                 {amenitiesGridTitle && <div className="section-title">{amenitiesGridTitle}</div>}
                 {hasValidGridItems && (
-                    <div className="amenities-grid flex-grow">
+                    <div className="amenities-grid"> {/* Removed flex-grow */}
                     {validGridItems.map((item, index) => (
                         <GridItem key={item.id || `grid-${index}`} item={item} hint={`amenity ${index + 1} lifestyle`} />
                     ))}
