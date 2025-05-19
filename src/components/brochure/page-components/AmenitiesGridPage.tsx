@@ -27,7 +27,7 @@ const GridItem: React.FC<{ item: AmenityGridItemData; hint: string }> = ({ item,
           onError={(e) => { e.currentTarget.style.display = 'none'; }}
         />
       ) : (
-        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
+        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs p-2 text-center border border-border">
           {labelText || "Amenity Image"}
         </div>
       )}
@@ -36,21 +36,28 @@ const GridItem: React.FC<{ item: AmenityGridItemData; hint: string }> = ({ item,
   );
 };
 
-const ITEMS_PER_AMENITIES_GRID_PAGE = 6; 
+const ITEMS_PER_AMENITIES_GRID_PAGE = 6;
 
 export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) => {
   const amenitiesGridTitle = data.amenitiesGridTitle?.trim();
   const amenitiesGridDisclaimer = data.amenitiesGridDisclaimer?.trim();
-  
+
   const validGridItems = data.amenitiesGridItems?.filter(item => item.label?.trim() || item.image?.trim()) || [];
-  
-  // Core content: title OR actual grid items. Disclaimer alone is not enough for the section.
+
   const hasCoreContentForSection = !!amenitiesGridTitle || validGridItems.length > 0;
-  if (!hasCoreContentForSection) {
+  if (!hasCoreContentForSection && !amenitiesGridDisclaimer) { // Only render if title, items, OR disclaimer exists
     return null;
   }
+  
+  // If only disclaimer exists, but no title or items, it's still considered "empty" for actual page generation,
+  // unless the intent is to have a disclaimer-only page for some reason (which is unlikely for this component).
+  // The primary check for returning null is whether there is a title or items.
+  if (!amenitiesGridTitle && validGridItems.length === 0) {
+      return null;
+  }
 
-  const pages = [];
+
+  const pages: React.ReactNode[] = [];
 
   if (validGridItems.length > 0) {
     const numGridPages = Math.ceil(validGridItems.length / ITEMS_PER_AMENITIES_GRID_PAGE);
@@ -64,7 +71,7 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
         <PageWrapper key={`ag-page-${i}`} className="page-light-bg" id={`amenities-grid-page-${i}`}>
           <div className="page-content flex flex-col">
             {i === 0 && amenitiesGridTitle && <div className="section-title">{amenitiesGridTitle}</div>}
-            <div className="amenities-grid"> 
+            <div className="amenities-grid">
               {pageGridItems.map((item, index) => (
                   <GridItem key={item.id || `grid-item-${i}-${index}`} item={item} hint={`amenity lifestyle ${startIndex + index + 1}`} />
               ))}
@@ -78,7 +85,7 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
         </PageWrapper>
       );
     }
-  } else if (amenitiesGridTitle) { // Only render this static page if there's a title (and no items)
+  } else if (amenitiesGridTitle) {
      pages.push(
       <PageWrapper key="ag-page-static" className="page-light-bg" id="amenities-grid-page-static">
         <div className="page-content flex flex-col">
@@ -94,5 +101,5 @@ export const AmenitiesGridPage: React.FC<AmenitiesGridPageProps> = ({ data }) =>
     );
   }
 
-  return pages.length > 0 ? <>{pages}</> : null;
+  return pages.length > 0 ? pages : null;
 };

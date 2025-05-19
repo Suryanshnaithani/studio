@@ -13,7 +13,7 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    const area = plan.area?.trim();
    const image = plan.image?.trim();
    const features = plan.features?.map(f => f?.trim()).filter(Boolean);
-   
+
    const hasContent = name || area || image || (features && features.length > 0);
    if (!hasContent) return null;
 
@@ -52,26 +52,31 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    );
 };
 
-const ITEMS_PER_FLOOR_PLAN_PAGE = 3; 
+const ITEMS_PER_FLOOR_PLAN_PAGE = 3;
 
 export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   const floorPlansTitle = data.floorPlansTitle?.trim();
   const floorPlansDisclaimer = data.floorPlansDisclaimer?.trim();
 
-  const validFloorPlans = data.floorPlans?.filter(fp => 
-    fp.name?.trim() || 
-    fp.area?.trim() || 
+  const validFloorPlans = data.floorPlans?.filter(fp =>
+    fp.name?.trim() ||
+    fp.area?.trim() ||
     fp.image?.trim() ||
     (fp.features && fp.features.some(f => f?.trim()))
   ) || [];
-  
-  // Core content for the section: title OR actual floor plans. Disclaimer alone is not enough.
+
   const hasCoreContentForSection = !!floorPlansTitle || validFloorPlans.length > 0;
-  if (!hasCoreContentForSection) {
+
+  if (!hasCoreContentForSection && !floorPlansDisclaimer) { // Return null if no title, no plans, AND no disclaimer
     return null;
   }
 
-  const pages = [];
+  // If only disclaimer exists, but no title or plans, it's still "empty" for page generation.
+  if (!floorPlansTitle && validFloorPlans.length === 0) {
+      return null;
+  }
+
+  const pages: React.ReactNode[] = [];
 
   if (validFloorPlans.length > 0) {
     const numPlanPages = Math.ceil(validFloorPlans.length / ITEMS_PER_FLOOR_PLAN_PAGE);
@@ -85,7 +90,7 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
         <PageWrapper key={`fp-page-${i}`} className="page-light-bg" id={`floor-plans-page-${i}`}>
           <div className="page-content">
             {i === 0 && floorPlansTitle && <div className="section-title">{floorPlansTitle}</div>}
-            <div className="floor-plans-container"> 
+            <div className="floor-plans-container">
               {pagePlans.map((plan) => <FloorPlanItem key={plan.id || plan.name} plan={plan} />)}
             </div>
             {i === numPlanPages - 1 && floorPlansDisclaimer && (
@@ -95,7 +100,7 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
         </PageWrapper>
       );
     }
-  } else if (floorPlansTitle) { // Only render this static page if there's a title (and no plans)
+  } else if (floorPlansTitle) {
     pages.push(
       <PageWrapper key="fp-page-static" className="page-light-bg" id="floor-plans-page-static">
         <div className="page-content">
@@ -106,6 +111,6 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
       </PageWrapper>
     );
   }
-  
-  return pages.length > 0 ? <>{pages}</> : null;
+
+  return pages.length > 0 ? pages : null;
 };
