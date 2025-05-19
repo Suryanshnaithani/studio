@@ -34,30 +34,55 @@ export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeCla
     <ConnectivityPage key="connectivity" data={data} />,
     <AmenitiesIntroPage key="amenities-intro" data={data} />,
     <AmenitiesListPage key="amenities-list" data={data} />,
-    <AmenitiesGridPage key="amenities-grid" data={data} />,
+    // AmenitiesGridPage and FloorPlansPage can return arrays of pages
+    ...(Array.isArray(AmenitiesGridPage({ data })) ? AmenitiesGridPage({ data }) : [AmenitiesGridPage({ data })]),
     <SpecificationsPage key="specifications" data={data} />,
     <MasterPlanPage key="master-plan" data={data} />,
-    <FloorPlansPage key="floor-plans" data={data} />,
+    ...(Array.isArray(FloorPlansPage({ data })) ? FloorPlansPage({ data }) : [FloorPlansPage({ data })]),
     <BackCoverPage key="back-cover" data={data} />,
   ];
 
-  let pageComponents: (React.ReactNode | null)[];
+  let pageComponentsCandidate: (React.ReactNode | null)[];
   switch (structure) {
     case 'standard':
     default:
-      pageComponents = renderStandardStructure();
+      pageComponentsCandidate = renderStandardStructure();
       break;
   }
 
-  const validPages = pageComponents.filter(page => page !== null && page !== undefined);
+  const validPages = pageComponentsCandidate.flat().filter(page => page !== null && page !== undefined);
 
   if (validPages.length === 0) {
-    return null; // If all pages are empty, render nothing for the brochure itself
+    return null; 
   }
 
   return (
     <div className={cn("printable-brochure", themeClass)} id="brochure-content">
-      {validPages}
+      {validPages.map((page, index) => {
+        // Check if the page is a valid React element and if it's a PageWrapper or a Fragment containing PageWrappers
+        if (React.isValidElement(page)) {
+          if (page.type === React.Fragment) {
+            // If it's a fragment, we need to clone its children if they are PageWrappers
+            // This scenario is less likely with the current flat().filter() but good for robustness
+             return React.cloneElement(page, {
+              key: `frag-${index}`,
+              children: React.Children.map(page.props.children, (child, childIndex) => 
+                React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('PageWrapper')
+                  ? React.cloneElement(child, { isLastPage: index === validPages.length - 1 && childIndex === React.Children.count(page.props.children) - 1 })
+                  : child
+              )
+            });
+          } else if (typeof page.type !== 'string' && (page.type as any).displayName?.includes('PageWrapper')) {
+             // If it's a PageWrapper directly
+            return React.cloneElement(page as React.ReactElement<any>, { isLastPage: index === validPages.length - 1 });
+          }
+        }
+        // Fallback for pages that might not be direct PageWrapper (e.g. from AmenitiesGridPage which returns PageWrappers)
+        // This assumes the top-level elements in validPages are the ones we want to mark as last.
+        // If a component in validPages itself renders multiple PageWrappers, those internal ones won't be marked here.
+        // However, AmenitiesGridPage/FloorPlansPage are designed to return PageWrapper instances directly or in an array.
+        return page; 
+      })}
     </div>
   );
 };
