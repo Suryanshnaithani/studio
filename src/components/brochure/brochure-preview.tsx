@@ -21,51 +21,43 @@ import { cn } from '@/lib/utils';
 interface BrochurePreviewProps {
   data: BrochureData;
   themeClass: string;
-  structure: BrochureStructure; // Keep for potential future flexibility, but will default to 'standard'
+  structure: BrochureStructure;
 }
 
 export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeClass, structure }) => {
   
-  // For now, we'll only use the standard structure.
-  // The switch can be expanded later if more structures are added.
-  const renderStandardStructure = () => (
-    <>
-      <CoverPage data={data} />
-      <IntroPage data={data} />
-      <DeveloperPage data={data} />
-      <LocationPage data={data} />
-      <ConnectivityPage data={data} />
-      <AmenitiesIntroPage data={data} />
-      <AmenitiesListPage data={data} />
-      <AmenitiesGridPage data={data} />
-      <SpecificationsPage data={data} />
-      <MasterPlanPage data={data} />
-      <FloorPlansPage data={data} />
-      <BackCoverPage data={data} />
-    </>
-  );
+  const renderStandardStructure = (): (React.ReactNode | null)[] => [
+    <CoverPage key="cover" data={data} />,
+    <IntroPage key="intro" data={data} />,
+    <DeveloperPage key="developer" data={data} />,
+    <LocationPage key="location" data={data} />,
+    <ConnectivityPage key="connectivity" data={data} />,
+    <AmenitiesIntroPage key="amenities-intro" data={data} />,
+    <AmenitiesListPage key="amenities-list" data={data} />,
+    <AmenitiesGridPage key="amenities-grid" data={data} />,
+    <SpecificationsPage key="specifications" data={data} />,
+    <MasterPlanPage key="master-plan" data={data} />,
+    <FloorPlansPage key="floor-plans" data={data} />,
+    <BackCoverPage key="back-cover" data={data} />,
+  ];
 
-  let content;
-  // Currently, only 'standard' structure is effectively used.
-  // This switch is kept for potential future expansion.
+  let pageComponents: (React.ReactNode | null)[];
   switch (structure) {
-    // case 'compact':
-    //   content = renderCompactStructure(); // Example for future
-    //   break;
-    // case 'visual':
-    //   content = renderVisualStructure(); // Example for future
-    //   break;
     case 'standard':
     default:
-      content = renderStandardStructure();
+      pageComponents = renderStandardStructure();
       break;
+  }
+
+  const validPages = pageComponents.filter(page => page !== null && page !== undefined);
+
+  if (validPages.length === 0) {
+    return null; // If all pages are empty, render nothing for the brochure itself
   }
 
   return (
     <div className={cn("printable-brochure", themeClass)} id="brochure-content">
-      {content}
+      {validPages}
     </div>
   );
 };
-
-    
