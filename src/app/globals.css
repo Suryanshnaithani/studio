@@ -420,7 +420,6 @@ body {
   }
 
   html, body {
-      height: auto !important;
       background-color: transparent !important; /* Crucial for avoiding blank white pages from body bg */
       color: hsl(var(--foreground)) !important; /* Ensures text uses theme color */
       print-color-adjust: exact !important;
@@ -428,9 +427,16 @@ body {
       font-family: var(--brochure-font-family-override, var(--brochure-font-family, 'Georgia', serif)) !important;
       font-size: 10pt; /* Base font size for print */
       line-height: 1.3; /* Base line height for print */
+      
+      height: auto !important; /* Force height to content */
+      min-height: 0 !important; /* Remove any minimum height */
+      max-height: none !important; /* Override any max-height */
       overflow: visible !important; /* Body should not hide overflowing content for print */
+      
       margin: 0 !important; /* Remove any body margins */
       padding: 0 !important; /* Remove any body padding */
+      border: none !important; /* Ensure no borders */
+      box-shadow: none !important; /* Ensure no shadows */
       box-sizing: border-box !important;
       page-break-before: avoid !important;
       page-break-after: avoid !important;
@@ -453,14 +459,16 @@ body {
 
   #print-only-section-wrapper {
     display: block !important;
+    width: 210mm !important; /* A4 width */
     height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
-    page-break-before: avoid !important; /* Ensure the wrapper itself doesn't start a new page */
+    page-break-before: avoid !important;
+    page-break-after: avoid !important; 
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    width: 210mm; /* A4 width */
     box-sizing: border-box !important;
   }
   
@@ -468,31 +476,32 @@ body {
     display: block !important;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important; /* Should fill its parent wrapper */
     height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
-    page-break-inside: avoid !important; /* Try to keep this whole block from breaking if very short */
-    page-break-after: avoid !important;  /* CRITICAL: No page break after the entire brochure content */
+    page-break-inside: avoid !important; 
+    page-break-after: avoid !important;
     box-sizing: border-box !important;
   }
 
   .printable-brochure {
-    margin: 0 auto !important; /* Centering for safety, though should fill width */
+    margin: 0 auto !important; 
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 210mm !important;
+    width: 100% !important; /* Should fill its parent */
     height: auto !important;
-    overflow: visible !important; /* Changed from hidden to visible for print flow */
-    page-break-before: avoid !important; /* Ensure this container doesn't cause a break before its first page */
-    page-break-inside: avoid !important; /* If the whole brochure is one page, don't break it */
-    page-break-after: avoid !important; /* Redundant if parent has it, but safe */
-    display: block !important; /* Ensure it behaves as a block for flow */
+    overflow: visible !important; 
+    page-break-before: avoid !important; 
+    page-break-inside: avoid !important; 
+    page-break-after: avoid !important;
+    display: block !important; 
     box-sizing: border-box !important;
   }
 
-  /* Ensure the very first *rendered* page in the brochure doesn't break before it */
   .printable-brochure > .page:first-child,
-  .printable-brochure > *:first-child:is(.page) { /* More robust selector for first direct child page */
+  .printable-brochure > *:first-child:is(.page) {
       page-break-before: avoid !important;
   }
 
@@ -521,3 +530,5 @@ body {
         text-shadow: none !important;
     }
 }
+
+  

@@ -27,19 +27,18 @@ interface BrochurePreviewProps {
 export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeClass, structure }) => {
   
   const renderStandardStructure = (): (React.ReactNode | null)[] => [
-    <CoverPage key="cover" data={data} />,
-    <IntroPage key="intro" data={data} />,
-    <DeveloperPage key="developer" data={data} />,
-    <LocationPage key="location" data={data} />,
-    <ConnectivityPage key="connectivity" data={data} />,
-    <AmenitiesIntroPage key="amenities-intro" data={data} />,
-    <AmenitiesListPage key="amenities-list" data={data} />,
-    // AmenitiesGridPage and FloorPlansPage can return arrays of pages
-    ...(Array.isArray(AmenitiesGridPage({ data })) ? AmenitiesGridPage({ data }) : [AmenitiesGridPage({ data })]),
-    <SpecificationsPage key="specifications" data={data} />,
-    <MasterPlanPage key="master-plan" data={data} />,
-    ...(Array.isArray(FloorPlansPage({ data })) ? FloorPlansPage({ data }) : [FloorPlansPage({ data })]),
-    <BackCoverPage key="back-cover" data={data} />,
+    CoverPage({ data }), // Directly call, they return ReactNode or null
+    IntroPage({ data }),
+    DeveloperPage({ data }),
+    LocationPage({ data }),
+    ConnectivityPage({ data }),
+    AmenitiesIntroPage({ data }),
+    AmenitiesListPage({ data }),
+    AmenitiesGridPage({ data }), // This can return an array or null
+    SpecificationsPage({ data }),
+    MasterPlanPage({ data }),
+    FloorPlansPage({ data }), // This can return an array or null
+    BackCoverPage({ data }),
   ];
 
   let pageComponentsCandidate: (React.ReactNode | null)[];
@@ -50,7 +49,11 @@ export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeCla
       break;
   }
 
-  const validPages = pageComponentsCandidate.flat().filter(page => page !== null && page !== undefined);
+  // Flatten and filter out null/undefined/empty fragments
+  const validPages = pageComponentsCandidate
+    .flat(Infinity) // Fully flatten in case some components return arrays of pages
+    .filter(page => page !== null && page !== undefined && (React.isValidElement(page) ? (page.type !== React.Fragment || React.Children.count(page.props.children) > 0) : true) );
+
 
   if (validPages.length === 0) {
     return null; 
@@ -59,30 +62,19 @@ export const BrochurePreview: React.FC<BrochurePreviewProps> = ({ data, themeCla
   return (
     <div className={cn("printable-brochure", themeClass)} id="brochure-content">
       {validPages.map((page, index) => {
-        // Check if the page is a valid React element and if it's a PageWrapper or a Fragment containing PageWrappers
         if (React.isValidElement(page)) {
-          if (page.type === React.Fragment) {
-            // If it's a fragment, we need to clone its children if they are PageWrappers
-            // This scenario is less likely with the current flat().filter() but good for robustness
-             return React.cloneElement(page, {
-              key: `frag-${index}`,
-              children: React.Children.map(page.props.children, (child, childIndex) => 
-                React.isValidElement(child) && typeof child.type !== 'string' && (child.type as any).displayName?.includes('PageWrapper')
-                  ? React.cloneElement(child, { isLastPage: index === validPages.length - 1 && childIndex === React.Children.count(page.props.children) - 1 })
-                  : child
-              )
+            // Ensure a unique key for each page.
+            // The id prop from page components is good, fallback to index.
+            const pageKey = (page.props as any)?.id ? `page-${(page.props as any).id}` : `page-${index}`;
+            return React.cloneElement(page as React.ReactElement<any>, {
+                 isLastPage: index === validPages.length - 1,
+                 key: pageKey
             });
-          } else if (typeof page.type !== 'string' && (page.type as any).displayName?.includes('PageWrapper')) {
-             // If it's a PageWrapper directly
-            return React.cloneElement(page as React.ReactElement<any>, { isLastPage: index === validPages.length - 1 });
-          }
         }
-        // Fallback for pages that might not be direct PageWrapper (e.g. from AmenitiesGridPage which returns PageWrappers)
-        // This assumes the top-level elements in validPages are the ones we want to mark as last.
-        // If a component in validPages itself renders multiple PageWrappers, those internal ones won't be marked here.
-        // However, AmenitiesGridPage/FloorPlansPage are designed to return PageWrapper instances directly or in an array.
-        return page; 
+        return page; // Should not happen if filtering is correct
       })}
     </div>
   );
 };
+
+  
