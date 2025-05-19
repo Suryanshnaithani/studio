@@ -52,7 +52,7 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    );
 };
 
-const ITEMS_PER_FLOOR_PLAN_PAGE = 2; // Adjust as needed based on typical content size
+const ITEMS_PER_FLOOR_PLAN_PAGE = 3; // Adjusted to 3 floor plans per page
 
 export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   const floorPlansTitle = data.floorPlansTitle?.trim();
