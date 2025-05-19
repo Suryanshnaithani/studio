@@ -52,6 +52,8 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
    );
 };
 
+const ITEMS_PER_FLOOR_PLAN_PAGE = 2; // Adjust as needed based on typical content size
+
 export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   const floorPlansTitle = data.floorPlansTitle?.trim();
   const floorPlansDisclaimer = data.floorPlansDisclaimer?.trim();
@@ -63,26 +65,50 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
     (fp.features && fp.features.some(f => f?.trim()))
   ) || [];
   
-  const hasTextContent = floorPlansTitle || floorPlansDisclaimer;
   const hasFloorPlans = validFloorPlans.length > 0;
+  const hasTitle = !!floorPlansTitle;
+  const hasDisclaimer = !!floorPlansDisclaimer;
 
-  if (!hasTextContent && !hasFloorPlans) {
+  if (!hasTitle && !hasFloorPlans && !hasDisclaimer) {
     return null;
   }
 
-  return (
-    <PageWrapper className="page-light-bg" id="floor-plans-page">
-      <div className="page-content">
-        {floorPlansTitle && <div className="section-title">{floorPlansTitle}</div>}
-        {hasFloorPlans && (
-            <div className="floor-plans-container">
-            {validFloorPlans.map((plan) => <FloorPlanItem key={plan.id || plan.name} plan={plan} />)}
+  const pages = [];
+
+  if (hasFloorPlans) {
+    const numPlanPages = Math.ceil(validFloorPlans.length / ITEMS_PER_FLOOR_PLAN_PAGE);
+
+    for (let i = 0; i < numPlanPages; i++) {
+      const startIndex = i * ITEMS_PER_FLOOR_PLAN_PAGE;
+      const endIndex = startIndex + ITEMS_PER_FLOOR_PLAN_PAGE;
+      const pagePlans = validFloorPlans.slice(startIndex, endIndex);
+
+      pages.push(
+        <PageWrapper key={`fp-page-${i}`} className="page-light-bg" id={`floor-plans-page-${i}`}>
+          <div className="page-content">
+            {i === 0 && hasTitle && <div className="section-title">{floorPlansTitle}</div>}
+            <div className="floor-plans-container"> {/* Container for current page's plans */}
+              {pagePlans.map((plan) => <FloorPlanItem key={plan.id || plan.name} plan={plan} />)}
             </div>
-        )}
-        {floorPlansDisclaimer && (
-            <p className="plans-disclaimer">{floorPlansDisclaimer}</p>
-        )}
-      </div>
-    </PageWrapper>
-  );
+            {i === numPlanPages - 1 && hasDisclaimer && (
+              <p className="plans-disclaimer">{floorPlansDisclaimer}</p>
+            )}
+          </div>
+        </PageWrapper>
+      );
+    }
+  } else if (hasTitle || hasDisclaimer) {
+    // Render a single page if only title/disclaimer is present, but no plans
+    pages.push(
+      <PageWrapper key="fp-page-static" className="page-light-bg" id="floor-plans-page-static">
+        <div className="page-content">
+          {hasTitle && <div className="section-title">{floorPlansTitle}</div>}
+          {!hasFloorPlans && hasTitle && <p className="text-center text-muted-foreground italic my-4">Detailed floor plans are available upon request.</p>}
+          {hasDisclaimer && <p className="plans-disclaimer">{floorPlansDisclaimer}</p>}
+        </div>
+      </PageWrapper>
+    );
+  }
+  
+  return pages.length > 0 ? <>{pages}</> : null;
 };
