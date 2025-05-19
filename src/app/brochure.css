@@ -21,7 +21,6 @@
   width: 210mm; /* A4 width */
   min-height: 297mm; /* A4 height */
   height: 297mm; /* Strict A4 height */
-  line-height: 1.4;
   box-shadow: 0 0 10px hsla(var(--foreground-h, 0), var(--foreground-s, 0%), var(--foreground-l, 10%), 0.1); 
   margin-bottom: 20px; /* Spacing in live preview only */
   page-break-inside: avoid !important; /* Avoid breaking a page itself */
@@ -79,7 +78,7 @@ h1 { font-size: 28px; line-height: 1.1; margin-bottom: 6mm; font-weight: bold; l
 h2 { font-size: 20px; line-height: 1.1; margin-bottom: 4mm; font-weight: bold; letter-spacing: -0.1pt; } 
 h3 { font-size: 16px; line-height: 1.1; margin-bottom: 3mm; font-weight: bold; } 
 h4 { font-size: 13px; line-height: 1.1; margin-bottom: 2mm; font-weight: bold; } 
-p { font-size: 10pt; line-height: 1.35; margin-bottom: 2mm; } 
+p { font-size: 10pt; line-height: 1.4; margin-bottom: 2mm; } /* Slightly increased line-height */
 ul { list-style: none; padding-left: 0; margin-bottom: 3mm; }
 li { margin-bottom: 1.5mm; font-size: 10pt; position: relative; padding-left: 5mm; break-inside: avoid; } 
 li::before { content: '•'; color: hsl(var(--primary)); position: absolute; left: 0; top: 0.1em; font-size: 12pt; line-height: 1; } 
@@ -162,7 +161,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 /* Location Page */
 .location-container { display: flex; flex-direction: column; gap: 4mm; flex-grow: 1; }
 .location-text h3 { margin-top: 4mm; margin-bottom: 2.5mm; font-size: 15px; color: hsl(var(--primary));}
-.location-map { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden;}
+.location-map { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden; page-break-inside: avoid !important; }
 .location-map img { width: 100%; height: auto; max-height: 85mm; object-fit: contain; border-radius: 1.5mm; border: 1px solid hsl(var(--border)); }
 .map-disclaimer { position: absolute; bottom: 2mm; right: 2mm; font-size: 6pt; color: hsl(var(--map-disclaimer-text-color, var(--foreground))); background-color: hsla(var(--map-disclaimer-bg-h, var(--background-h)), var(--map-disclaimer-bg-s, var(--background-s)), var(--map-disclaimer-bg-l, var(--background-l)), 0.65); padding: 1mm 1.5mm; border-radius: 1mm; z-index: 3; }
 .page-accent-bg .map-disclaimer { color: hsl(var(--map-disclaimer-text-color-accent, var(--primary-foreground))); background-color: hsla(var(--map-disclaimer-bg-h-accent, var(--primary-h)), var(--map-disclaimer-bg-s-accent, var(--primary-s)), var(--map-disclaimer-bg-l-accent, var(--primary-l)), 0.55); }
@@ -176,7 +175,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 /* Connectivity Page */
 .connectivity-container { display: flex; flex-direction: column; gap: 4mm; flex-grow: 1; }
 .connectivity-text h3 { margin-bottom: 2.5mm; margin-top: 0; font-size: 15px; color: hsl(var(--primary));}
-.connectivity-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden;}
+.connectivity-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden; page-break-inside: avoid !important; }
 .connectivity-image img { width: 100%; height: auto; max-height: 85mm; object-fit: cover; border-radius: 1.5mm; }
 .district-label { position: absolute; bottom: 5mm; left: 50%; transform: translateX(-50%); background-color: hsl(var(--conn-label-bg, var(--background))); color: hsl(var(--conn-label-text, var(--primary))); padding: 1.5mm 3.5mm; font-weight: bold; font-size: 11px; text-transform: uppercase; border-radius: 1mm; z-index: 3; }
 .connectivity-point-list { break-inside: avoid; margin-bottom: 3mm; }
@@ -189,7 +188,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 
 /* Amenities List Page */
 .amenities-container { display: flex; flex-direction: column; gap: 4mm; flex-grow: 1; }
-.amenities-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden;}
+.amenities-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden; page-break-inside: avoid !important; }
 .amenities-image img { width: 100%; height: auto; max-height: 75mm; object-fit: cover; border-radius: 1.5mm; }
 .amenities-image .map-disclaimer { position: absolute; bottom: 2mm; right: 2mm; font-size: 6pt; color: hsl(var(--am-list-disclaimer-text-color, var(--foreground))); background-color: hsla(var(--am-list-disclaimer-bg-h, var(--background-h)), var(--am-list-disclaimer-bg-s, var(--background-s)), var(--am-list-disclaimer-bg-l, var(--background-l)), 0.65); padding: 1mm 1.5mm; border-radius: 1mm; z-index: 3; }
 .page-accent-bg .amenities-image .map-disclaimer { color: hsl(var(--am-list-disclaimer-text-color-accent, var(--primary-foreground))); background-color: hsla(var(--am-list-disclaimer-bg-h-accent, var(--primary-h)), var(--am-list-disclaimer-bg-s-accent, var(--primary-s)), var(--am-list-disclaimer-bg-l-accent, var(--primary-l)), 0.55); }
@@ -200,14 +199,14 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 
 /* Amenities Grid Page */
 .amenities-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(75mm, 1fr)); gap: 5mm; margin-bottom: 5mm; margin-top: 5mm; }
-.grid-item { position: relative; border-radius: 1.5mm; overflow: hidden; aspect-ratio: 4 / 3; }
+.grid-item { position: relative; border-radius: 1.5mm; overflow: hidden; aspect-ratio: 4 / 3; page-break-inside: avoid !important; }
 .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 .grid-label { position: absolute; bottom: 2.5mm; left: 50%; transform: translateX(-50%); background-color: hsla(var(--am-grid-label-bg-h, var(--background-h)), var(--am-grid-label-bg-s, var(--background-s)), var(--am-grid-label-bg-l, var(--background-l)), 0.9); color: hsl(var(--am-grid-label-text-color, var(--primary))); padding: 1mm 2.5mm; font-weight: bold; font-size: 10px; text-transform: uppercase; border-radius: 1mm; z-index: 3; white-space: nowrap; }
 .grid-disclaimer { font-size: 7pt; font-style: italic; text-align: center; margin-top: auto; padding-top:4mm; color: hsl(var(--muted-foreground)); flex-shrink: 0;} 
 
 /* Specifications Page */
 .specs-container { display: flex; flex-direction: column; gap: 4mm; flex-grow: 1; }
-.specs-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden;}
+.specs-image { position: relative; min-height: 65mm; margin-top: 4mm; overflow: hidden; page-break-inside: avoid !important; }
 .specs-image img { width: 100%; height: auto; max-height: 75mm; object-fit: cover; border-radius: 1.5mm; }
 .specs-image .map-disclaimer { position: absolute; bottom: 2mm; right: 2mm; font-size: 6pt; color: hsl(var(--specs-disclaimer-text-color, var(--foreground))); background-color: hsla(var(--specs-disclaimer-bg-h, var(--background-h)), var(--specs-disclaimer-bg-s, var(--background-s)), var(--specs-disclaimer-bg-l, var(--background-l)), 0.65); padding: 1mm 1.5mm; border-radius: 1mm; z-index: 3; }
 .page-accent-bg .specs-image .map-disclaimer { color: hsl(var(--specs-disclaimer-text-color-accent, var(--primary-foreground))); background-color: hsla(var(--specs-disclaimer-bg-h-accent, var(--primary-h)), var(--specs-disclaimer-bg-s-accent, var(--primary-s)), var(--specs-disclaimer-bg-l-accent, var(--primary-l)), 0.55); }
@@ -216,7 +215,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 .specs-list ul { column-count: 2; column-gap: 5mm; }
 
 /* Master Plan Page */
-.master-plan-image { width: 100%; margin-bottom: 4mm; position: relative; margin-top: 4mm; overflow: hidden;}
+.master-plan-image { width: 100%; margin-bottom: 4mm; position: relative; margin-top: 4mm; overflow: hidden; page-break-inside: avoid !important; }
 .master-plan-image img { width: 100%; height: auto; object-fit: contain; border-radius: 1.5mm; border: 1px solid hsl(var(--border)); max-height: 130mm; }
 .master-plan-image .map-disclaimer { position: absolute; bottom: 2mm; right: 2mm; font-size: 6pt; color: hsl(var(--mp-disclaimer-text-color, var(--foreground))); background-color: hsla(var(--mp-disclaimer-bg-h, var(--background-h)), var(--mp-disclaimer-bg-s, var(--background-s)), var(--mp-disclaimer-bg-l, var(--background-l)), 0.75); padding: 1mm 1.5mm; border-radius: 1mm; z-index: 3; }
 .page-accent-bg .master-plan-image .map-disclaimer { color: hsl(var(--mp-disclaimer-text-color-accent, var(--primary-foreground))); background-color: hsla(var(--mp-disclaimer-bg-h-accent, var(--primary-h)), var(--mp-disclaimer-bg-s-accent, var(--primary-s)), var(--mp-disclaimer-bg-l-accent, var(--primary-l)), 0.55); }
@@ -226,7 +225,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 /* Floor Plans Page */
 .floor-plans-container { display: flex; flex-direction: column; gap: 6mm; margin-top: 4mm; flex-grow: 1; }
 .floor-plan { display: flex; flex-direction: row; gap: 5mm; page-break-inside: avoid !important; align-items: flex-start; }
-.plan-image { flex: 0 0 65mm; position: relative; max-height: 75mm; overflow: hidden;}
+.plan-image { flex: 0 0 65mm; position: relative; max-height: 75mm; overflow: hidden; page-break-inside: avoid !important; }
 .plan-image img { width: 100%; height: auto; object-fit: contain; border: 1px solid hsl(var(--border)); border-radius: 1.5mm; max-height: 75mm; }
 .plan-details { flex: 1; }
 .plan-details h4 { color: hsl(var(--primary)); margin-bottom: 1.5mm; margin-top: 0; font-size: 13px; }
@@ -252,6 +251,7 @@ li::before { content: '•'; color: hsl(var(--primary)); position: absolute; lef
 
 /* General Helpers */
 img { display: block; max-width: 100%; height: auto; page-break-inside: avoid !important; }
+figure { page-break-inside: avoid !important; } /* Added rule for figures */
 .object-cover { object-fit: cover; }
 .object-contain { object-fit: contain; }
 
@@ -263,12 +263,9 @@ h1, h2, h3, h4, h5, h6, .section-title {
   page-break-after: avoid !important;
 }
 /* More selective page-break-inside: avoid */
-p, ul, ol, table, figure, 
-.list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info {
-    page-break-inside: avoid !important;
-}
-/* Avoid breaking specific container divs if they are direct children of page-content and not too large */
-.page-content > div:not(.section-title):not(.amenities-grid):not(.floor-plans-container) {
+p, ul, ol, table, 
+.list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info,
+.location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item { /* Added image containers */
     page-break-inside: avoid !important;
 }
 
