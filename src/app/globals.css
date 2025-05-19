@@ -379,7 +379,7 @@ body {
     --watermark-opacity-light: 0.09; --watermark-opacity-accent: 0.13; --watermark-opacity-muted: 0.08;
     --watermark-opacity-light-print: 0.06; --watermark-opacity-accent-print: 0.09; --watermark-opacity-muted-print: 0.05;
   }
-  
+
   .theme-monochrome-steel {
     --background: 220 10% 96%; /* Very Light Steel Grey */
     --background-h: 220; --background-s: 10%; --background-l: 96%;
@@ -431,48 +431,53 @@ body {
       overflow: visible !important; /* Body should not hide overflowing content for print */
       margin: 0 !important; /* Remove any body margins */
       padding: 0 !important; /* Remove any body padding */
+      box-sizing: border-box !important;
+      page-break-before: avoid !important;
+      page-break-after: avoid !important;
+  }
+  html::before, html::after, body::before, body::after {
+    content: "" !important;
+    display: none !important;
   }
 
+
   /* Hide elements not meant for printing */
-  .no-print, 
-  [data-radix-toast-provider], 
+  .no-print,
+  [data-radix-toast-provider],
   body > div[data-radix-toast-provider-focus-wrapper-id],
-  #sidebar-container,
-  .brochure-preview-container, /* Live preview area on main page */
-  #live-preview-content-wrapper /* Wrapper for live preview content */
+  #main-app-ui-container /* ID for the main UI container in page.tsx */
   {
      display: none !important;
   }
 
 
-  /* This container is critical for preventing the blank first page */
   #print-only-section-wrapper {
-    display: block !important; /* Ensure it's a block element taking up space */
-    height: auto !important; /* Content should define height */
-    overflow: visible !important; /* Should not clip its content */
-    page-break-before: avoid !important; /* PREVENT this from starting on a new page if it's the first printable thing */
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-before: avoid !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    width: 210mm; /* Explicitly set width for print root */
+    width: 210mm;
   }
 
   .printable-brochure {
-    margin: 0 auto !important; /* Centering within its print-only wrapper */
+    margin: 0 auto !important;
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 210mm !important; /* A4 width */
-    height: auto !important; /* Let content define height */
-    overflow: visible !important; /* Allow content to flow naturally */
-    page-break-before: avoid !important; /* Prevent starting on a new page unnecessarily */
-    display: block !important; /* Ensure it's block for proper flow */
+    width: 210mm !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-before: avoid !important;
+    display: block !important;
   }
 
   /* Ensure the very first *rendered* page in the brochure doesn't break before it */
-  .printable-brochure > .page:first-of-type,
-  .printable-brochure > *:first-child:is(.page) { 
+  .printable-brochure > .page:first-child,
+  .printable-brochure > *:first-child:is(.page) {
       page-break-before: avoid !important;
   }
 
@@ -480,8 +485,7 @@ body {
   h1, h2, h3, h4, h5, h6, .section-title {
     page-break-after: avoid !important;
   }
-  
-  /* Refined page-break-inside: avoid */
+
   p, ul, ol, table, figure,
   .list-columns, .connectivity-point-list, .amenities-list, .specs-list, .floor-plan, .contact-info,
   .location-map, .connectivity-image, .amenities-image, .specs-image, .master-plan-image, .plan-image, .grid-item {
