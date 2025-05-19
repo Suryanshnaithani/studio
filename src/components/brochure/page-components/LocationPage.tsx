@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -14,22 +15,30 @@ const splitIntoColumns = (arr: string[] = []) => {
 };
 
 export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
+  const locationTitle = data.locationTitle?.trim();
+  const locationDesc1 = data.locationDesc1?.trim();
+  const locationDesc2 = data.locationDesc2?.trim();
+  const locationNote = data.locationNote?.trim();
+  const locationMapImage = data.locationMapImage?.trim();
+  const locationWatermark = data.locationWatermark?.trim();
+  const mapDisclaimer = data.mapDisclaimer?.trim();
+
   const [col1, col2] = splitIntoColumns(data.keyDistances);
   const hasKeyDistances = col1.length > 0 || col2.length > 0;
-  const hasTextContent = data.locationTitle || data.locationDesc1 || data.locationDesc2 || hasKeyDistances || data.locationNote;
-  const hasVisualContent = !!data.locationMapImage || !!data.locationWatermark;
-  const hasMapDisclaimer = !!data.mapDisclaimer;
+  
+  const hasTextContent = locationTitle || locationDesc1 || locationDesc2 || hasKeyDistances || locationNote || mapDisclaimer;
+  const hasVisualContent = !!locationMapImage || !!locationWatermark;
 
-  if (!hasTextContent && !hasVisualContent && !hasMapDisclaimer) {
+  if (!hasTextContent && !hasVisualContent) {
     return null;
   }
 
   return (
     <PageWrapper className="page-light-bg" id="location-page">
       <div className="page-content">
-        {data.locationWatermark && data.locationWatermark.trim() !== '' && (
+        {locationWatermark && (
            <Image
-            src={data.locationWatermark}
+            src={locationWatermark}
             alt="Watermark"
             width={189}
             height={189}
@@ -38,12 +47,12 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {data.locationTitle && <div className="section-title">{data.locationTitle}</div>}
+        {locationTitle && <div className="section-title">{locationTitle}</div>}
         <div className="location-container">
-          {(data.locationDesc1 || data.locationDesc2 || hasKeyDistances || data.locationNote) && (
+          {(locationDesc1 || locationDesc2 || hasKeyDistances || locationNote) && (
             <div className="location-text">
-              {data.locationDesc1 && <p>{data.locationDesc1}</p>}
-              {data.locationDesc2 && <p>{data.locationDesc2}</p>}
+              {locationDesc1 && <p>{locationDesc1}</p>}
+              {locationDesc2 && <p>{locationDesc2}</p>}
               {hasKeyDistances && (
                 <>
                   <h3>Key Distances</h3>
@@ -61,15 +70,15 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                   </div>
                 </>
               )}
-               {data.locationNote && <p className="location-note">{data.locationNote}</p>}
+               {locationNote && <p className="location-note">{locationNote}</p>}
             </div>
           )}
-          {(data.locationMapImage || data.mapDisclaimer) && (
+          {(locationMapImage || mapDisclaimer) && (
             <div className="location-map">
-              {data.locationMapImage && data.locationMapImage.trim() !== '' ? (
+              {locationMapImage ? (
                 <figure className="relative">
                    <Image
-                      src={data.locationMapImage}
+                      src={locationMapImage}
                       alt="Location Map"
                       width={700}
                       height={550}
@@ -77,16 +86,18 @@ export const LocationPage: React.FC<LocationPageProps> = ({ data }) => {
                       data-ai-hint="stylized city map color"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
-                   {data.mapDisclaimer && (
+                   {mapDisclaimer && (
                        <figcaption className="map-disclaimer">
-                         <p>{data.mapDisclaimer}</p>
+                         <p>{mapDisclaimer}</p>
                        </figcaption>
                    )}
                 </figure>
               ): (
-                   <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
-                      {data.mapDisclaimer ? data.mapDisclaimer : "Location Map Area"}
-                  </div>
+                   mapDisclaimer && (
+                    <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
+                       <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{mapDisclaimer}</p>
+                    </div>
+                   )
               )}
             </div>
           )}

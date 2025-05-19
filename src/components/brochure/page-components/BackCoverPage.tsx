@@ -9,12 +9,34 @@ interface BackCoverPageProps {
 }
 
 export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
+  const backCoverImage = data.backCoverImage?.trim();
+  const backCoverLogo = data.backCoverLogo?.trim();
+  const callToAction = data.callToAction?.trim();
+  const contactTitle = data.contactTitle?.trim();
+  const contactPhone = data.contactPhone?.trim();
+  const contactEmail = data.contactEmail?.trim();
+  const contactWebsite = data.contactWebsite?.trim();
+  const contactAddress = data.contactAddress?.trim();
+  const fullDisclaimer = data.fullDisclaimer?.trim();
+  const reraDisclaimer = data.reraDisclaimer?.trim();
+
+  const hasContactInfo = contactTitle || contactPhone || contactEmail || contactWebsite || contactAddress;
+  const hasDisclaimers = fullDisclaimer || reraDisclaimer;
+  const hasVisuals = backCoverImage || backCoverLogo;
+
+  // If there's no significant content, don't render the page. 
+  // Call to action is important, so it's a primary check.
+  if (!callToAction && !hasContactInfo && !hasDisclaimers && !hasVisuals && !data.projectName?.trim()) {
+    return null; 
+  }
+
+
   return (
     <PageWrapper className="back-cover" id="back-cover-page">
-      {data.backCoverImage && data.backCoverImage.trim() !== '' && (
+      {backCoverImage && (
         <div className="back-cover-image-container">
             <Image
-            src={data.backCoverImage}
+            src={backCoverImage}
             alt="Luxury Property Background"
             layout="fill"
             objectFit="cover"
@@ -24,9 +46,9 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
         </div>
       )}
       <div className="back-cover-content">
-        {data.backCoverLogo && data.backCoverLogo.trim() !== '' && (
+        {backCoverLogo && (
           <Image
-            src={data.backCoverLogo}
+            src={backCoverLogo}
             alt={`${data.projectName || 'Project'} Logo`}
             width={302} // approx 80mm
             height={151} // maintain aspect ratio
@@ -35,21 +57,21 @@ export const BackCoverPage: React.FC<BackCoverPageProps> = ({ data }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {data.callToAction && <h2 className="call-to-action">{data.callToAction}</h2>}
-        {(data.contactTitle || data.contactPhone || data.contactEmail || data.contactWebsite || data.contactAddress) && (
+        {callToAction && <h2 className="call-to-action">{callToAction}</h2>}
+        {hasContactInfo && (
             <div className="contact-info">
-            {data.contactTitle && <h3>{data.contactTitle}</h3>}
-            {data.contactPhone && <p>Call: <a href={`tel:${data.contactPhone.replace(/\s+/g, '')}`} className="text-[hsl(var(--primary-foreground))] hover:opacity-80">{data.contactPhone}</a></p>}
-            {data.contactEmail && <p>Email: <a href={`mailto:${data.contactEmail}`} className="text-[hsl(var(--primary-foreground))] hover:opacity-80">{data.contactEmail}</a></p>}
-            {data.contactWebsite && <p>Website: <a href={data.contactWebsite} target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--primary-foreground))] underline hover:opacity-80">{data.contactWebsite}</a></p>}
-            {data.contactAddress && <p>Visit: {data.contactAddress}</p>}
+            {contactTitle && <h3>{contactTitle}</h3>}
+            {contactPhone && <p>Call: <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="text-[hsl(var(--primary-foreground))] hover:opacity-80">{contactPhone}</a></p>}
+            {contactEmail && <p>Email: <a href={`mailto:${contactEmail}`} className="text-[hsl(var(--primary-foreground))] hover:opacity-80">{contactEmail}</a></p>}
+            {contactWebsite && <p>Website: <a href={contactWebsite} target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--primary-foreground))] underline hover:opacity-80">{contactWebsite}</a></p>}
+            {contactAddress && <p>Visit: {contactAddress}</p>}
             </div>
         )}
       </div>
-      {(data.fullDisclaimer || data.reraDisclaimer) && (
+      {hasDisclaimers && (
         <div className="full-disclaimer">
-            {data.fullDisclaimer && <p>{data.fullDisclaimer}</p>}
-            {data.reraDisclaimer && <p className="mt-2">{data.reraDisclaimer}</p>}
+            {fullDisclaimer && <p>{fullDisclaimer}</p>}
+            {reraDisclaimer && <p className="mt-2">{reraDisclaimer}</p>}
         </div>
       )}
     </PageWrapper>

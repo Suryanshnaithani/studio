@@ -9,8 +9,15 @@ interface DeveloperPageProps {
 }
 
 export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
-  const hasTextContent = data.developerName || data.developerDesc1 || data.developerDesc2 || data.developerDisclaimer;
-  const hasVisualContent = !!data.developerImage || !!data.developerLogo;
+  const developerName = data.developerName?.trim();
+  const developerDesc1 = data.developerDesc1?.trim();
+  const developerDesc2 = data.developerDesc2?.trim();
+  const developerImage = data.developerImage?.trim();
+  const developerLogo = data.developerLogo?.trim();
+  const developerDisclaimer = data.developerDisclaimer?.trim();
+
+  const hasTextContent = developerName || developerDesc1 || developerDesc2 || developerDisclaimer;
+  const hasVisualContent = !!developerImage || !!developerLogo;
 
   if (!hasTextContent && !hasVisualContent) {
     return null;
@@ -18,10 +25,10 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
 
   return (
     <PageWrapper className="developer-page page-muted-bg" id="developer-page">
-       {data.developerImage && data.developerImage.trim() !== '' && (
+       {hasVisualContent && developerImage && (
         <div className="developer-image-container">
           <Image
-            src={data.developerImage}
+            src={developerImage}
             alt="Developer Background"
             layout="fill"
             objectFit="cover"
@@ -31,14 +38,14 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
         </div>
        )}
       <div className="page-content">
-        {(data.developerName || data.developerDesc1 || data.developerDesc2 || data.developerLogo) && (
+        {(developerName || developerDesc1 || developerDesc2 || developerLogo) && (
           <div className="developer-content">
-            {data.developerName && <h2>{data.developerName}</h2>}
-            {data.developerDesc1 && <p>{data.developerDesc1}</p>}
-            {data.developerDesc2 && <p>{data.developerDesc2}</p>}
-            {data.developerLogo && data.developerLogo.trim() !== '' && (
+            {developerName && <h2>{developerName}</h2>}
+            {developerDesc1 && <p>{developerDesc1}</p>}
+            {developerDesc2 && <p>{developerDesc2}</p>}
+            {hasVisualContent && developerLogo && (
               <Image
-                src={data.developerLogo}
+                src={developerLogo}
                 alt={`${data.developerName || 'Developer'} Logo`}
                 width={170} // Adjusted size
                 height={85}  // Adjusted size
@@ -49,9 +56,9 @@ export const DeveloperPage: React.FC<DeveloperPageProps> = ({ data }) => {
              )}
           </div>
         )}
-        {data.developerDisclaimer && (
+        {developerDisclaimer && (
           <div className="disclaimer">
-            <p>{data.developerDisclaimer}</p>
+            <p>{developerDisclaimer}</p>
           </div>
         )}
       </div>

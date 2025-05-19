@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -8,25 +9,29 @@ interface SpecificationsPageProps {
 }
 
 export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) => {
-  const interiorItems = data.specsInterior?.filter(item => item?.trim());
-  const buildingItems = data.specsBuilding?.filter(item => item?.trim());
+  const specsTitle = data.specsTitle?.trim();
+  const specsImage = data.specsImage?.trim();
+  const specsImageDisclaimer = data.specsImageDisclaimer?.trim();
+  const specsWatermark = data.specsWatermark?.trim();
+
+  const interiorItems = data.specsInterior?.map(item => item?.trim()).filter(Boolean);
+  const buildingItems = data.specsBuilding?.map(item => item?.trim()).filter(Boolean);
   const hasInteriorItems = interiorItems && interiorItems.length > 0;
   const hasBuildingItems = buildingItems && buildingItems.length > 0;
 
-  const hasTextContent = data.specsTitle || hasInteriorItems || hasBuildingItems;
-  const hasVisualContent = !!data.specsImage || !!data.specsWatermark;
-  const hasDisclaimer = !!data.specsImageDisclaimer;
+  const hasTextContent = specsTitle || hasInteriorItems || hasBuildingItems || specsImageDisclaimer;
+  const hasVisualContent = !!specsImage || !!specsWatermark;
 
-  if (!hasTextContent && !hasVisualContent && !hasDisclaimer) {
+  if (!hasTextContent && !hasVisualContent) {
     return null;
   }
 
   return (
     <PageWrapper className="page-light-bg" id="specifications-page">
       <div className="page-content">
-        {data.specsWatermark && data.specsWatermark.trim() !== '' && (
+        {specsWatermark && (
            <Image
-            src={data.specsWatermark}
+            src={specsWatermark}
             alt="Watermark"
             width={189}
             height={189}
@@ -35,14 +40,14 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {data.specsTitle && <div className="section-title">{data.specsTitle}</div>}
+        {specsTitle && <div className="section-title">{specsTitle}</div>}
         <div className="specs-container">
-          {(data.specsImage || data.specsImageDisclaimer) && (
+          {(specsImage || specsImageDisclaimer) && (
             <div className="specs-image">
-              {data.specsImage && data.specsImage.trim() !== '' ? (
+              {specsImage ? (
                  <figure className="relative">
                    <Image
-                      src={data.specsImage}
+                      src={specsImage}
                       alt="Interior Finish Example"
                       width={700}
                       height={500}
@@ -50,16 +55,18 @@ export const SpecificationsPage: React.FC<SpecificationsPageProps> = ({ data }) 
                       data-ai-hint="luxury apartment detail marble"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
-                    {data.specsImageDisclaimer && (
+                    {specsImageDisclaimer && (
                        <figcaption className="map-disclaimer">
-                         <p>{data.specsImageDisclaimer}</p>
+                         <p>{specsImageDisclaimer}</p>
                        </figcaption>
                     )}
                  </figure>
               ) : (
-                   <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                      {data.specsImageDisclaimer ? data.specsImageDisclaimer : "Specifications Image Area"}
-                  </div>
+                  specsImageDisclaimer && (
+                     <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
+                        <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{specsImageDisclaimer}</p>
+                     </div>
+                  )
               )}
             </div>
           )}

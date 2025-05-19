@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -8,9 +9,10 @@ interface ConnectivityPageProps {
 }
 
 const renderPointList = (items: string[] = [], categoryKey: string) => {
-     if (!items || items.length <= 1) return null;
-     const heading = items[0];
-     const listItems = items.slice(1).filter(item => item?.trim());
+     const trimmedItems = items?.map(item => item?.trim()).filter(Boolean) || [];
+     if (trimmedItems.length <= 1) return null; // Needs a heading and at least one point
+     const heading = trimmedItems[0];
+     const listItems = trimmedItems.slice(1);
      if (listItems.length === 0) return null;
 
      return (
@@ -24,14 +26,20 @@ const renderPointList = (items: string[] = [], categoryKey: string) => {
 };
 
 export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
+  const connectivityTitle = data.connectivityTitle?.trim();
+  const connectivityNote = data.connectivityNote?.trim();
+  const connectivityImage = data.connectivityImage?.trim();
+  const connectivityDistrictLabel = data.connectivityDistrictLabel?.trim();
+  const connectivityWatermark = data.connectivityWatermark?.trim();
+
   const businessPoints = renderPointList(data.connectivityPointsBusiness, 'business');
   const healthcarePoints = renderPointList(data.connectivityPointsHealthcare, 'healthcare');
   const educationPoints = renderPointList(data.connectivityPointsEducation, 'education');
   const leisurePoints = renderPointList(data.connectivityPointsLeisure, 'leisure');
 
   const hasPointLists = businessPoints || healthcarePoints || educationPoints || leisurePoints;
-  const hasTextContent = data.connectivityTitle || hasPointLists || data.connectivityNote;
-  const hasVisualContent = !!data.connectivityImage || !!data.connectivityDistrictLabel || !!data.connectivityWatermark;
+  const hasTextContent = connectivityTitle || hasPointLists || connectivityNote;
+  const hasVisualContent = !!connectivityImage || !!connectivityDistrictLabel || !!connectivityWatermark;
 
   if (!hasTextContent && !hasVisualContent) {
     return null;
@@ -40,9 +48,9 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
   return (
     <PageWrapper className="page-light-bg" id="connectivity-page">
       <div className="page-content">
-         {data.connectivityWatermark && data.connectivityWatermark.trim() !== '' && (
+         {connectivityWatermark && (
            <Image
-            src={data.connectivityWatermark}
+            src={connectivityWatermark}
             alt="Watermark"
             width={189}
             height={189}
@@ -51,9 +59,9 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         )}
-        {data.connectivityTitle && <div className="section-title">{data.connectivityTitle}</div>}
+        {connectivityTitle && <div className="section-title">{connectivityTitle}</div>}
         <div className="connectivity-container">
-          {(hasPointLists || data.connectivityNote) && (
+          {(hasPointLists || connectivityNote) && (
             <div className="connectivity-text">
                 {hasPointLists && (
                     <>
@@ -66,15 +74,15 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                         </div>
                     </>
                 )}
-                {data.connectivityNote && <p className="location-note">{data.connectivityNote}</p>}
+                {connectivityNote && <p className="location-note">{connectivityNote}</p>}
             </div>
           )}
-          {(data.connectivityImage || data.connectivityDistrictLabel) && (
+          {(connectivityImage || connectivityDistrictLabel) && (
               <div className="connectivity-image">
-                {data.connectivityImage && data.connectivityImage.trim() !== '' ? (
+                {connectivityImage ? (
                 <figure className="relative">
                     <Image
-                        src={data.connectivityImage}
+                        src={connectivityImage}
                         alt="Connectivity Highlight"
                         width={700}
                         height={500}
@@ -82,14 +90,16 @@ export const ConnectivityPage: React.FC<ConnectivityPageProps> = ({ data }) => {
                         data-ai-hint="cityscape aerial view highway"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
-                    {data.connectivityDistrictLabel && (
-                        <figcaption className="district-label">{data.connectivityDistrictLabel}</figcaption>
+                    {connectivityDistrictLabel && (
+                        <figcaption className="district-label">{connectivityDistrictLabel}</figcaption>
                     )}
                 </figure>
                 ) : (
-                    <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                        {data.connectivityDistrictLabel ? data.connectivityDistrictLabel : "Connectivity Image Area"}
-                    </div>
+                    connectivityDistrictLabel && (
+                        <div className="w-full h-[100mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
+                           <span className="district-label !static !transform-none !bg-transparent !text-muted-foreground">{connectivityDistrictLabel}</span>
+                        </div>
+                    )
                 )}
             </div>
           )}

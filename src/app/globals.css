@@ -77,7 +77,7 @@ body {
     --sidebar-ring: 216 80% 30%; /* Dark Blue for rings, consistent with main ring */
 
     /* Default brochure font, can be overridden by themes */
-    --brochure-font-family: 'Georgia', serif; 
+    --brochure-font-family: 'Georgia', serif;
   }
 
   .dark {
@@ -108,7 +108,7 @@ body {
 
     --secondary: 216 25% 20%; /* Darker Grey-Blue */
     --secondary-foreground: 0 0% 95%;
-    
+
     --muted: 216 20% 15%;
     --muted-h: 216;
     --muted-s: 20%;
@@ -330,48 +330,42 @@ body {
 
   html, body {
       height: auto !important;
-      background-color: transparent !important;
-      color: hsl(var(--foreground)) !important;
+      background-color: transparent !important; /* Crucial for avoiding blank white pages from body bg */
+      color: hsl(var(--foreground)) !important; /* Ensures text uses theme color */
       print-color-adjust: exact !important;
       -webkit-print-color-adjust: exact !important;
       font-family: var(--brochure-font-family-override, var(--brochure-font-family, 'Georgia', serif)) !important;
-      font-size: 10pt;
-      line-height: 1.3;
-      overflow: visible !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      font-size: 10pt; /* Base font size for print */
+      line-height: 1.3; /* Base line height for print */
+      overflow: visible !important; /* Body should not hide overflowing content for print */
+      margin: 0 !important; /* Remove any body margins */
+      padding: 0 !important; /* Remove any body padding */
   }
 
   /* Hide elements not meant for printing */
-  .no-print, [data-radix-toast-provider], body > div[data-radix-toast-provider-focus-wrapper-id] {
+  .no-print, 
+  [data-radix-toast-provider], 
+  body > div[data-radix-toast-provider-focus-wrapper-id],
+  #sidebar-container,
+  .brochure-preview-container, /* Live preview area on main page */
+  #live-preview-content-wrapper /* Wrapper for live preview content */
+  {
      display: none !important;
-  }
-  #sidebar-container { display: none !important; }
-  /* This is the LIVE PREVIEW area on the main page, it MUST be hidden for print */
-  .brochure-preview-container { 
-    display: none !important;
-  }
-  /* This targets the wrapper for the live preview content.
-     It should also be hidden, ensuring only #print-only-section-wrapper is visible */
-  #live-preview-content-wrapper {
-      display: none !important;
   }
 
 
   /* This container is critical for preventing the blank first page */
   #print-only-section-wrapper {
-    display: block !important; 
-    height: auto !important;
-    overflow: visible !important;
-    page-break-before: avoid !important; 
+    display: block !important; /* Ensure it's a block element taking up space */
+    height: auto !important; /* Content should define height */
+    overflow: visible !important; /* Should not clip its content */
+    page-break-before: avoid !important; /* PREVENT this from starting on a new page if it's the first printable thing */
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
     width: 210mm; /* Explicitly set width for print root */
-    position: absolute; /* Detach from normal flow for print start */
-    left: 0;
-    top: 0;
+    /* position: absolute; left:0; top:0; removed as it might cause flow issues, rely on normal flow */
   }
 
   .printable-brochure {
@@ -379,11 +373,11 @@ body {
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    width: 210mm !important; 
-    height: auto !important; 
-    overflow: visible !important; 
-    page-break-before: avoid !important; 
-    display: block !important; 
+    width: 210mm !important; /* A4 width */
+    height: auto !important; /* Let content define height */
+    overflow: visible !important; /* Allow content to flow naturally */
+    page-break-before: avoid !important; /* Prevent starting on a new page unnecessarily */
+    display: block !important; /* Ensure it's block for proper flow */
   }
 
   /* Ensure the very first *rendered* page in the brochure doesn't break before it */

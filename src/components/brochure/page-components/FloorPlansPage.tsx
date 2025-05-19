@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData, FloorPlanData } from '@/components/brochure/data-schema';
@@ -8,17 +9,21 @@ interface FloorPlansPageProps {
 }
 
 const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
-   const features = plan.features?.filter(f => f?.trim());
-   const hasContent = plan.name || plan.area || (features && features.length > 0) || plan.image;
+   const name = plan.name?.trim();
+   const area = plan.area?.trim();
+   const image = plan.image?.trim();
+   const features = plan.features?.map(f => f?.trim()).filter(Boolean);
+   
+   const hasContent = name || area || image || (features && features.length > 0);
    if (!hasContent) return null;
 
    return (
     <div className="floor-plan">
         <div className="plan-image">
-        {plan.image && plan.image.trim() !== '' ? (
+        {image ? (
             <Image
-            src={plan.image}
-            alt={`${plan.name || 'Floor Plan'} Image`}
+            src={image}
+            alt={`${name || 'Floor Plan'} Image`}
             width={300}
             height={250}
             className="w-full h-auto max-h-[90mm] object-contain border border-gray-300 rounded-[1.5mm]"
@@ -27,13 +32,13 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
             />
         ) : (
              <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-300 text-xs p-2 text-center">
-                {plan.name || "Floor Plan"}
+                {name || "Floor Plan"}
             </div>
         )}
         </div>
         <div className="plan-details">
-            {plan.name && <h4>{plan.name}</h4>}
-            {plan.area && <p><strong>Area:</strong> {plan.area}</p>}
+            {name && <h4>{name}</h4>}
+            {area && <p><strong>Area:</strong> {area}</p>}
             {features && features.length > 0 && (
                 <>
                     <p className="mt-2 mb-1"><strong>Features:</strong></p>
@@ -48,8 +53,17 @@ const FloorPlanItem: React.FC<{ plan: FloorPlanData }> = ({ plan }) => {
 };
 
 export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
-  const validFloorPlans = data.floorPlans?.filter(fp => fp.name || fp.area || (fp.features && fp.features.some(f => f?.trim())) || fp.image) || [];
-  const hasTextContent = data.floorPlansTitle || data.floorPlansDisclaimer;
+  const floorPlansTitle = data.floorPlansTitle?.trim();
+  const floorPlansDisclaimer = data.floorPlansDisclaimer?.trim();
+
+  const validFloorPlans = data.floorPlans?.filter(fp => 
+    fp.name?.trim() || 
+    fp.area?.trim() || 
+    fp.image?.trim() ||
+    (fp.features && fp.features.some(f => f?.trim()))
+  ) || [];
+  
+  const hasTextContent = floorPlansTitle || floorPlansDisclaimer;
   const hasFloorPlans = validFloorPlans.length > 0;
 
   if (!hasTextContent && !hasFloorPlans) {
@@ -59,14 +73,14 @@ export const FloorPlansPage: React.FC<FloorPlansPageProps> = ({ data }) => {
   return (
     <PageWrapper className="page-light-bg" id="floor-plans-page">
       <div className="page-content">
-        {data.floorPlansTitle && <div className="section-title">{data.floorPlansTitle}</div>}
+        {floorPlansTitle && <div className="section-title">{floorPlansTitle}</div>}
         {hasFloorPlans && (
             <div className="floor-plans-container">
             {validFloorPlans.map((plan) => <FloorPlanItem key={plan.id || plan.name} plan={plan} />)}
             </div>
         )}
-        {data.floorPlansDisclaimer && (
-            <p className="plans-disclaimer">{data.floorPlansDisclaimer}</p>
+        {floorPlansDisclaimer && (
+            <p className="plans-disclaimer">{floorPlansDisclaimer}</p>
         )}
       </div>
     </PageWrapper>

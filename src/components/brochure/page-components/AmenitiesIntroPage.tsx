@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -8,8 +9,14 @@ interface AmenitiesIntroPageProps {
 }
 
 export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) => {
-  const hasTextContent = data.amenitiesIntroTitle || data.amenitiesIntroP1 || data.amenitiesIntroP2 || data.amenitiesIntroP3;
-  const hasVisualContent = !!data.amenitiesIntroWatermark;
+  const amenitiesIntroTitle = data.amenitiesIntroTitle?.trim();
+  const amenitiesIntroP1 = data.amenitiesIntroP1?.trim();
+  const amenitiesIntroP2 = data.amenitiesIntroP2?.trim();
+  const amenitiesIntroP3 = data.amenitiesIntroP3?.trim();
+  const amenitiesIntroWatermark = data.amenitiesIntroWatermark?.trim();
+  
+  const hasTextContent = amenitiesIntroTitle || amenitiesIntroP1 || amenitiesIntroP2 || amenitiesIntroP3;
+  const hasVisualContent = !!amenitiesIntroWatermark;
 
   if (!hasTextContent && !hasVisualContent) {
     return null;
@@ -18,9 +25,9 @@ export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) 
   return (
     <PageWrapper className="page-accent-bg" id="amenities-intro-page">
       <div className="page-content">
-         {data.amenitiesIntroWatermark && data.amenitiesIntroWatermark.trim() !== '' && (
+         {amenitiesIntroWatermark && (
            <Image
-            src={data.amenitiesIntroWatermark}
+            src={amenitiesIntroWatermark}
             alt="Watermark"
             width={227} // 60mm
             height={227} // 60mm
@@ -31,11 +38,11 @@ export const AmenitiesIntroPage: React.FC<AmenitiesIntroPageProps> = ({ data }) 
         )}
         {hasTextContent && (
             <>
-                <div className="section-title">{data.amenitiesIntroTitle}</div>
+                {amenitiesIntroTitle && <div className="section-title">{amenitiesIntroTitle}</div>}
                 <div className="amenities-intro">
-                {data.amenitiesIntroP1 && <p>{data.amenitiesIntroP1}</p>}
-                {data.amenitiesIntroP2 && <p>{data.amenitiesIntroP2}</p>}
-                {data.amenitiesIntroP3 && <p>{data.amenitiesIntroP3}</p>}
+                {amenitiesIntroP1 && <p>{amenitiesIntroP1}</p>}
+                {amenitiesIntroP2 && <p>{amenitiesIntroP2}</p>}
+                {amenitiesIntroP3 && <p>{amenitiesIntroP3}</p>}
                 </div>
             </>
         )}

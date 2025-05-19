@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -8,30 +9,33 @@ interface AmenitiesListPageProps {
 }
 
 export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) => {
-  const wellnessItems = data.amenitiesWellness?.filter(item => item?.trim());
-  const recreationItems = data.amenitiesRecreation?.filter(item => item?.trim());
+  const amenitiesListTitle = data.amenitiesListTitle?.trim();
+  const amenitiesListImage = data.amenitiesListImage?.trim();
+  const amenitiesListImageDisclaimer = data.amenitiesListImageDisclaimer?.trim();
+
+  const wellnessItems = data.amenitiesWellness?.map(item => item?.trim()).filter(Boolean);
+  const recreationItems = data.amenitiesRecreation?.map(item => item?.trim()).filter(Boolean);
   const hasWellnessItems = wellnessItems && wellnessItems.length > 0;
   const hasRecreationItems = recreationItems && recreationItems.length > 0;
 
-  const hasTextContent = data.amenitiesListTitle || hasWellnessItems || hasRecreationItems;
-  const hasVisualContent = !!data.amenitiesListImage;
-  const hasDisclaimer = !!data.amenitiesListImageDisclaimer;
+  const hasTextContent = amenitiesListTitle || hasWellnessItems || hasRecreationItems || amenitiesListImageDisclaimer;
+  const hasVisualContent = !!amenitiesListImage;
 
-  if (!hasTextContent && !hasVisualContent && !hasDisclaimer) {
+  if (!hasTextContent && !hasVisualContent) {
     return null;
   }
 
   return (
     <PageWrapper className="page-light-bg" id="amenities-list-page">
       <div className="page-content">
-        {data.amenitiesListTitle && <div className="section-title">{data.amenitiesListTitle}</div>}
+        {amenitiesListTitle && <div className="section-title">{amenitiesListTitle}</div>}
         <div className="amenities-container">
-          {(data.amenitiesListImage || data.amenitiesListImageDisclaimer) && (
+          {(amenitiesListImage || amenitiesListImageDisclaimer) && (
              <div className="amenities-image">
-                {data.amenitiesListImage && data.amenitiesListImage.trim() !== '' ? (
+                {amenitiesListImage ? (
                 <figure className="relative">
                     <Image
-                        src={data.amenitiesListImage}
+                        src={amenitiesListImage}
                         alt="Amenities Highlight"
                         width={700}
                         height={500}
@@ -39,16 +43,18 @@ export const AmenitiesListPage: React.FC<AmenitiesListPageProps> = ({ data }) =>
                         data-ai-hint="luxury infinity pool sunset"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
-                    {data.amenitiesListImageDisclaimer && (
+                    {amenitiesListImageDisclaimer && (
                         <figcaption className="map-disclaimer">
-                        <p>{data.amenitiesListImageDisclaimer}</p>
+                        <p>{amenitiesListImageDisclaimer}</p>
                         </figcaption>
                     )}
                 </figure>
                 ) : (
-                    <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
-                       {data.amenitiesListImageDisclaimer ? data.amenitiesListImageDisclaimer : "Amenities Image Area"}
-                    </div>
+                    amenitiesListImageDisclaimer && (
+                        <div className="w-full h-[90mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] text-xs p-2 text-center">
+                           <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{amenitiesListImageDisclaimer}</p>
+                        </div>
+                    )
                 )}
             </div>
           )}

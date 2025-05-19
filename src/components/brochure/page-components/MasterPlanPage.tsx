@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Image from 'next/image';
 import type { BrochureData } from '@/components/brochure/data-schema';
@@ -8,24 +9,29 @@ interface MasterPlanPageProps {
 }
 
 export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
-  const hasTextContent = data.masterPlanTitle || data.masterPlanDesc1 || data.masterPlanDesc2;
-  const hasVisualContent = !!data.masterPlanImage;
-  const hasDisclaimer = !!data.masterPlanImageDisclaimer;
+  const masterPlanTitle = data.masterPlanTitle?.trim();
+  const masterPlanDesc1 = data.masterPlanDesc1?.trim();
+  const masterPlanDesc2 = data.masterPlanDesc2?.trim();
+  const masterPlanImage = data.masterPlanImage?.trim();
+  const masterPlanImageDisclaimer = data.masterPlanImageDisclaimer?.trim();
 
-  if (!hasTextContent && !hasVisualContent && !hasDisclaimer) {
+  const hasTextContent = masterPlanTitle || masterPlanDesc1 || masterPlanDesc2 || masterPlanImageDisclaimer;
+  const hasVisualContent = !!masterPlanImage;
+
+  if (!hasTextContent && !hasVisualContent) {
     return null;
   }
 
   return (
     <PageWrapper className="page-light-bg" id="master-plan-page">
       <div className="page-content">
-        {data.masterPlanTitle && <div className="section-title">{data.masterPlanTitle}</div>}
-        {(data.masterPlanImage || data.masterPlanImageDisclaimer) && (
+        {masterPlanTitle && <div className="section-title">{masterPlanTitle}</div>}
+        {(masterPlanImage || masterPlanImageDisclaimer) && (
           <div className="master-plan-image">
-            {data.masterPlanImage && data.masterPlanImage.trim() !== '' ? (
+            {masterPlanImage ? (
                <figure className="relative">
                    <Image
-                      src={data.masterPlanImage}
+                      src={masterPlanImage}
                       alt="Master Plan Layout"
                       width={700}
                       height={500}
@@ -33,23 +39,25 @@ export const MasterPlanPage: React.FC<MasterPlanPageProps> = ({ data }) => {
                       data-ai-hint="architectural site plan color legend"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                    />
-                   {data.masterPlanImageDisclaimer && (
+                   {masterPlanImageDisclaimer && (
                        <figcaption className="map-disclaimer">
-                          <p>{data.masterPlanImageDisclaimer}</p>
+                          <p>{masterPlanImageDisclaimer}</p>
                        </figcaption>
                    )}
                </figure>
             ) : (
-                 <div className="w-full h-[150mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
-                    {data.masterPlanImageDisclaimer ? data.masterPlanImageDisclaimer : "Master Plan Image Area"}
-                 </div>
+                masterPlanImageDisclaimer && (
+                     <div className="w-full h-[150mm] bg-muted flex items-center justify-center text-muted-foreground rounded-[1.5mm] border border-gray-200 text-xs p-2 text-center">
+                        <p className="map-disclaimer !static !bg-transparent !text-muted-foreground !p-0">{masterPlanImageDisclaimer}</p>
+                     </div>
+                )
             )}
           </div>
         )}
-        {(data.masterPlanDesc1 || data.masterPlanDesc2) && (
+        {(masterPlanDesc1 || masterPlanDesc2) && (
           <div className="master-plan-text">
-            {data.masterPlanDesc1 && <p>{data.masterPlanDesc1}</p>}
-            {data.masterPlanDesc2 && <p>{data.masterPlanDesc2}</p>}
+            {masterPlanDesc1 && <p>{masterPlanDesc1}</p>}
+            {masterPlanDesc2 && <p>{masterPlanDesc2}</p>}
           </div>
         )}
       </div>

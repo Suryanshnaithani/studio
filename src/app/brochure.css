@@ -6,7 +6,7 @@
 }
 
 .printable-brochure {
-  @apply bg-white shadow-lg mx-auto print:shadow-none;
+  @apply bg-white shadow-lg mx-auto print:shadow-none print:bg-transparent;
   background-color: hsl(var(--background)); 
   width: 210mm; /* A4 width */
   padding: 0 !important; /* Crucial: No padding on the container for print */
@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden; /* Prevent content from spilling out of A4 bounds */
+  overflow: hidden !important; /* Prevent content from spilling out of A4 bounds, crucial for print */
 }
 
 @media print {
@@ -43,7 +43,6 @@
     overflow: hidden !important; 
     page-break-inside: avoid !important; 
     page-break-before: auto !important; /* Let browser decide based on content flow */
-    page-break-after: auto !important;  /* Let browser decide based on content flow */
     position: relative !important; 
     display: flex !important; 
     flex-direction: column !important; 
@@ -545,7 +544,6 @@ img[data-ai-hint] { }
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
-    .no-print { display: none !important; }
 
      a { color: inherit !important; text-decoration: none !important; }
      a[href]::after { content: none !important; }
